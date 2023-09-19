@@ -247,11 +247,41 @@ public class VisaoAula extends JFrame{
         /* JLabels */
         label_aula.setText(aula.getMateria());
         label_aula.setFont(texto_sub_titulo);
-        label_aula.setBounds(200, 25,125,40);
+        label_aula.setBounds(150, 35,125,40);
+
+        label_segunda.setFont(texto_sub_titulo);
+        label_segunda.setBounds(25, 75,125,40);
+
+        label_terca.setFont(texto_sub_titulo);
+        label_terca.setBounds(25, 75,125,40);
+
+        label_quarta.setFont(texto_sub_titulo);
+        label_quarta.setBounds(25, 75,125,40);
+
+        label_quinta.setFont(texto_sub_titulo);
+        label_quinta.setBounds(25, 75,125,40);
+
+        label_sexta.setFont(texto_sub_titulo);
+        label_sexta.setBounds(25, 75,125,40);
+
+        label_sabado.setFont(texto_sub_titulo);
+        label_sabado.setBounds(25, 75,125,40);
+
+        label_domingo.setFont(texto_sub_titulo);
+        label_domingo.setBounds(25, 75,125,40);
 
         label_professor.setText(aula.getMateria());
         label_professor.setFont(texto_sub_titulo);
         label_professor.setBounds(25, 25,125,40);
+
+
+    JLabel label_segunda = new JLabel("S");
+    JLabel label_terca = new JLabel("T");
+    JLabel label_quarta = new JLabel("Q");
+    JLabel label_quinta = new JLabel("Q");
+    JLabel label_sexta = new JLabel("S");
+    JLabel label_sabado = new JLabel("S");
+    JLabel label_domingo = new JLabel("D");
 
         /* Caixas de texto */
         tArea_descricao.setFont(texto_sub_titulo);
