@@ -21,4 +21,8 @@ public class ControleAluno extends Controle{
         return ((PersistenciaAluno)persistencia).devolveIdPerdido(email, dia, mes, ano);
     }
 
+    public Object[][] textoAlunos(){
+        return ((PersistenciaAluno)persistencia).textoAlunos();
+    }
+    
 }

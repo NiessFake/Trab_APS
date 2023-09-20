@@ -37,6 +37,7 @@ public class VisaoUsuario extends JFrame {
     JPanel jpanel_cadastro = new JPanel();
 
     /* Botões */
+    JButton bt_projeto = new JButton("PROJETO");
     JButton bt_login = new JButton("LOGIN");
     JButton bt_juntese = new JButton("JUNTE-SE");
     JButton bt_continuar_cadastro = new JButton("CONTINUAR");
@@ -45,7 +46,6 @@ public class VisaoUsuario extends JFrame {
     JButton bt_perdi = new JButton("perdi o id");
 
     /* Labels */
-    JLabel projeto = new JLabel("PROJETO");
     JLabel label_cadatro = new JLabel("CADASTRO");
     JLabel label_login = new JLabel("LOGIN");
     JLabel label_recuperar = new JLabel("RECUPERAR ID");
@@ -112,9 +112,12 @@ public class VisaoUsuario extends JFrame {
 		bt_juntese.setForeground(Color.black);
         bt_juntese.addActionListener(this::vaiPCadastro);
 
-        /* Labels */
-        projeto.setFont(texto_titulo);
-        projeto.setBounds(20, 30,150,50);
+        bt_projeto.setFont(texto_titulo);
+        bt_projeto.setBounds(20, 30,200,50);
+        bt_projeto.setBackground(cor_cabecalho);
+		bt_projeto.setForeground(Color.black);
+        bt_projeto.setBorderPainted(false);
+        bt_projeto.addActionListener(this::projeto);
 
         /* Paineis */
         jpanel_cabecalho.setLayout(null);
@@ -132,7 +135,7 @@ public class VisaoUsuario extends JFrame {
         /* Adiciona os elementos no cabecalho, em seguida adiciona-o no fundo e adiciona o fundo */
         jpanel_cabecalho.add(bt_login);
         jpanel_cabecalho.add(bt_juntese);
-        jpanel_cabecalho.add(projeto);
+        jpanel_cabecalho.add(bt_projeto);
         
         add(jpanel_cabecalho);
         add(jpanel_fundo);
@@ -477,7 +480,7 @@ public class VisaoUsuario extends JFrame {
 
         jpanel_cabecalho.remove(bt_login);
         jpanel_cabecalho.remove(bt_juntese);
-        jpanel_cabecalho.remove(projeto);
+        jpanel_cabecalho.remove(bt_projeto);
 
         remove(jpanel_cabecalho);
         remove(jpanel_fundo);
@@ -638,12 +641,24 @@ public class VisaoUsuario extends JFrame {
         jpanel_cadastro.remove(label_cSenha);
         jpanel_cadastro.remove(tArea_cSenha);
         jpanel_cadastro.remove(bt_continuar_cadastro);
+        jpanel_login.remove(label_recuperar);
+        jpanel_login.remove(label_email);
+        jpanel_login.remove(label_dataNasc);
+        jpanel_login.remove(label_papel);
+        jpanel_login.remove(tArea_email);
+        jpanel_login.remove(cbox_papel);
+        jpanel_login.remove(cbox_dia);
+        jpanel_login.remove(cbox_mes);
+        jpanel_login.remove(cbox_ano);
+        jpanel_login.remove(bt_continuar_recupera);
 
         jpanel_fundo.remove(jpanel_cadastro);
 
         jpanel_cabecalho.remove(bt_login);
         jpanel_cabecalho.remove(bt_juntese);
-        jpanel_cabecalho.remove(projeto);
+        jpanel_cabecalho.remove(bt_projeto);
+
+        
 
         remove(jpanel_cabecalho);
         remove(jpanel_fundo);
@@ -678,7 +693,7 @@ public class VisaoUsuario extends JFrame {
 
         jpanel_cabecalho.remove(bt_login);
         jpanel_cabecalho.remove(bt_juntese);
-        jpanel_cabecalho.remove(projeto);
+        jpanel_cabecalho.remove(bt_projeto);
 
         remove(jpanel_cabecalho);
         remove(jpanel_fundo);
@@ -715,7 +730,7 @@ public class VisaoUsuario extends JFrame {
 
         jpanel_cabecalho.remove(bt_login);
         jpanel_cabecalho.remove(bt_juntese);
-        jpanel_cabecalho.remove(projeto);
+        jpanel_cabecalho.remove(bt_projeto);
 
         remove(jpanel_cabecalho);
         remove(jpanel_fundo);
@@ -725,6 +740,72 @@ public class VisaoUsuario extends JFrame {
         /* Manda pro login */
         login(cUsuario);
     }
+
+
+    public void projeto(ActionEvent actionEvent){
+        /* Deixa a caixa de texto de algumas das caixas de texto */
+        tArea_email.setText("");
+        tArea_email.requestFocus();
+        cbox_dia.setSelectedItem("");
+        cbox_mes.setSelectedItem("");
+        cbox_ano.setSelectedItem("");
+        cbox_papel.setSelectedItem("");
+        tArea_senha.setText("");
+        tArea_senha.requestFocus();
+        tArea_cSenha.setText("");
+        tArea_cSenha.requestFocus();
+        tArea_id.setText("");
+        tArea_id.requestFocus();
+
+        /* remove tudo do painel */
+        jpanel_cadastro.remove(label_cadatro);
+        jpanel_cadastro.remove(label_nome);
+        jpanel_cadastro.remove(tArea_nome);
+        jpanel_cadastro.remove(label_sobrenome);
+        jpanel_cadastro.remove(tArea_sobrenome);
+        jpanel_cadastro.remove(label_email);
+        jpanel_cadastro.remove(tArea_email);
+        jpanel_cadastro.remove(label_dataNasc);
+        jpanel_cadastro.remove(cbox_dia);
+        jpanel_cadastro.remove(cbox_mes);
+        jpanel_cadastro.remove(cbox_ano);
+        jpanel_cadastro.remove(label_papel);
+        jpanel_cadastro.remove(cbox_papel);
+        jpanel_cadastro.remove(label_senha);
+        jpanel_cadastro.remove(tArea_senha);
+        jpanel_cadastro.remove(label_cSenha);
+        jpanel_cadastro.remove(tArea_cSenha);
+        jpanel_cadastro.remove(bt_continuar_cadastro);
+        jpanel_login.remove(label_recuperar);
+        jpanel_login.remove(label_email);
+        jpanel_login.remove(label_dataNasc);
+        jpanel_login.remove(label_papel);
+        jpanel_login.remove(tArea_email);
+        jpanel_login.remove(cbox_papel);
+        jpanel_login.remove(cbox_dia);
+        jpanel_login.remove(cbox_mes);
+        jpanel_login.remove(cbox_ano);
+        jpanel_login.remove(bt_continuar_recupera);
+		jpanel_login.remove(bt_continuar_login);
+		jpanel_login.remove(bt_perdi);
+        jpanel_login.remove(label_login);
+        jpanel_login.remove(label_id);
+        jpanel_login.remove(tArea_id);
+
+        jpanel_fundo.remove(jpanel_cadastro);
+
+        jpanel_cabecalho.remove(bt_login);
+        jpanel_cabecalho.remove(bt_juntese);
+        jpanel_cabecalho.remove(bt_projeto);
+
+        remove(jpanel_cabecalho);
+        remove(jpanel_fundo);
+
+        VisaoMain.getInstance().menu();
+
+        setVisible(false);
+    }
+
 
 
     /* Tamanho dos vetores para o dia, mês e ano */

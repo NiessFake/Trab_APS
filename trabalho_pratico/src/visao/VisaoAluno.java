@@ -32,15 +32,15 @@ public class VisaoAluno extends JFrame{
     /* Botões */
     JButton bt_aulas = new JButton("AULAS");
     JButton bt_mensagens = new JButton("MENSAGENS");
+    JButton bt_sair = new JButton("SAIR");
     JButton bt_aluno = new JButton("");
     JButton bt_alterar = new JButton("ALTERAR DADOS");
     JButton bt_excluir = new JButton("EXCLUIR");
     JButton bt_confirmar = new JButton("CONFIRMAR");
     JButton bt_entrar_aula = new JButton("ENTRAR AULA");
-
+    JButton bt_projeto = new JButton("PROJETO");
     
     /* Labels */
-    JLabel projeto = new JLabel("PROJETO");
     JLabel label_dados = new JLabel("DADOS PESSOAIS");
     JLabel label_alterar = new JLabel("ALTERAR DADOS");
     JLabel label_nome = new JLabel();
@@ -73,7 +73,7 @@ public class VisaoAluno extends JFrame{
     /* Contrução do JFrame que será usado */
     public VisaoAluno(){
         setSize(750,600);
-        setTitle("TP Analise e Projeto de Software");
+        setTitle("TP Analise e bt_projeto de Software");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setResizable(false);
         setLocationRelativeTo(null);
@@ -90,13 +90,13 @@ public class VisaoAluno extends JFrame{
     public void cabecalho(){
         /* Botões */
         bt_aulas.setFont(texto_padrao);
-        bt_aulas.setBounds(200,30,125,40);
+        bt_aulas.setBounds(240,30,125,40);
         bt_aulas.setBackground(Color.white);
 		bt_aulas.setForeground(Color.black);
         bt_aulas.addActionListener(this::irPAula);
 
         bt_mensagens.setFont(texto_padrao);
-        bt_mensagens.setBounds(330,30,125,40);
+        bt_mensagens.setBounds(370,30,125,40);
         bt_mensagens.setBackground(Color.white);
 		bt_mensagens.setForeground(Color.black);
 
@@ -105,9 +105,12 @@ public class VisaoAluno extends JFrame{
         bt_aluno.setBackground(Color.white);
 		bt_aluno.setForeground(Color.black);
 
-        /* Labels */
-        projeto.setFont(texto_titulo);
-        projeto.setBounds(20,30,150,50);
+        bt_projeto.setFont(texto_titulo);
+        bt_projeto.setBounds(20, 30,200,50);
+        bt_projeto.setBackground(cor_cabecalho);
+		bt_projeto.setForeground(Color.black);
+        bt_projeto.setBorderPainted(false);
+        bt_projeto.addActionListener(this::projeto);
 
         /* Paineis */
         jpanel_cabecalho.setLayout(null);
@@ -126,7 +129,7 @@ public class VisaoAluno extends JFrame{
         jpanel_cabecalho.add(bt_aulas);
         jpanel_cabecalho.add(bt_mensagens);
         jpanel_cabecalho.add(bt_aluno);
-        jpanel_cabecalho.add(projeto);
+        jpanel_cabecalho.add(bt_projeto);
         
         add(jpanel_cabecalho);
         add(jpanel_fundo);
@@ -441,6 +444,53 @@ public class VisaoAluno extends JFrame{
 
         VisaoAula.getInstance().menuAulas(cAula,aluno,1);
 
+    }
+
+    private void projeto(ActionEvent actionEvent){
+        /* Deixa as caixas de texto em branco */
+        tArea_nome.setText("");
+        tArea_nome.requestFocus();
+        tArea_sobrenome.setText("");
+        tArea_sobrenome.requestFocus();
+        tArea_email.setText("");
+        tArea_email.requestFocus();
+        cbox_dia.setSelectedItem("");
+        cbox_mes.setSelectedItem("");
+        cbox_ano.setSelectedItem("");
+        tArea_senha.setText("");
+        tArea_senha.requestFocus();
+        tArea_cSenha.setText("");
+        tArea_cSenha.requestFocus();
+
+        jpanel_dados.remove(label_alterar);
+        jpanel_dados.remove(label_sobrenome);
+        jpanel_dados.remove(label_senha);
+        jpanel_dados.remove(label_cSenha);
+        jpanel_dados.remove(tArea_nome);
+        jpanel_dados.remove(tArea_sobrenome);
+        jpanel_dados.remove(tArea_email);
+        jpanel_dados.remove(tArea_senha);
+        jpanel_dados.remove(tArea_cSenha);
+        jpanel_dados.remove(cbox_dia);
+        jpanel_dados.remove(cbox_mes);
+        jpanel_dados.remove(cbox_ano);
+        jpanel_dados.remove(bt_excluir);
+        jpanel_dados.remove(bt_confirmar);
+        jpanel_dados.remove(label_dados);
+        jpanel_dados.remove(label_nome);
+        jpanel_dados.remove(label_email);
+        jpanel_dados.remove(label_dataNasc);
+        jpanel_dados.remove(bt_alterar);
+
+        jpanel_fundo.remove(jpanel_dados);
+        jpanel_fundo.remove(bt_entrar_aula);
+
+        remove(jpanel_fundo);
+        remove(jpanel_cabecalho);
+
+        VisaoMain.getInstance().menu();
+
+        setVisible(false);
     }
 
     /* Tamanho dos vetores para o dia, mês e ano */

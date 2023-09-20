@@ -24,7 +24,8 @@ public class VisaoAula extends JFrame{
 
 
     /* Variaveis auxiliares */
-    String[] colunas = {"ID", "Materia", "Professor", "Capacidade", "Duracao","Frequente"};
+    String[] colunas_aula = {"ID", "Materia", "Professor", "Capacidade", "Duracao","Frequente"};
+    String[] colunas_aluno = {"ID","Nome","Idade"};
     int funcao, id, tamanho_voltar,tamanho_capacidade;
     String capacidade;
     int[] aulas_inscritas,alunos_inscritos;
@@ -41,7 +42,8 @@ public class VisaoAula extends JFrame{
     JPanel jpanel_materia = new JPanel();
 
     /* Scroll Panels */
-    JScrollPane barraRolagem;
+    JScrollPane jScroll_aula;
+    JScrollPane jScroll_alunos;
     
     /* Botões */
     JButton bt_aulas = new JButton("AULAS");
@@ -49,9 +51,11 @@ public class VisaoAula extends JFrame{
     JButton bt_login = new JButton("LOGIN");
     JButton bt_juntese = new JButton("JUNTE-SE");
     JButton bt_usuario = new JButton("");
-    JButton bt_voltar = new JButton("VOLTAR");
     JButton bt_inscrever = new JButton("INSCREVER");
     JButton bt_editar = new JButton("INSCREVER");
+    JButton bt_alunos = new JButton("alunos");
+    JButton bt_tarefas = new JButton("tarefas");
+    JButton bt_home = new JButton("home");
 
     
     /* Labels */
@@ -80,6 +84,7 @@ public class VisaoAula extends JFrame{
 
     /* Fonte e Cores */
     Font texto_padrao = new Font("ARIAL",Font.BOLD,12);
+    Font texto_pequeno = new Font("ARIAL",Font.BOLD,10);
     Font texto_titulo = new Font("ARIAL",Font.BOLD,30);
     Font texto_sub_titulo = new Font("ARIAL",Font.BOLD,20);
     Color cor_fundo = new Color(194,255,240);
@@ -196,11 +201,11 @@ public class VisaoAula extends JFrame{
         cabecalho();
 
         /* Chama a funcao que devolve um objeto contendo os dados do json */
-        Object[][] objeto_tabela = cAula.textoTabelas();
+        Object[][] objeto_tabela_aula = cAula.textoTabelas();
 
         
         /* Cria uma tabela de selecao unica e nao editavel */
-        tabela_aulas = new JTable(objeto_tabela, colunas){   
+        tabela_aulas = new JTable(objeto_tabela_aula, colunas_aula){   
             public boolean isCellEditable(int row, int column) {                
                 return false;               
             }
@@ -221,7 +226,7 @@ public class VisaoAula extends JFrame{
                         aula.setId(Integer.parseInt(aux));
 
                         /* Apaga tabela antiga */
-                        jpanel_fundo.remove(barraRolagem);
+                        jpanel_fundo.remove(jScroll_aula);
 
                         setVisible(false);
                         paginaIndividual();
@@ -233,21 +238,18 @@ public class VisaoAula extends JFrame{
 
 
         /* Cria um novo JScrollPane e coloca a tabela nele */
-        barraRolagem = new JScrollPane(tabela_aulas);
+        jScroll_aula = new JScrollPane(tabela_aulas);
 
-        barraRolagem.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-        barraRolagem.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        barraRolagem.setBounds(100,150, 550,350);
-        barraRolagem.getVerticalScrollBar().setValue(0);
-        barraRolagem.setVisible(true);
+        jScroll_aula.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        jScroll_aula.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        jScroll_aula.setBounds(100,150, 550,350);
+        jScroll_aula.getVerticalScrollBar().setValue(0);
+        jScroll_aula.setVisible(true);
 
         /* Adiciona o ScrollPane no painel */
-        jpanel_fundo.add(barraRolagem);
+        jpanel_fundo.add(jScroll_aula);
         
     }
-
-    
-    
 
     public void paginaIndividual(){
         setVisible(true);
@@ -281,14 +283,28 @@ public class VisaoAula extends JFrame{
         }
 
         /* Botoes */
-        bt_voltar.setFont(texto_padrao);
-        bt_voltar.setBounds(375,400,100,40);
-        bt_voltar.setBackground(Color.white);
-		bt_voltar.setForeground(Color.black);
+        bt_home.setFont(texto_pequeno);
+        bt_home.setBounds(0,400,75,40);
+        bt_home.setBackground(Color.white);
+		bt_home.setForeground(Color.black);
+        bt_home.setBorderPainted(false);
+
+        bt_alunos.setFont(texto_pequeno);
+        bt_alunos.setBounds(0,360,75,40);
+        bt_alunos.setBackground(Color.lightGray);
+		bt_alunos.setForeground(Color.black);
+        bt_alunos.setBorderPainted(false);
+        bt_alunos.addActionListener(this::alunos);
+
+        bt_tarefas.setFont(texto_pequeno);
+        bt_tarefas.setBounds(0,320,75,40);
+        bt_tarefas.setBackground(Color.lightGray);
+		bt_tarefas.setForeground(Color.black);
+        bt_tarefas.setBorderPainted(false);
 
         if(funcao != 2){
             bt_inscrever.setFont(texto_padrao);
-            bt_inscrever.setBounds(362,300,125,40);
+            bt_inscrever.setBounds(362,400,125,40);
             bt_inscrever.setBackground(Color.white);
             bt_inscrever.setForeground(Color.black);
             bt_inscrever.addActionListener(this::adicionaAluno);
@@ -296,7 +312,7 @@ public class VisaoAula extends JFrame{
         }
         else{
             bt_editar.setFont(texto_padrao);
-            bt_editar.setBounds(362,300,125,40);
+            bt_editar.setBounds(362,400,125,40);
             bt_editar.setBackground(Color.white);
             bt_editar.setForeground(Color.black);
             jpanel_dados.add(bt_editar);
@@ -383,6 +399,10 @@ public class VisaoAula extends JFrame{
         jpanel_botoes.setSize(75, 500);
         jpanel_botoes.setLocation(75, 100);
 
+        jpanel_botoes.add(bt_home);
+        jpanel_botoes.add(bt_tarefas);
+        jpanel_botoes.add(bt_alunos);
+
         jpanel_materia.add(label_aula);
 
         jpanel_dados.add(label_professor);
@@ -396,7 +416,6 @@ public class VisaoAula extends JFrame{
         jpanel_dados.add(label_sabado);
         jpanel_dados.add(label_domingo);
         jpanel_dados.add(tArea_descricao);
-        jpanel_dados.add(bt_voltar);
         jpanel_dados.add(jpanel_materia);
 
         jpanel_fundo.add(jpanel_dados);
@@ -503,6 +522,82 @@ public class VisaoAula extends JFrame{
             VisaoProfessor.getInstance().paginaProfessor(cProfessor, professor);
     }
 
+    private void alunos(ActionEvent actionEvent){
+        setVisible(false);
+        jpanel_dados.remove(label_professor);
+        jpanel_dados.remove(label_frequencia);
+        jpanel_dados.remove(label_capacidade);
+        jpanel_dados.remove(label_segunda);
+        jpanel_dados.remove(label_terca);
+        jpanel_dados.remove(label_quarta);
+        jpanel_dados.remove(label_quinta);
+        jpanel_dados.remove(label_sexta);
+        jpanel_dados.remove(label_sabado);
+        jpanel_dados.remove(label_domingo);
+        jpanel_dados.remove(tArea_descricao);
+        jpanel_dados.remove(bt_editar);
+        jpanel_dados.remove(bt_inscrever);
+
+        bt_alunos.setBackground(Color.white);
+        bt_alunos.removeActionListener(this::alunos);
+
+        bt_home.setBackground(Color.lightGray);
+        bt_home.addActionListener(this::home);
+        
+        Object[][] objeto_tabela_aluno = cAluno.textoAlunos();
+        
+        /* Cria uma tabela de selecao unica e nao editavel */
+        tabela_alunos = new JTable(objeto_tabela_aluno, colunas_aluno){   
+            public boolean isCellEditable(int row, int column) {                
+                return false;               
+            }
+        };
+        tabela_alunos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        /* Cria um novo JScrollPane e coloca a tabela nele */
+        jScroll_alunos = new JScrollPane(tabela_alunos);
+
+        jScroll_alunos.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        jScroll_alunos.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        jScroll_alunos.setBounds(112,145,300,260);
+        jScroll_alunos.getVerticalScrollBar().setValue(0);
+        jScroll_alunos.setVisible(true);
+
+        /* Adiciona o ScrollPane no painel */
+        jpanel_dados.add(jScroll_alunos);
+
+        
+        setVisible(true);
+    }
+
+    private void home(ActionEvent actionEvent){  
+        setVisible(false);   
+        jpanel_dados.remove(jScroll_alunos);
+
+        bt_home.removeActionListener(this::home);
+
+        paginaIndividual();     
+    }
+
+    private void menu(ActionEvent actionEvent){        
+        bt_home.removeActionListener(this::home);
+        bt_alunos.removeActionListener(this::alunos);
+
+        
+        switch (funcao) {
+            case 1:                                
+                menuAulas(cAula, aluno, 1);
+                break;
+            
+            case 2:                       
+                menuAulas(cAula, professor, 2);
+                break;
+            
+            default:       
+                menuAulas(cAula, usuario, 0);
+                break;
+        }
+    }
 
     public void removeItens(){
         jpanel_cabecalho.remove(bt_aulas);
@@ -523,13 +618,15 @@ public class VisaoAula extends JFrame{
         jpanel_dados.remove(label_sabado);
         jpanel_dados.remove(label_domingo);
         jpanel_dados.remove(tArea_descricao);
-        jpanel_dados.remove(bt_voltar);
         jpanel_dados.remove(jpanel_materia);
+        jpanel_dados.remove(bt_editar);
+        jpanel_dados.remove(bt_inscrever);
+        //jpanel_dados.remove(jScroll_alunos);
         
 
         jpanel_fundo.remove(jpanel_dados);
         jpanel_fundo.remove(jpanel_botoes);
-        jpanel_fundo.remove(barraRolagem);
+        jpanel_fundo.remove(jScroll_aula);
 
         remove(jpanel_cabecalho);
         remove(jpanel_fundo);

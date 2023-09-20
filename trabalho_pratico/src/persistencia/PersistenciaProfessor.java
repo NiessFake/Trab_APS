@@ -43,7 +43,6 @@ public class PersistenciaProfessor implements Persistencia{
             hashJSON.put("diaNasc", ((Professor)entidade).getDiaNasc());
             hashJSON.put("mesNasc", ((Professor)entidade).getMesNasc());
             hashJSON.put("anoNasc", ((Professor)entidade).getAnoNasc());
-            hashJSON.put("id", devolveMaiorID()+1);
             hashJSON.put("senha", ((Professor)entidade).getSenha());
 
             /* Se existir alguma aula no professor, cria um vetor JSON q armazena elas e depois 
@@ -59,6 +58,11 @@ public class PersistenciaProfessor implements Persistencia{
             }
             else
                 hashJSON.put("aulas", null);
+
+            if(((Professor)entidade).getId()==0)
+                hashJSON.put("id", devolveMaiorID()+1);
+            else
+                hashJSON.put("id", ((Professor)entidade).getId());
 
 
             /* Cria um objeto JSON que vai armazenar o objeto Hash */

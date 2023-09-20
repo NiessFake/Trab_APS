@@ -60,10 +60,16 @@ public class PersistenciaAula implements Persistencia{
                 for(int j = 0; j < vetor_alunos.length ;j++)
                     vetorAulas.add(vetor_alunos[j]);
                 
-                hashJSON.put("aulas", vetorAulas);
+                hashJSON.put("alunos", vetorAulas);
             }
             else
-                hashJSON.put("aulas", null);
+                hashJSON.put("alunos", null);
+
+
+            if(((Aula)entidade).getId()==0)
+                hashJSON.put("id", devolveMaiorID()+1);
+            else
+                hashJSON.put("id", ((Aula)entidade).getId());
 
 
             /* Cria um objeto JSON que vai armazenar o objeto Hash */
@@ -254,7 +260,7 @@ public class PersistenciaAula implements Persistencia{
                         vetor_alunos = new int[vetorJSONAux.size()];
 
                         for(int j = 0; j < vetorJSONAux.size();j++)
-                            vetor_alunos[j] = (Integer) vetorJSONAux.get(j);
+                            vetor_alunos[j] = Integer.valueOf(vetorJSONAux.get(j).toString());
                     }
                     else
                         vetor_alunos = null;
@@ -380,9 +386,9 @@ public class PersistenciaAula implements Persistencia{
 
                 id_professor = elemento.get("professor").toString();
                 if(Integer.parseInt(id_professor) == ((Professor)entidade).getId()){
-                    objeto[i][0] = elemento.get("id").toString();
-                    objeto[i][1] = elemento.get("materia").toString();
-                    objeto[i][2] = elemento.get("capacidade").toString();
+                    objeto[contador][0] = elemento.get("id").toString();
+                    objeto[contador][1] = elemento.get("materia").toString();
+                    objeto[contador][2] = elemento.get("capacidade").toString();
                     contador ++;
                 }
             }

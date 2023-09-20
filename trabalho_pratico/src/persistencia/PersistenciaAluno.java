@@ -19,6 +19,7 @@ public class PersistenciaAluno implements Persistencia{
 
     /* */
     int vetor_aulas[];
+    protected int ANO_ATUAL = 2023;
 
     /* Função que insere um usuário no arquivo */
     public void insere(Entidade entidade){
@@ -37,7 +38,6 @@ public class PersistenciaAluno implements Persistencia{
             hashJSON.put("diaNasc", ((Aluno)entidade).getDiaNasc());
             hashJSON.put("mesNasc", ((Aluno)entidade).getMesNasc());
             hashJSON.put("anoNasc", ((Aluno)entidade).getAnoNasc());
-            hashJSON.put("id", devolveMaiorID()+1);
             hashJSON.put("senha", ((Aluno)entidade).getSenha());
 
 
@@ -56,6 +56,11 @@ public class PersistenciaAluno implements Persistencia{
             else
                 hashJSON.put("aulas", null);
 
+
+            if(((Aluno)entidade).getId()==0)
+                hashJSON.put("id", devolveMaiorID()+1);
+            else
+                hashJSON.put("id", ((Aluno)entidade).getId());
             
             /* Cria um objeto JSON que vai armazenar o objeto Hash */
             JSONObject insereObj = new JSONObject(hashJSON);
@@ -307,6 +312,51 @@ public class PersistenciaAluno implements Persistencia{
 
         /* Retorna 0 caso não encontre o id */;
         return 0;
+    }
+
+    /* Texto de alunos para tabelas */
+    public Object[][] textoAlunos(){
+        int idade=0;
+        /* Cria um conversor de JSON para texto para que seja possível percorrer o arquivo */
+        JSONParser conversorJson = new JSONParser();
+        try {
+            caminhoExiste();
+            
+            /* Converte os elementos no arquivo para um objeto JSON*/
+            JSONObject aluno = (JSONObject) conversorJson.parse(new FileReader(file));
+            
+            /* Pega o vetor dentro do objeto JSON e o guarda em um vetor JSON */
+            JSONArray vetorJson = (JSONArray) aluno.get("aluno");
+
+            /* Cria um objeto que vai guardar os dados dos elementos no JSON */
+            Object[][] objeto = new Object[vetorJson.size()][3];
+
+            /* Loop for que percorre os elementos do vetor até o seu fim */
+            for (int i = 0; i < vetorJson.size() ; i++){
+                /* Cria um objeto para aquele elemento que será analisado */
+                JSONObject elemento = (JSONObject) vetorJson.get(i);
+
+                /* Converte o id do professor daquele elemento para String */
+                
+                idade = ANO_ATUAL - Integer.valueOf(elemento.get("anoNasc").toString());
+
+                objeto[i][0] = elemento.get("id").toString();
+                objeto[i][1] = elemento.get("nome").toString();
+                objeto[i][2] = idade;
+            }
+            
+            return objeto;
+            
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (org.json.simple.parser.ParseException e) {
+            e.printStackTrace();
+        }
+
+        /* Retorna o maior id */
+        return null;
     }
 
 }

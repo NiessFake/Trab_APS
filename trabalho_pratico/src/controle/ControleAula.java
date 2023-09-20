@@ -29,4 +29,5 @@ public class ControleAula extends Controle {
     public int numeroAlunos(Entidade entidade){
         return ((PersistenciaAula)persistencia).numeroAlunos(entidade);
     }
+
 }
