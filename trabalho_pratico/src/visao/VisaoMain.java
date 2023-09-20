@@ -12,7 +12,8 @@ public class VisaoMain extends JFrame {
     Usuario usuario = new Usuario();
 
     /* Cria um atributo do tipo Controle para acessar as funções */
-    private ControleUsuario cUsuario; //acho que vai ter q criar um desses para cada
+    private ControleUsuario cUsuario;
+    private ControleAula cAula;
 
     /* Atributo que vai guardar a única instância da interface */
     private static VisaoMain uniqueInstance;
@@ -99,6 +100,9 @@ public class VisaoMain extends JFrame {
         /* Chama a funcao que adiciona o cabecalho */
         cabecalho();
 
+        this.cUsuario = new ControleUsuario();
+        this.cAula = new ControleAula();
+
         /* BOTOES */
         bt_aula.setFont(texto_padrao);
         bt_aula.setBounds(400, 250,100,40);
@@ -147,7 +151,7 @@ public class VisaoMain extends JFrame {
 
         usuario.setId(0);
         /* Chama a instancia unica do VisaoUsuario e vai até ela na funcao cadastro */
-        VisaoAula.getInstance().menuAulas(usuario,0);
+        VisaoAula.getInstance().menuAulas(cAula,usuario,0);
         
         setVisible(false);
     }

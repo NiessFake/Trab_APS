@@ -4,26 +4,31 @@ package visao;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import javax.swing.*;
-//import controle.*;
-import modelo.*;
-import persistencia.*;
+
+import controle.Controle;
+import controle.ControleAula;
+import controle.ControleProfessor;
+import modelo.Entidade;
+import modelo.Aula;
+import modelo.Professor;
 
 public class VisaoProfessor extends JFrame {
     /* Atributo que vai guardar a única instância da interface */
     private static VisaoProfessor uniqueInstance;
 
-    Aula aula;
-    Professor professor = new Professor();
-    PersistenciaAula pAula = new PersistenciaAula();
-    PersistenciaProfessor pProfessor = new PersistenciaProfessor();
+    /* Classes usadas */
+    private Aula aula;
+    private Professor professor = new Professor();
+    private ControleProfessor cProfessor;
+    private ControleAula cAula;
 
     /* Variaveis auxiliares */
-    String nome, sobrenome, email, dia, mes, ano , senha, cSenha, materia, capacidade, duracao;
-    String[] dias = new String[7];
-    int[] aulas_ministradas;
-    int tamanho_vetor_aula;
-    boolean condicao_alteracao, condicao_cadastro, frequencia;
-    String[] colunas = {"ID", "Materia", "Capacidade"};
+    protected int tamanho_vetor_aula;
+    protected String nome, sobrenome, email, dia, mes, ano , senha, cSenha, materia, capacidade, duracao;
+    protected boolean condicao_alteracao, condicao_cadastro, frequencia;
+    protected int[] aulas_ministradas;
+    protected String[] dias = new String[7];
+    protected String[] colunas = {"ID", "Materia", "Capacidade"};
 
     /* Paineis */
     JPanel jpanel_cabecalho = new JPanel();
@@ -98,7 +103,7 @@ public class VisaoProfessor extends JFrame {
     Font texto_sub_titulo = new Font("ARIAL",Font.BOLD,20);
     Color cor_fundo = new Color(194,255,240);
     Color cor_cabecalho = new Color(0,204,155);
-    Color cor_textos = new Color(163, 184, 204);
+    //Color cor_textos = new Color(163, 184, 204);
 
     /* Contrução do JFrame que será usado */
     public VisaoProfessor(){
@@ -124,7 +129,7 @@ public class VisaoProfessor extends JFrame {
         bt_aulas.setBounds(200,30,125,40);
         bt_aulas.setBackground(Color.white);
 		bt_aulas.setForeground(Color.black);
-        bt_aulas.addActionListener(this::irPAula);
+        bt_aulas.addActionListener(this::ircAula);
 
         bt_mensagens.setFont(texto_padrao);
         bt_mensagens.setBounds(330,30,125,40);
@@ -167,7 +172,7 @@ public class VisaoProfessor extends JFrame {
     /* Funcao que cria uma tabela de aulas */
     public void tabelaAulasProf(){
         /* Chama a funcao que devolve um objeto contendo os dados do json */
-        Object[][] objeto_tabela = pAula.aulasProfessor(professor);
+        Object[][] objeto_tabela = cAula.aulasProfessor(professor);
 
         
         /* Cria uma tabela de selecao unica e nao editavel */
@@ -194,10 +199,12 @@ public class VisaoProfessor extends JFrame {
 
 
     /* Pagina do professor que leva para seus dados */
-    public void paginaProfessor(Entidade entidade){
+    public void paginaProfessor(Controle controle, Entidade entidade){
         setVisible(true);
         
         professor = (Professor)entidade;
+        cProfessor = (ControleProfessor)controle;
+        this.cAula = new ControleAula();
 
         cabecalho();
         tabelaAulasProf();
@@ -302,23 +309,23 @@ public class VisaoProfessor extends JFrame {
         /* Caixas de texto */
         tArea_nome.setFont(texto_padrao);
         tArea_nome.setBounds(218, 125, 250,25);
-        tArea_nome.setBackground(cor_textos);
+        tArea_nome.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
 
         tArea_sobrenome.setFont(texto_padrao);
         tArea_sobrenome.setBounds(218, 160, 250,25);
-        tArea_sobrenome.setBackground(cor_textos);
+        tArea_sobrenome.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
 
         tArea_email.setFont(texto_padrao);
         tArea_email.setBounds(218, 195, 250,25);
-        tArea_email.setBackground(cor_textos);
+        tArea_email.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
 
         tArea_senha.setFont(texto_padrao);
         tArea_senha.setBounds(218, 265, 250,25);
-        tArea_senha.setBackground(cor_textos);
+        tArea_senha.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
 
         tArea_cSenha.setFont(texto_padrao);
         tArea_cSenha.setBounds(218, 300,250,25);
-        tArea_cSenha.setBackground(cor_textos);
+        tArea_cSenha.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
 
         /* ComboBOXes */
         cbox_dia.setBounds(218, 230,80,25);
@@ -359,7 +366,7 @@ public class VisaoProfessor extends JFrame {
     uir */
     private void excluir(ActionEvent actionEvent){
         /* Chama a funcao da persistencia que exclui o usuario */
-        pProfessor.remove(professor,true);
+        cProfessor.remove(professor,true);
 
         /* Imprime uma mensagem de sucesso */
         JOptionPane.showMessageDialog(null,"Seu cadastrato foi excluido", "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
@@ -463,8 +470,8 @@ public class VisaoProfessor extends JFrame {
             tArea_cSenha.requestFocus();
 
             /* Exclui o cadastro antigo e adiciona o novo */
-            pProfessor.remove(professor,true);
-            pProfessor.insere(professor);
+            cProfessor.remove(professor,true);
+            cProfessor.insere(professor);
 
             JOptionPane.showMessageDialog(null,"Seu cadastrato foi alterado", "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
             
@@ -493,7 +500,7 @@ public class VisaoProfessor extends JFrame {
         remove(jpanel_cabecalho);
 
         setVisible(false);
-        paginaProfessor(professor);
+        paginaProfessor(cProfessor,professor);
     }
 
 
@@ -544,15 +551,15 @@ public class VisaoProfessor extends JFrame {
         /* Caixas de texto */
         tArea_materia.setFont(texto_padrao);
         tArea_materia.setBounds(190, 150,250,25);
-        tArea_materia.setBackground(cor_textos);
+        tArea_materia.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
 
         tArea_capacidade.setFont(texto_padrao);
         tArea_capacidade.setBounds(190, 185,250,25);
-        tArea_capacidade.setBackground(cor_textos);
+        tArea_capacidade.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
 
         tArea_duracao.setFont(texto_padrao);
         tArea_duracao.setBounds(190, 255,100,25);
-        tArea_duracao.setBackground(cor_textos);
+        tArea_duracao.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
 
         /* CheckBOXes */
         check_frequencia.setBounds(190, 220, 100, 25);
@@ -662,20 +669,20 @@ public class VisaoProfessor extends JFrame {
                     dias[6]= "";
 
                 aula = new Aula(0, materia, null,Integer.parseInt(capacidade), null, professor.getId(), Integer.parseInt(duracao), frequencia, dias);
-
+                
                 /* Insere a aula no sistema */
-                pAula.insere(aula);
+                cAula.insere(aula);
 
                 if(professor.getIdAulaMinistradas() == null){
                     aulas_ministradas = new int[30];
-                    aulas_ministradas[0] = pAula.devolveMaiorID();
+                    aulas_ministradas[0] = cAula.devolveMaiorID();
                 }
                 else{
                     aux = professor.getIdAulaMinistradas();
                     aulas_ministradas[0] = aux[0];
                     for(int i = 1; i < 30 ;i++){
                         if(aux[i] == 0 && count){
-                            aulas_ministradas[i] = pAula.devolveMaiorID();
+                            aulas_ministradas[i] = cAula.devolveMaiorID();
                             count = false;
                         }
                         else
@@ -685,8 +692,8 @@ public class VisaoProfessor extends JFrame {
 
                 professor.setIdAulaMinistradas(aulas_ministradas);
 
-                pProfessor.remove(professor,false);
-                pProfessor.insere(professor);
+                cProfessor.remove(professor,false);
+                cProfessor.insere(professor);
 
                 /* Uma mensagem de sucesso aparece e apresenta o id do usuário */
                 JOptionPane.showMessageDialog(null,"Parabéns, sua aula foi cadastrada com sucesso.", "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
@@ -742,10 +749,10 @@ public class VisaoProfessor extends JFrame {
         remove(jpanel_fundo);
         remove(jpanel_cabecalho);
         
-        paginaProfessor(professor);
+        paginaProfessor(cProfessor, professor);
     }
 
-    private void irPAula(ActionEvent actionEvent){
+    private void ircAula(ActionEvent actionEvent){
         setVisible(false);
 
         /* Remove os elementos do painel */
@@ -761,7 +768,7 @@ public class VisaoProfessor extends JFrame {
         remove(jpanel_fundo);
         remove(jpanel_cabecalho);
 
-        VisaoAula.getInstance().menuAulas(professor,2);
+        VisaoAula.getInstance().menuAulas(cAula,professor,2);
 
     }
 

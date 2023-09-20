@@ -4,7 +4,7 @@ public class Aula extends Entidade{
     /* Atributos da classe Aula */
     protected int id;
     protected String materia;
-    protected String[] descricao;
+    protected String descricao;
     protected int capacidade;
     protected int[] idAlunos;
     protected int idProfessor;
@@ -25,7 +25,7 @@ public class Aula extends Entidade{
     }
 
     /* Construtor com valores para a classe Aula */ 
-    public Aula(int id, String materia, String[] descricao, int capacidade, int[] idAlunos, int idProfessor, int duracao, boolean frequencia, String[] dias){
+    public Aula(int id, String materia, String descricao, int capacidade, int[] idAlunos, int idProfessor, int duracao, boolean frequencia, String[] dias){
         this.id = id;
         this.materia = materia;
         this.descricao = descricao;
@@ -46,7 +46,7 @@ public class Aula extends Entidade{
     public String getMateria(){
         return this.materia;
     }
-    public String[] getDescricao(){
+    public String getDescricao(){
         return this.descricao;
     }
     public int getCapacidade(){
@@ -75,7 +75,7 @@ public class Aula extends Entidade{
     public void setMateria(String materia){
         this.materia = materia;
     }
-    public void setDescricao(String[] descricao){
+    public void setDescricao(String descricao){
         this.descricao = descricao;
     }
     public void setCapacidade(int capacidade){

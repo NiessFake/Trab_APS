@@ -1,32 +1,24 @@
 package controle;
 
-import org.json.simple.JSONObject;
-
 import modelo.Aluno;
-import modelo.Entidade;
 import persistencia.PersistenciaAluno;
 
 public class ControleAluno extends Controle{
-    protected PersistenciaAluno pAluno;
 
     public ControleAluno() {
         super(new PersistenciaAluno());
     }
 
-    public void caminhoExiste(Entidade entidade){
-        pAluno.caminhoExiste();
-    }
-
-    public void escreveArquivo(JSONObject jsonObject){
-        pAluno.escreveArquivo(jsonObject);
-    }
-
     public int devolveMaiorID(){
-        return pAluno.devolveMaiorID();
+        return ((PersistenciaAluno)persistencia).devolveMaiorID();
     }
 
     public Aluno buscaID(int id){
-        return pAluno.buscaID(id);
+        return ((PersistenciaAluno)persistencia).buscaID(id);
+    }
+
+    public int devolveIdPerdido(String email, int dia, int mes, int ano){
+        return ((PersistenciaAluno)persistencia).devolveIdPerdido(email, dia, mes, ano);
     }
 
 }

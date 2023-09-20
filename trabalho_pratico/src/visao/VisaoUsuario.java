@@ -7,26 +7,25 @@ import javax.swing.*;
 
 import controle.*;
 import modelo.*;
-import persistencia.*;
 
 public class VisaoUsuario extends JFrame {
     /* Cria atributos do tipo modelo e controle */
     private Aluno aluno = new Aluno();
     private Professor professor = new Professor();
 
-    private PersistenciaAluno pAluno = new PersistenciaAluno();
-    private PersistenciaProfessor pProfessor = new PersistenciaProfessor();
+    //private PersistenciaAluno cAluno = new PersistenciaAluno();
+    //private PersistenciaProfessor cProfessor = new PersistenciaProfessor();
 
     private ControleUsuario cUsuario;
-    //private ControleAluno cAluno;
-    //private ControleProfessor cProfessor;
+    private ControleAluno cAluno;
+    private ControleProfessor cProfessor;
     
 
     /* Variaveis que serao usadas */
-    String[] papelVetor = {"","Aluno","Professor"};
-    String nome, sobrenome, email, dia, mes, ano, papel, id, senha, cSenha;
-    int idAux = 0;
-    boolean condicao;
+    protected int idAux = 0;
+    protected String nome, sobrenome, email, dia, mes, ano, papel, id, senha, cSenha;
+    protected boolean condicao;
+    protected String[] papelVetor = {"","Aluno","Professor"};
 
     /* Atributo que vai guardar a única instância da interface */
     private static VisaoUsuario uniqueInstance;
@@ -80,7 +79,7 @@ public class VisaoUsuario extends JFrame {
     Font texto_sub_titulo = new Font("ARIAL",Font.BOLD,20);
     Color cor_fundo = new Color(194,255,240);
     Color cor_cabecalho = new Color(0,204,155);
-    Color cor_textos = new Color(163, 184, 204);
+    //Color cor_textos = new Color(163, 184, 204);
 
     /* Contrução do JFrame que será usado */
     public VisaoUsuario(){
@@ -145,6 +144,12 @@ public class VisaoUsuario extends JFrame {
 
         cabecalho();
 
+        cUsuario = (ControleUsuario)controle;
+
+        /* Inicializa os controles */
+        this.cAluno = new ControleAluno();
+        this.cProfessor = new ControleProfessor();
+
         /* Botões */
         bt_continuar_cadastro.setFont(texto_padrao);
         bt_continuar_cadastro.setBounds(0,0,125,40);
@@ -182,23 +187,23 @@ public class VisaoUsuario extends JFrame {
         /* Caixas de texto */
         tArea_nome.setFont(texto_padrao);
         tArea_nome.setBounds(218, 125,250,25);
-        tArea_nome.setBackground(cor_textos);
+        tArea_nome.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
 
         tArea_sobrenome.setFont(texto_padrao);
         tArea_sobrenome.setBounds(218, 155,250,25);
-        tArea_sobrenome.setBackground(cor_textos);
+        tArea_sobrenome.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
 
         tArea_email.setFont(texto_padrao);
         tArea_email.setBounds(218, 185,250,25);
-        tArea_email.setBackground(cor_textos);
+        tArea_email.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
 
         tArea_senha.setFont(texto_padrao);
         tArea_senha.setBounds(218, 275,250,25);
-        tArea_senha.setBackground(cor_textos);
+        tArea_senha.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
 
         tArea_cSenha.setFont(texto_padrao);
         tArea_cSenha.setBounds(218, 305,250,25);
-        tArea_cSenha.setBackground(cor_textos);
+        tArea_cSenha.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
 
         /* ComboBOXes */
         cbox_dia.setBounds(218, 215,80,25);
@@ -247,6 +252,12 @@ public class VisaoUsuario extends JFrame {
 
         cabecalho();
 
+        cUsuario = (ControleUsuario)controle;
+
+        /* Inicializa os controles */
+        this.cAluno = new ControleAluno();
+        this.cProfessor = new ControleProfessor();
+
         /* Botões */
         bt_continuar_login.setFont(texto_padrao);
         bt_continuar_login.setBounds(125, 325,125,25);
@@ -277,11 +288,11 @@ public class VisaoUsuario extends JFrame {
         /* Caixas de texto */
         tArea_id.setFont(texto_padrao);
         tArea_id.setBounds(162, 185,150,25);
-        tArea_id.setBackground(cor_textos);
+        tArea_id.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
 
         tArea_senha.setFont(texto_padrao);
         tArea_senha.setBounds(162, 220,150,25);
-        tArea_senha.setBackground(cor_textos);
+        tArea_senha.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
 
         /* ComboBoxes */
         cbox_papel.setBounds(162, 255,150,25);
@@ -313,6 +324,7 @@ public class VisaoUsuario extends JFrame {
     /* Ações dos botões */
     /* Acoes do botao continuar do cadastro */
     private void continuarCadastro(ActionEvent actionEvent){
+
         /* Atribuicao  dos valores no texto para salvar nas variaveis locais*/
         nome = tArea_nome.getText();
         sobrenome = tArea_sobrenome.getText();
@@ -349,10 +361,10 @@ public class VisaoUsuario extends JFrame {
                     aluno.setSenha(senha);
 
                     /* Insere o aluno no sistema */
-                    pAluno.insere(aluno);
+                    cAluno.insere(aluno);
 
                     /* Uma mensagem de sucesso aparece e apresenta o id do usuário */
-                    JOptionPane.showMessageDialog(null,"Parabéns!! Você foi cadastrado com sucesso.\nSeu id é: "+ pAluno.devolveMaiorID(), "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(null,"Parabéns!! Você foi cadastrado com sucesso.\nSeu id é: "+ cAluno.devolveMaiorID(), "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
                 }
                 else{
                     /* Pega os dados digitados e insere o usuário no sistema */
@@ -365,10 +377,10 @@ public class VisaoUsuario extends JFrame {
                     professor.setSenha(senha);
 
                     /* Insere o professor no sistema */
-                    pProfessor.insere(professor);
+                    cProfessor.insere(professor);
 
                     /* Uma mensagem de sucesso aparece e apresenta o id do usuário */
-                    JOptionPane.showMessageDialog(null,"Parabéns!! Você foi cadastrado com sucesso.\nSeu id é: "+ pProfessor.devolveMaiorID(), "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(null,"Parabéns!! Você foi cadastrado com sucesso.\nSeu id é: "+ cProfessor.devolveMaiorID(), "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
                 }
         
                 
@@ -408,7 +420,7 @@ public class VisaoUsuario extends JFrame {
 
         /* Insere o usuário de acordo com a funcao selecionada */
         if(aux.equals("Aluno")){
-            aluno = pAluno.buscaID(Integer.parseInt(id));
+            aluno = cAluno.buscaID(Integer.parseInt(id));
             
             /* Se o id for igual a 0, o usuario nao existe e uma mensagem de erro eh exibida */
             if(aluno.getId()==0)
@@ -426,7 +438,7 @@ public class VisaoUsuario extends JFrame {
                 
         }
         else{
-           professor = pProfessor.buscaID(Integer.parseInt(id));
+           professor = cProfessor.buscaID(Integer.parseInt(id));
             /* Se o id for igual a 0, o usuario nao existe e uma mensagem de erro eh exibida */
             if(professor.getId()==0)
                 JOptionPane.showMessageDialog(null,"ID não encontrado", "ERRO",JOptionPane.ERROR_MESSAGE);
@@ -475,9 +487,9 @@ public class VisaoUsuario extends JFrame {
         /* Considerando true para Aluno e false para professor, uma comparacao eh feita e 
          * leva o usuario para sua pagina correspondente de acordo com seu papel */
         if(tipoUsuario)
-            VisaoAluno.getInstance().paginaAluno(entidade);
+            VisaoAluno.getInstance().paginaAluno(cAluno,(Aluno)entidade);
         else
-            VisaoProfessor.getInstance().paginaProfessor(entidade);
+            VisaoProfessor.getInstance().paginaProfessor(cProfessor,(Professor)entidade);
     }
 
     public void perdiId(ActionEvent actionEvent){
@@ -526,7 +538,7 @@ public class VisaoUsuario extends JFrame {
         /* Caixas de texto */
         tArea_email.setFont(texto_padrao);
         tArea_email.setBounds(140, 185,190,25);
-        tArea_email.setBackground(cor_textos);
+        tArea_email.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
 
         /* ComboBoxes */
         cbox_papel.setBounds(140, 255,190,25);
@@ -567,7 +579,7 @@ public class VisaoUsuario extends JFrame {
             JOptionPane.showMessageDialog(null,"Informação faltando", "ERRO",JOptionPane.ERROR_MESSAGE);
         else{
             if(papel.equals("Aluno")){
-                idAux = pAluno.devolveIdPerdido(email, Integer.parseInt(dia), Integer.parseInt(mes), Integer.parseInt(ano));
+                idAux = cAluno.devolveIdPerdido(email, Integer.parseInt(dia), Integer.parseInt(mes), Integer.parseInt(ano));
                 if(idAux ==0 )
                     JOptionPane.showMessageDialog(null,"Dados divergem", "ERRO",JOptionPane.ERROR_MESSAGE);
                 else{
@@ -577,7 +589,7 @@ public class VisaoUsuario extends JFrame {
                 }
             }
             else{
-                idAux = pProfessor.devolveIdPerdido(email, Integer.parseInt(dia), Integer.parseInt(mes), Integer.parseInt(ano));
+                idAux = cProfessor.devolveIdPerdido(email, Integer.parseInt(dia), Integer.parseInt(mes), Integer.parseInt(ano));
                 if(idAux ==0 )
                     JOptionPane.showMessageDialog(null,"i", "ERRO",JOptionPane.ERROR_MESSAGE);
                 else{

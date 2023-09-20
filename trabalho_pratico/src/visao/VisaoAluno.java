@@ -4,19 +4,24 @@ package visao;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import javax.swing.*;
-//import controle.*;
-import modelo.*;
-import persistencia.*;
+
+import controle.Controle;
+import controle.ControleAluno;
+import controle.ControleAula;
+import modelo.Entidade;
+import modelo.Aluno;
 
 public class VisaoAluno extends JFrame{
     /* Atributo que vai guardar a única instância da interface */
     private static VisaoAluno uniqueInstance;
 
-    Aluno aluno = new Aluno();
-    PersistenciaAluno pAluno = new PersistenciaAluno();
+    /* Classes usadas */
+    private Aluno aluno = new Aluno();
+    private ControleAluno cAluno;
+    private ControleAula cAula;
 
-    String nome, sobrenome, email, dia, mes, ano , senha, cSenha;
-    boolean condicao;
+    protected String nome, sobrenome, email, dia, mes, ano , senha, cSenha;
+    protected boolean condicao;
 
     /* Paineis */
     JPanel jpanel_cabecalho = new JPanel();
@@ -63,7 +68,7 @@ public class VisaoAluno extends JFrame{
     Font texto_sub_titulo = new Font("ARIAL",Font.BOLD,20);
     Color cor_fundo = new Color(194,255,240);
     Color cor_cabecalho = new Color(0,204,155);
-    Color cor_textos = new Color(163, 184, 204);
+    //Color cor_textos = new Color(163, 184, 204);
     
     /* Contrução do JFrame que será usado */
     public VisaoAluno(){
@@ -129,10 +134,13 @@ public class VisaoAluno extends JFrame{
 
 
     /* Pagina do aluno que leva para seus dados */
-    public void paginaAluno(Entidade entidade){
+    public void paginaAluno(Controle controle, Entidade entidade){
         setVisible(true);
         
         aluno = (Aluno)entidade;
+        cAluno = (ControleAluno)controle;
+
+        this.cAula = new ControleAula();
 
         cabecalho();
 
@@ -225,23 +233,23 @@ public class VisaoAluno extends JFrame{
         /* Caixas de texto */
         tArea_nome.setFont(texto_padrao);
         tArea_nome.setBounds(218, 125,250,25);
-        tArea_nome.setBackground(cor_textos);
+        tArea_nome.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
 
         tArea_sobrenome.setFont(texto_padrao);
         tArea_sobrenome.setBounds(218, 160,250,25);
-        tArea_sobrenome.setBackground(cor_textos);
+        tArea_sobrenome.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
 
         tArea_email.setFont(texto_padrao);
         tArea_email.setBounds(218, 195,250,25);
-        tArea_email.setBackground(cor_textos);
+        tArea_email.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
 
         tArea_senha.setFont(texto_padrao);
         tArea_senha.setBounds(218, 265,250,25);
-        tArea_senha.setBackground(cor_textos);
+        tArea_senha.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
 
         tArea_cSenha.setFont(texto_padrao);
         tArea_cSenha.setBounds(218, 300,250,25);
-        tArea_cSenha.setBackground(cor_textos);
+        tArea_cSenha.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
 
         /* ComboBOXes */
         cbox_dia.setBounds(218, 230,80,25);
@@ -278,7 +286,7 @@ public class VisaoAluno extends JFrame{
     /* Acao do botao excluir */
     private void excluir(ActionEvent actionEvent){
         /* Chama a funcao da persistencia que exclui o usuario */
-        pAluno.remove(aluno, true);
+        cAluno.remove(aluno, true);
 
         /* Imprime uma mensagem de sucesso */
         JOptionPane.showMessageDialog(null,"Seu cadastrato foi excluido", "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
@@ -369,8 +377,8 @@ public class VisaoAluno extends JFrame{
             }
 
             /* Exclui o cadastro antigo e adiciona o novo */
-            pAluno.remove(aluno,true);
-            pAluno.insere(aluno);
+            cAluno.remove(aluno,true);
+            cAluno.insere(aluno);
 
             JOptionPane.showMessageDialog(null,"Seu cadastrato foi alterado", "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
             
@@ -412,7 +420,7 @@ public class VisaoAluno extends JFrame{
         remove(jpanel_cabecalho);
 
         setVisible(false);
-        paginaAluno(aluno);
+        paginaAluno(cAluno,aluno);
     }
 
     private void irPAula(ActionEvent actionEvent){
@@ -431,7 +439,7 @@ public class VisaoAluno extends JFrame{
         remove(jpanel_fundo);
         remove(jpanel_cabecalho);
 
-        VisaoAula.getInstance().menuAulas(aluno,1);
+        VisaoAula.getInstance().menuAulas(cAula,aluno,1);
 
     }
 
