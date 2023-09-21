@@ -22,6 +22,7 @@ public class VisaoUsuario extends JFrame {
     protected int idAux = 0;
     protected String nome, sobrenome, email, dia, mes, ano, papel, id, senha, cSenha;
     protected boolean condicao;
+    protected boolean condicao_imagem_unica = true;
     protected String[] papelVetor = {"","Aluno","Professor"};
 
     /* Atributo que vai guardar a única instância da interface */
@@ -289,10 +290,12 @@ public class VisaoUsuario extends JFrame {
         label_papel.setFont(texto_padrao);
         label_papel.setBounds(62, 245,100,50);
 
-
-        label_imagem_login.setBounds(0,0,370,500);
-        imagem_login.setImage(imagem_login.getImage().getScaledInstance(label_imagem_login.getWidth(),label_imagem_login.getHeight(),1));
-        label_imagem_login.setIcon(imagem_login);
+        if(condicao_imagem_unica){
+            label_imagem_login.setBounds(0,0,370,500);
+            imagem_login.setImage(imagem_login.getImage().getScaledInstance(label_imagem_login.getWidth(),label_imagem_login.getHeight(),1));
+            label_imagem_login.setIcon(imagem_login);
+            condicao_imagem_unica = false;
+        }
 
         /* Caixas de texto */
         tArea_id.setFont(texto_padrao);
@@ -619,9 +622,7 @@ public class VisaoUsuario extends JFrame {
         }
 
             
-    }
-
-   
+    }   
 
     /* Funcao que remove tudo do painel e vai para o cdastro */    
     public void vaiPLogin(ActionEvent actionEvent){
@@ -674,7 +675,6 @@ public class VisaoUsuario extends JFrame {
         jpanel_cabecalho.remove(bt_projeto);
 
         
-
         remove(jpanel_cabecalho);
         remove(jpanel_fundo);
 
@@ -704,7 +704,10 @@ public class VisaoUsuario extends JFrame {
         jpanel_login.remove(label_papel);
         jpanel_login.remove(cbox_papel);
 
-        jpanel_fundo.remove(jpanel_login);
+        jpanel_imagem.remove(label_imagem_login);
+
+        jpanel_fundo.remove(jpanel_login);        
+        jpanel_fundo.remove(jpanel_imagem);
 
         jpanel_cabecalho.remove(bt_login);
         jpanel_cabecalho.remove(bt_juntese);
@@ -807,6 +810,11 @@ public class VisaoUsuario extends JFrame {
         jpanel_login.remove(label_id);
         jpanel_login.remove(tArea_id);
 
+        jpanel_imagem.remove(label_imagem_login);
+
+        jpanel_fundo.remove(jpanel_cadastro);
+        jpanel_fundo.remove(jpanel_login);        
+        jpanel_fundo.remove(jpanel_imagem);
         jpanel_fundo.remove(jpanel_cadastro);
 
         jpanel_cabecalho.remove(bt_login);

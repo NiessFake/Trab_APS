@@ -44,7 +44,7 @@ public class PersistenciaProfessor implements Persistencia{
             hashJSON.put("mesNasc", ((Professor)entidade).getMesNasc());
             hashJSON.put("anoNasc", ((Professor)entidade).getAnoNasc());
             hashJSON.put("senha", ((Professor)entidade).getSenha());
-
+            
             /* Se existir alguma aula no professor, cria um vetor JSON q armazena elas e depois 
              * coloca no objeto. Em caso negativo salva um vetor vazio */
             if(((Professor) entidade).getIdAulaMinistradas() != null){
@@ -100,7 +100,7 @@ public class PersistenciaProfessor implements Persistencia{
     public void remove(Entidade entidade, boolean condicao){
         /* Variaveis auxiliares */
         String aux_id;
-        String aulaIndiv;
+        int aulaIndiv;
 
         /* Classes usadas */
         Aula aula = new Aula();
@@ -125,16 +125,15 @@ public class PersistenciaProfessor implements Persistencia{
                 /* Converte o id daquele elemento para String */
                 aux_id = elemento.get("id").toString();
                 
-                
-                vetorJSONAux = (JSONArray) elemento.get("aulas");
-
                 /* Se achar o id que deseja excluir, exclui e depois  */
                 if(Integer.parseInt(aux_id) == ((Professor)entidade).getId()){
+                    vetorJSONAux = (JSONArray) elemento.get("aulas");
+
                     if(vetorJSONAux != null && condicao){
                         for(int j = 0;j < vetorJSONAux.size(); j++){
-                            aulaIndiv = vetorJSONAux.get(j).toString();
-                            if(Integer.parseInt(aulaIndiv) != 0 ){
-                                aula = pAula.buscaID(Integer.parseInt(aulaIndiv));
+                            aulaIndiv = Integer.valueOf(vetorJSONAux.get(j).toString());
+                            if(aulaIndiv != 0 ){
+                                aula = pAula.buscaID(aulaIndiv);
                                 pAula.remove(aula, true);
                             }
                         }

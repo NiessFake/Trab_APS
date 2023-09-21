@@ -26,8 +26,10 @@ public class VisaoAula extends JFrame{
 
     /* Variaveis auxiliares */
     protected int funcao, id, tamanho_voltar,tamanho_capacidade;
-    protected String capacidade;
+    protected String materia, capacidade, duracao, descricao;
+    protected boolean frequencia;
     protected int[] aulas_inscritas,alunos_inscritos;
+    protected String[] dias = new String[7];
     protected String[] colunas_aula = {"ID", "Materia", "Professor", "Capacidade", "Duracao","Frequente"};
     protected String[] colunas_aluno = {"ID","Nome","Idade"};
 
@@ -41,6 +43,7 @@ public class VisaoAula extends JFrame{
     JPanel jpanel_dados = new JPanel();
     JPanel jpanel_botoes = new JPanel();
     JPanel jpanel_materia = new JPanel();
+    JPanel jpanel_cadastro = new JPanel();
 
     /* Scroll Panels */
     JScrollPane jScroll_aula;
@@ -54,11 +57,11 @@ public class VisaoAula extends JFrame{
     JButton bt_juntese = new JButton("JUNTE-SE");
     JButton bt_usuario = new JButton("");
     JButton bt_inscrever = new JButton("INSCREVER");
-    JButton bt_editar = new JButton("INSCREVER");
+    JButton bt_editar = new JButton("EDITAR AULA");
     JButton bt_alunos = new JButton("alunos");
     JButton bt_tarefas = new JButton("tarefas");
     JButton bt_home = new JButton("home");
-
+    JButton bt_continuar_cadastro = new JButton("CONTINUAR");
     
     /* Labels */
     JLabel label_aula = new JLabel("");
@@ -72,9 +75,29 @@ public class VisaoAula extends JFrame{
     JLabel label_sexta = new JLabel("S");
     JLabel label_sabado = new JLabel("S");
     JLabel label_domingo = new JLabel("D");
+    JLabel label_editar_aula = new JLabel("EDITA AULA");
+    JLabel label_materia = new JLabel("MATERIA");
+    JLabel label_duracao = new JLabel("DURACAO");
+    JLabel label_dias = new JLabel("DIAS DA SEMANA");
+    JLabel label_minutos = new JLabel("minutos");
+    JLabel label_descricao = new JLabel("DESCRICAO");
 
     /* TextAreas */
     JTextArea tArea_descricao = new JTextArea();
+    JTextArea tArea_descricao_cadastro = new JTextArea();
+    JTextArea tArea_materia = new JTextArea();
+    JTextArea tArea_capacidade = new JTextArea();
+    JTextArea tArea_duracao = new JTextArea();
+
+    /* CheckBoxes */
+    JCheckBox check_frequencia = new JCheckBox("SIM");
+    JCheckBox check_segunda = new JCheckBox("SEG");
+    JCheckBox check_terca = new JCheckBox("TER");
+    JCheckBox check_quarta = new JCheckBox("QUA");
+    JCheckBox check_quinta = new JCheckBox("QUI");
+    JCheckBox check_sexta = new JCheckBox("SEX");
+    JCheckBox check_sabado = new JCheckBox("SAB");
+    JCheckBox check_domingo = new JCheckBox("DOM");
 
     /* Tabelas */
     JTable tabela_aulas;
@@ -180,9 +203,12 @@ public class VisaoAula extends JFrame{
 
         funcao = tipo;
         cAula = (ControleAula)controle;
+
         this.cUsuario = new ControleUsuario();
         this.cAluno = new ControleAluno();
         this.cProfessor = new ControleProfessor();
+
+        bt_aulas.removeActionListener(this::menu);
 
         switch (tipo) {
             case 1:                
@@ -233,7 +259,7 @@ public class VisaoAula extends JFrame{
                         jpanel_fundo.remove(jScroll_aula);
 
                         setVisible(false);
-                        paginaIndividual();
+                        paginaIndividual(cAula,aula);
                 }
             }
         });
@@ -256,9 +282,11 @@ public class VisaoAula extends JFrame{
         
     }
 
-    public void paginaIndividual(){
+    public void paginaIndividual(Controle controle,Entidade entidade){
         setVisible(true);
         
+        bt_aulas.addActionListener(this::menu);
+
         aula = cAula.buscaID(aula.getId());
 
         String vetor_dias[] = aula.getDias();
@@ -320,6 +348,8 @@ public class VisaoAula extends JFrame{
             bt_editar.setBounds(362,400,125,40);
             bt_editar.setBackground(Color.white);
             bt_editar.setForeground(Color.black);
+            bt_editar.addActionListener(this::edita);
+
             jpanel_dados.add(bt_editar);
         }
 
@@ -379,10 +409,10 @@ public class VisaoAula extends JFrame{
         tArea_descricao.setWrapStyleWord(true);
         tArea_descricao.setEditable(false);
 
-        /*if(aula.getDescricao().equals(null))   
+        if(aula.getDescricao()==null)   
             tArea_descricao.setText("Ainda nao foi adicionada nenhuma descricao a aula. ");
         else   
-            tArea_descricao.setText(aula.getDescricao());*/
+            tArea_descricao.setText(aula.getDescricao());
         
     
         /* Paineis */
@@ -452,8 +482,6 @@ public class VisaoAula extends JFrame{
                     /*Insere as aulas no vetor de alunos */
                     aux_aluno = aluno.getIdAulaInscritas();
 
-                    System.out.printf("\n"+aux_aluno+""+"\n");
-
                     aulas_inscritas = new int[30];
                     aulas_inscritas[0] = aux_aluno[0];
                     for(int i = 1; i < 30 ;i++){
@@ -498,11 +526,223 @@ public class VisaoAula extends JFrame{
                 cAula.remove(aula, false);
                 cAula.insere(aula);
 
-                JOptionPane.showMessageDialog(null,"Parabens "+aluno.getNome()+"!! Voce entrou na aula.", "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
+                //JOptionPane.showMessageDialog(null,"Parabens "+aluno.getNome()+"!! Voce entrou na aula.", "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
                 
             }
         }
         
+    }
+
+    private void edita(ActionEvent actionEvent){
+        setVisible(false);
+
+        jpanel_dados.remove(label_professor);
+        jpanel_dados.remove(label_frequencia);
+        jpanel_dados.remove(label_capacidade);
+        jpanel_dados.remove(label_segunda);
+        jpanel_dados.remove(label_terca);
+        jpanel_dados.remove(label_quarta);
+        jpanel_dados.remove(label_quinta);
+        jpanel_dados.remove(label_sexta);
+        jpanel_dados.remove(label_sabado);
+        jpanel_dados.remove(label_domingo);
+        jpanel_dados.remove(tArea_descricao);
+        jpanel_dados.remove(bt_editar);
+        jpanel_dados.remove(bt_inscrever);
+
+        jpanel_fundo.remove(jpanel_dados);
+        jpanel_fundo.remove(jpanel_botoes);
+
+        /* Botões */
+        bt_continuar_cadastro.setFont(texto_padrao);
+        bt_continuar_cadastro.setBounds(187, 385, 125,40);
+        bt_continuar_cadastro.setBackground(Color.white);
+        bt_continuar_cadastro.setForeground(Color.black);
+        bt_continuar_cadastro.addActionListener(this::continuarCadastro);
+
+        /* Labels */
+        label_editar_aula.setFont(texto_sub_titulo);
+        label_editar_aula.setBounds(162, 25, 175,50);
+
+        label_materia.setFont(texto_padrao);
+        label_materia.setBounds(60, 90, 125,50);
+
+        label_capacidade.setText("CAPACIDADE");
+        label_capacidade.setFont(texto_padrao);
+        label_capacidade.setBounds(60, 125, 125,50);
+
+        label_frequencia.setText("FREQUENTE");
+        label_frequencia.setForeground(Color.black);
+        label_frequencia.setFont(texto_padrao);
+        label_frequencia.setBounds(60, 160,125,50);
+
+        label_duracao.setFont(texto_padrao);
+        label_duracao.setBounds(60, 195,125,50);
+
+        label_dias.setFont(texto_padrao);
+        label_dias.setBounds(60, 230,125,50);
+
+        label_minutos.setFont(texto_padrao);
+        label_minutos.setBounds(295, 195,100,50);
+
+        label_descricao.setFont(texto_padrao);
+        label_descricao.setBounds(60, 280,100,50);
+
+
+        /* Caixas de texto */
+        tArea_materia.setFont(texto_padrao);
+        tArea_materia.setBounds(190, 100,250,25);
+        tArea_materia.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
+
+        tArea_capacidade.setFont(texto_padrao);
+        tArea_capacidade.setBounds(190, 135,250,25);
+        tArea_capacidade.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
+
+        tArea_duracao.setFont(texto_padrao);
+        tArea_duracao.setBounds(190, 205,100,25);
+        tArea_duracao.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
+
+        tArea_descricao_cadastro.setFont(texto_padrao);
+        tArea_descricao_cadastro.setBounds(190, 300,250,65);
+        tArea_descricao_cadastro.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
+
+
+        /* CheckBOXes */
+        check_frequencia.setBounds(190, 170, 100, 25);
+
+        check_segunda.setBounds(190, 240, 60, 25);
+
+        check_terca.setBounds(255, 240, 60, 25);
+
+        check_quarta.setBounds(320, 240, 60, 25);
+
+        check_quinta.setBounds(385, 240, 60, 25);
+
+        check_sexta.setBounds(190, 270, 60, 25);
+
+        check_sabado.setBounds(255, 270, 60, 25);
+        
+        check_domingo.setBounds(320, 270, 60, 25);
+
+        /* Painel */   
+        jpanel_cadastro.setLayout(null);
+        jpanel_cadastro.setBackground(Color.WHITE);
+        jpanel_cadastro.setSize(500, 500);
+        jpanel_cadastro.setLocation(125, 100);
+        jpanel_cadastro.setVisible(true);
+
+        /* Adiciona elementos no painel */
+        jpanel_cadastro.add(label_editar_aula);
+        jpanel_cadastro.add(label_materia);
+        jpanel_cadastro.add(label_capacidade);
+        jpanel_cadastro.add(label_frequencia);
+        jpanel_cadastro.add(label_duracao);
+        jpanel_cadastro.add(label_dias);
+        jpanel_cadastro.add(label_minutos);
+        jpanel_cadastro.add(label_descricao);
+        jpanel_cadastro.add(tArea_materia);
+        jpanel_cadastro.add(tArea_capacidade);
+        jpanel_cadastro.add(tArea_duracao);
+        jpanel_cadastro.add(tArea_descricao_cadastro);
+        jpanel_cadastro.add(check_frequencia);
+        jpanel_cadastro.add(check_segunda);
+        jpanel_cadastro.add(check_terca);
+        jpanel_cadastro.add(check_quarta);
+        jpanel_cadastro.add(check_quinta);
+        jpanel_cadastro.add(check_sexta);
+        jpanel_cadastro.add(check_sabado);
+        jpanel_cadastro.add(check_domingo);
+        jpanel_cadastro.add(bt_continuar_cadastro);
+
+        jpanel_fundo.add(jpanel_cadastro);
+
+        setVisible(true);
+    }
+
+    private void continuarCadastro(ActionEvent actionEvent){
+        /* Atribuicao  dos valores no texto para salvar nas variaveis locais*/
+        materia = tArea_materia.getText();
+        capacidade = tArea_capacidade.getText();
+        duracao =  tArea_duracao.getText();
+        descricao =  tArea_descricao_cadastro.getText();
+
+        boolean condicao = !(check_segunda.isSelected() && check_terca.isSelected() && check_quarta.isSelected() 
+        && check_quinta.isSelected() && check_sexta.isSelected() && check_sabado.isSelected() && check_domingo.isSelected())
+        && materia.equals("") && capacidade.equals("") && duracao.equals("")&& descricao.equals("");
+
+        if(!condicao){
+        
+            /* Se uma das caixas de texto estiver em branco, exibe mensagem de erro */
+            if(!(materia.equals("")))
+                aula.setMateria(materia);
+            if(!(capacidade.equals("")))
+                aula.setCapacidade(Integer.parseInt(capacidade));
+            if(!(duracao.equals("")))
+                aula.setDuracao(Integer.parseInt(duracao));
+            if(!(descricao.equals("")))
+                aula.setDescricao(descricao);
+            
+            /* Atribui um valor pra frequencia de acordo com o item selecionado */
+            if(check_frequencia.isSelected())
+                aula.setFrequencia(true);
+            else
+                aula.setFrequencia(false);
+
+            /* Escreve os dias da semana selecionados*/            
+            if(check_segunda.isSelected())
+                dias[0]= "SEGUNDA";
+            else
+                dias[0]= "";
+            if(check_terca.isSelected())
+                dias[1]= "TERCA";
+            else
+                dias[1]= "";
+            if(check_quarta.isSelected())
+                dias[2]= "QUARTA";
+            else
+                dias[2]= "";
+            if(check_quinta.isSelected())
+                dias[3]= "QUINTA";
+            else
+                dias[3]= "";
+            if(check_sexta.isSelected())
+                dias[4]= "SEXTA";
+            else
+                dias[4]= "";
+            if(check_sabado.isSelected())
+                dias[5]= "SABADO";
+            else
+                dias[5]= "";
+            if(check_domingo.isSelected())
+                dias[6]= "DOMINGO";
+            else
+                dias[6]= "";
+
+            aula.setDias(dias);
+
+            cAula.remove(aula, false);
+            cAula.insere(aula);
+
+            /* Deixa as caixas de texto em branco */
+            tArea_materia.setText("");
+            tArea_materia.requestFocus();
+            tArea_capacidade.setText("");
+            tArea_capacidade.requestFocus();
+            tArea_duracao.setText("");
+            tArea_duracao.requestFocus();
+            tArea_descricao.setText("");
+            tArea_descricao.requestFocus();
+            check_frequencia.setSelected(false);
+            check_segunda.setSelected(false);
+            check_terca.setSelected(false);
+            check_quarta.setSelected(false);
+            check_quinta.setSelected(false);
+            check_sexta.setSelected(false);
+            check_sabado.setSelected(false);
+            check_domingo.setSelected(false);
+
+            home(actionEvent);         
+        }
     }
 
     private void login(ActionEvent actionEvent){
@@ -555,7 +795,7 @@ public class VisaoAula extends JFrame{
         bt_home.setBackground(Color.lightGray);
         bt_home.addActionListener(this::home);
         
-        Object[][] objeto_tabela_aluno = cAluno.textoAlunos();
+        Object[][] objeto_tabela_aluno = cAula.textoAlunos(aula);
         
         /* Cria uma tabela de selecao unica e nao editavel */
         tabela_alunos = new JTable(objeto_tabela_aluno, colunas_aluno){   
@@ -583,17 +823,42 @@ public class VisaoAula extends JFrame{
 
     private void home(ActionEvent actionEvent){  
         setVisible(false);   
+        jpanel_cadastro.remove(label_editar_aula);
+        jpanel_cadastro.remove(label_materia);
+        jpanel_cadastro.remove(label_capacidade);
+        jpanel_cadastro.remove(label_frequencia);
+        jpanel_cadastro.remove(label_duracao);
+        jpanel_cadastro.remove(label_dias);
+        jpanel_cadastro.remove(label_minutos);
+        jpanel_cadastro.remove(label_descricao);
+        jpanel_cadastro.remove(tArea_materia);
+        jpanel_cadastro.remove(tArea_capacidade);
+        jpanel_cadastro.remove(tArea_duracao);
+        jpanel_cadastro.remove(tArea_descricao_cadastro);
+        jpanel_cadastro.remove(check_frequencia);
+        jpanel_cadastro.remove(check_segunda);
+        jpanel_cadastro.remove(check_terca);
+        jpanel_cadastro.remove(check_quarta);
+        jpanel_cadastro.remove(check_quinta);
+        jpanel_cadastro.remove(check_sexta);
+        jpanel_cadastro.remove(check_sabado);
+        jpanel_cadastro.remove(check_domingo);
+        jpanel_cadastro.remove(bt_continuar_cadastro);
+
+        jpanel_fundo.remove(jpanel_cadastro);
+
         jpanel_dados.remove(jScroll_alunos);
 
         bt_home.removeActionListener(this::home);
 
-        paginaIndividual();     
+        paginaIndividual(cAula,aula);     
     }
 
     private void menu(ActionEvent actionEvent){        
         bt_home.removeActionListener(this::home);
         bt_alunos.removeActionListener(this::alunos);
 
+        removeItens();
         
         switch (funcao) {
             case 1:                                

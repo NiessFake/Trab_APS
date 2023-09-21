@@ -16,19 +16,26 @@ public class VisaoAluno extends JFrame{
     private static VisaoAluno uniqueInstance;
 
     /* Classes usadas */
-    private Aluno aluno = new Aluno();
+    private Aluno aluno;
     private ControleAluno cAluno;
     private ControleAula cAula;
 
     protected String nome, sobrenome, email, dia, mes, ano , senha, cSenha;
     protected boolean condicao;
-    protected String[] coluna_aula;
+    protected String[] coluna_aula = {"ID", "Materia", "Capacidade"};
+    protected String[] botoes = { "Sim", "Nao" };
 
     /* Paineis */
     JPanel jpanel_cabecalho = new JPanel();
     JPanel jpanel_fundo = new JPanel();
     JPanel jpanel_aulas = new JPanel();
     JPanel jpanel_dados = new JPanel();
+
+    /* Scroll Panels */
+    JScrollPane jScroll_aulas;
+
+    /* Tabelas */
+    JTable tabela_aulas;
 
     /* Botões */
     JButton bt_aulas = new JButton("AULAS");
@@ -139,6 +146,33 @@ public class VisaoAluno extends JFrame{
         add(jpanel_fundo);
     }
 
+    /* Funcao que cria uma tabela de aulas */
+    public void tabelaAulas(){
+
+        /* Chama a funcao que devolve um objeto contendo os dados do json */
+        Object[][] objeto_tabela = cAluno.textoAlunos(aluno);
+
+        
+        /* Cria uma tabela de selecao unica e nao editavel */
+        tabela_aulas = new JTable(objeto_tabela, coluna_aula){   
+            public boolean isCellEditable(int row, int column) {                
+                return false;               
+            }
+        };
+        tabela_aulas.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        /* Cria um novo JScrollPane e coloca a tabela nele */
+        jScroll_aulas = new JScrollPane(tabela_aulas);
+
+        jScroll_aulas.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        jScroll_aulas.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        jScroll_aulas.setBounds(385,125, 315,200);
+        jScroll_aulas.getVerticalScrollBar().setValue(0);
+        jScroll_aulas.setVisible(true);
+
+        /* Adiciona o ScrollPane no painel */
+        jpanel_fundo.add(jScroll_aulas);
+    }
 
     /* Pagina do aluno que leva para seus dados */
     public void paginaAluno(Controle controle, Entidade entidade){
@@ -150,6 +184,7 @@ public class VisaoAluno extends JFrame{
         this.cAula = new ControleAula();
 
         cabecalho();
+        tabelaAulas();
 
         /* Nomeia o botao como o nome do aluno cadastrado */
         bt_aluno.setText(aluno.getNome());
@@ -298,56 +333,82 @@ public class VisaoAluno extends JFrame{
 
     /* Acao do botao excluir */
     private void excluir(ActionEvent actionEvent){
-        /* Chama a funcao da persistencia que exclui o usuario */
-        cAluno.remove(aluno, true);
+        /* Recebe as senhas */
+        senha = tArea_senha.getText();
+        cSenha = tArea_cSenha.getText();
 
-        /* Imprime uma mensagem de sucesso */
-        JOptionPane.showMessageDialog(null,"Seu cadastrato foi excluido", "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
-        
-        /* Deixa as caixas de texto em branco */
-        tArea_nome.setText("");
-        tArea_nome.requestFocus();
-        tArea_sobrenome.setText("");
-        tArea_sobrenome.requestFocus();
-        tArea_email.setText("");
-        tArea_email.requestFocus();
-        cbox_dia.setSelectedItem("");
-        cbox_mes.setSelectedItem("");
-        cbox_ano.setSelectedItem("");
-        tArea_senha.setText("");
-        tArea_senha.requestFocus();
-        tArea_cSenha.setText("");
-        tArea_cSenha.requestFocus();
+        /* Confere se a senha foi digitada, se sao iguais e se corresponde a do aluno. Se nao for exibe mensagem de erro*/
+        if((senha.equals("") || cSenha.equals("")) || (!senha.equals(cSenha)) || (!senha.equals(aluno.getSenha())))
+            JOptionPane.showMessageDialog(null,"As senha nao digitadas ou divergem", "ERRO",JOptionPane.ERROR_MESSAGE);
+        else{
+            /* Se o vetor de aulas estiver vazio exclui, senao avisa que tem dependencia */
+            if(aluno.getIdAulaInscritas() != null){
+                int resposta = JOptionPane.showOptionDialog(null,"Ha aulas que voce ainda esta inscrito, apagar esse cadastro significa apagar seu registro nelas. Deseja continuar?", "ULTIMA CHANCE",JOptionPane.WARNING_MESSAGE, 0, null,botoes,botoes[0]);
+                
+                /* Deixa as caixas de texto em branco */
+                tArea_nome.setText("");
+                tArea_nome.requestFocus();
+                tArea_sobrenome.setText("");
+                tArea_sobrenome.requestFocus();
+                tArea_email.setText("");
+                tArea_email.requestFocus();
+                cbox_dia.setSelectedItem("");
+                cbox_mes.setSelectedItem("");
+                cbox_ano.setSelectedItem("");
+                tArea_senha.setText("");
+                tArea_senha.requestFocus();
+                tArea_cSenha.setText("");
+                tArea_cSenha.requestFocus();
 
-        /* Remove tudo do cabecalho */
-        jpanel_dados.remove(label_alterar);
-        jpanel_dados.remove(label_sobrenome);
-        jpanel_dados.remove(label_senha);
-        jpanel_dados.remove(label_cSenha);
-        jpanel_dados.remove(tArea_nome);
-        jpanel_dados.remove(tArea_sobrenome);
-        jpanel_dados.remove(tArea_email);
-        jpanel_dados.remove(tArea_senha);
-        jpanel_dados.remove(tArea_cSenha);
-        jpanel_dados.remove(cbox_dia);
-        jpanel_dados.remove(cbox_mes);
-        jpanel_dados.remove(cbox_ano);
-        jpanel_dados.remove(bt_excluir);
-        jpanel_dados.remove(bt_confirmar);
-        
-        jpanel_fundo.remove(jpanel_dados);
+                /* Remove tudo do cabecalho */
+                jpanel_dados.remove(label_alterar);
+                jpanel_dados.remove(label_sobrenome);
+                jpanel_dados.remove(label_senha);
+                jpanel_dados.remove(label_cSenha);
+                jpanel_dados.remove(tArea_nome);
+                jpanel_dados.remove(tArea_sobrenome);
+                jpanel_dados.remove(tArea_email);
+                jpanel_dados.remove(tArea_senha);
+                jpanel_dados.remove(tArea_cSenha);
+                jpanel_dados.remove(cbox_dia);
+                jpanel_dados.remove(cbox_mes);
+                jpanel_dados.remove(cbox_ano);
+                jpanel_dados.remove(bt_excluir);
+                jpanel_dados.remove(bt_confirmar);
 
-        remove(jpanel_fundo);
-        remove(jpanel_cabecalho);
+                //jpanel_fundo.remove(jScroll_aulas);
+                jpanel_fundo.remove(jpanel_dados);
 
+                jpanel_cabecalho.remove(bt_aluno);
 
-        remove(jpanel_cabecalho);
+                remove(jpanel_fundo);
+                remove(jpanel_cabecalho);
 
-        /* Deixa essa tela invisivel para o usuario */
-        setVisible(false);
+                /* Deixa essa tela invisivel para o usuario */
+                setVisible(false);
 
-        /* Leva ate o menu principal */
-        VisaoMain.getInstance().menu();
+                if(resposta == 0){
+                    //cAluno.remove(aluno, true);
+
+                    /* Imprime uma mensagem de sucesso */
+                    JOptionPane.showMessageDialog(null,"Seu cadastrato foi excluido", "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
+
+                    /* Leva ate o menu principal */
+                    VisaoMain.getInstance().menu();
+                }
+                else
+                    paginaAluno(cAluno, aluno);
+            }
+            else{
+                //cAluno.remove(aluno, true);
+
+                /* Imprime uma mensagem de sucesso */
+                JOptionPane.showMessageDialog(null,"Seu cadastrato foi excluido", "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
+
+                /* Leva ate o menu principal */
+                VisaoMain.getInstance().menu();
+            }
+        }
     }
 
     /* Acao do botao confirmar */

@@ -26,6 +26,10 @@ public class ControleAula extends Controle {
         return ((PersistenciaAula)persistencia).aulasProfessor(entidade);
     }
 
+    public Object[][] textoAlunos(Entidade entidade){
+        return ((PersistenciaAula)persistencia).textoAlunos(entidade);
+    }
+
     public int numeroAlunos(Entidade entidade){
         return ((PersistenciaAula)persistencia).numeroAlunos(entidade);
     }

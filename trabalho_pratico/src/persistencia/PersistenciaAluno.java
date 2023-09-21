@@ -17,9 +17,8 @@ public class PersistenciaAluno implements Persistencia{
     /* Caminho para salvar no arquivo */
     private String file = "src/arquivo/arquivoAluno.json";
 
-    /* */
-    int vetor_aulas[];
-    protected int ANO_ATUAL = 2023;
+    /* Variaveis a serem usadas */
+    protected int vetor_aulas[];
 
     /* Função que insere um usuário no arquivo */
     public void insere(Entidade entidade){
@@ -96,6 +95,12 @@ public class PersistenciaAluno implements Persistencia{
     public void remove(Entidade entidade, boolean condicao){
         /* Variavel auxiliar */
         String aux;
+        int aula_individual;
+        int[] vetor_aux;
+
+        /* Classes usadas */
+        Aula aula = new Aula();
+        PersistenciaAula pAula = new PersistenciaAula();
 
         /* Cria um conversor de JSON para texto para que seja possível escrever o arquivo */
         JSONParser conversorJson = new JSONParser();
@@ -106,6 +111,8 @@ public class PersistenciaAluno implements Persistencia{
             /* Pega o vetor dentro do objeto JSON e o guarda em um vetor JSON */
             JSONArray vetorJson = (JSONArray) aluno.get("aluno");
             
+            JSONArray vetorJSONAux;
+
             /* Loop for que percorre os elementos do vetor até o seu fim */
             for (int i = 0; i < vetorJson.size() ; i++){
                 /* Cria um objeto para aquele elemento que será analisado */
@@ -115,8 +122,33 @@ public class PersistenciaAluno implements Persistencia{
                 aux = elemento.get("id").toString();
 
                 /* Se achar o id que deseja excluir, exclui e depois  */
-                if(Integer.parseInt(aux)== ((Aluno)entidade).getId())
+                if(Integer.parseInt(aux)== ((Aluno)entidade).getId()){
+                    vetorJSONAux = (JSONArray) elemento.get("aulas");
+                    
+                    if(vetorJSONAux != null && condicao){
+                        for(int j = 0; j < vetorJSONAux.size(); j++){
+                            aula_individual = Integer.valueOf(vetorJSONAux.get(j).toString());
+                            
+                            if(aula_individual != 0 ){
+                                aula = pAula.buscaID(aula_individual);
+
+                                vetor_aux = aula.getIdAlunos();
+
+                                for(int k = 0; k < vetor_aux.length;k++){
+                                    if(vetor_aux[k] == ((Aluno)entidade).getId())
+                                        vetor_aux[k] = 0;
+                                }
+
+                                aula.setIdAlunos(vetor_aux);
+
+                                pAula.remove(aula, false);
+                                pAula.insere(aula);
+                            }
+                        }
+                    }
+
                     vetorJson.remove(elemento);
+                }
             }
 
             /* Hash que converte o texto em um objeto */
@@ -331,8 +363,12 @@ public class PersistenciaAluno implements Persistencia{
     }
 
     /* Texto de alunos para tabelas */
-    public Object[][] textoAlunos(){
-        int idade=0;
+    public Object[][] textoAlunos(Entidade entidade){
+
+        /* Classes usadas */
+        Aula aula = new Aula();
+        PersistenciaAula pAula = new PersistenciaAula();
+
         /* Cria um conversor de JSON para texto para que seja possível percorrer o arquivo */
         JSONParser conversorJson = new JSONParser();
         try {
@@ -349,16 +385,24 @@ public class PersistenciaAluno implements Persistencia{
 
             /* Loop for que percorre os elementos do vetor até o seu fim */
             for (int i = 0; i < vetorJson.size() ; i++){
+
                 /* Cria um objeto para aquele elemento que será analisado */
                 JSONObject elemento = (JSONObject) vetorJson.get(i);
 
-                /* Converte o id do professor daquele elemento para String */
-                
-                idade = ANO_ATUAL - Integer.valueOf(elemento.get("anoNasc").toString());
+                if(((Aluno)entidade).getId() == Integer.valueOf(elemento.get("id").toString())){
 
-                objeto[i][0] = elemento.get("id").toString();
-                objeto[i][1] = elemento.get("nome").toString();
-                objeto[i][2] = idade;
+                    JSONArray vetorAux = (JSONArray) elemento.get("aulas");
+
+                    for(int j =0 ; j < vetorAux.size();j++){
+                        if(Integer.valueOf(vetorAux.get(j).toString())!=0){
+                            aula = pAula.buscaID(Integer.valueOf(vetorAux.get(j).toString()));
+
+                            objeto[j][0] = aula.getId();
+                            objeto[j][1] = aula.getMateria();
+                            objeto[j][2] = aula.getCapacidade();
+                        }
+                    }
+                }
             }
             
             return objeto;

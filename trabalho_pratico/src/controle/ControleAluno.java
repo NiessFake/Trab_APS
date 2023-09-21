@@ -1,5 +1,6 @@
 package controle;
 
+import modelo.Entidade;
 import modelo.Aluno;
 import persistencia.PersistenciaAluno;
 
@@ -21,8 +22,8 @@ public class ControleAluno extends Controle{
         return ((PersistenciaAluno)persistencia).devolveIdPerdido(email, dia, mes, ano);
     }
 
-    public Object[][] textoAlunos(){
-        return ((PersistenciaAluno)persistencia).textoAlunos();
+    public Object[][] textoAlunos(Entidade entidade){
+        return ((PersistenciaAluno)persistencia).textoAlunos(entidade);
     }
     
 }

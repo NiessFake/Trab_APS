@@ -31,6 +31,7 @@ public class VisaoProfessor extends JFrame {
     protected int[] aulas_ministradas;
     protected String[] dias = new String[7];
     protected String[] colunas = {"ID", "Materia", "Capacidade"};
+    protected String[] botoes = { "Sim", "Nao" };
 
     /* Paineis */
     JPanel jpanel_cabecalho = new JPanel();
@@ -385,57 +386,83 @@ public class VisaoProfessor extends JFrame {
     /* Acao do botao excl
     uir */
     private void excluir(ActionEvent actionEvent){
-        /* Chama a funcao da persistencia que exclui o usuario */
-        cProfessor.remove(professor,true);
+        /* Recebe as senhas */
+        senha = tArea_senha.getText();
+        cSenha = tArea_cSenha.getText();
 
-        /* Imprime uma mensagem de sucesso */
-        JOptionPane.showMessageDialog(null,"Seu cadastrato foi excluido", "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
-        
-        /* Deixa as caixas de texto em branco */
-        tArea_nome.setText("");
-        tArea_nome.requestFocus();
-        tArea_sobrenome.setText("");
-        tArea_sobrenome.requestFocus();
-        tArea_email.setText("");
-        tArea_email.requestFocus();
-        cbox_dia.setSelectedItem("");
-        cbox_mes.setSelectedItem("");
-        cbox_ano.setSelectedItem("");
-        tArea_senha.setText("");
-        tArea_senha.requestFocus();
-        tArea_cSenha.setText("");
-        tArea_cSenha.requestFocus();
+        /* Confere se a senha foi digitada, se sao iguais e se corresponde a do professor. Se nao for exibe mensagem de erro*/
+        if((senha.equals("") || cSenha.equals("")) || (!senha.equals(cSenha)) || (!senha.equals(professor.getSenha())))
+            JOptionPane.showMessageDialog(null,"As senha nao digitadas ou divergem", "ERRO",JOptionPane.ERROR_MESSAGE);
+        else{
+            /* Se o vetor de aulas estiver vazio exclui, senao avisa que tem dependencia */
+            if(professor.getIdAulaMinistradas() != null){
+                int resposta = JOptionPane.showOptionDialog(null,"Ainda ha aulas que sao administradas por voce, apagar esse cadastro significa apagar elas. Deseja continuar?", "ULTIMA CHANCE",JOptionPane.WARNING_MESSAGE, 0, null,botoes,botoes[0]);
+                
+                /* Deixa as caixas de texto em branco */
+                tArea_nome.setText("");
+                tArea_nome.requestFocus();
+                tArea_sobrenome.setText("");
+                tArea_sobrenome.requestFocus();
+                tArea_email.setText("");
+                tArea_email.requestFocus();
+                cbox_dia.setSelectedItem("");
+                cbox_mes.setSelectedItem("");
+                cbox_ano.setSelectedItem("");
+                tArea_senha.setText("");
+                tArea_senha.requestFocus();
+                tArea_cSenha.setText("");
+                tArea_cSenha.requestFocus();
 
-        /* Remove tudo do cabecalho */
-        jpanel_dados.remove(label_alterar);
-        jpanel_dados.remove(label_sobrenome);
-        jpanel_dados.remove(label_senha);
-        jpanel_dados.remove(label_cSenha);
-        jpanel_dados.remove(tArea_nome);
-        jpanel_dados.remove(tArea_sobrenome);
-        jpanel_dados.remove(tArea_email);
-        jpanel_dados.remove(tArea_senha);
-        jpanel_dados.remove(tArea_cSenha);
-        jpanel_dados.remove(cbox_dia);
-        jpanel_dados.remove(cbox_mes);
-        jpanel_dados.remove(cbox_ano);
-        jpanel_dados.remove(bt_excluir);
-        jpanel_dados.remove(bt_confirmar);
+                /* Remove tudo do cabecalho */
+                jpanel_dados.remove(label_alterar);
+                jpanel_dados.remove(label_sobrenome);
+                jpanel_dados.remove(label_senha);
+                jpanel_dados.remove(label_cSenha);
+                jpanel_dados.remove(tArea_nome);
+                jpanel_dados.remove(tArea_sobrenome);
+                jpanel_dados.remove(tArea_email);
+                jpanel_dados.remove(tArea_senha);
+                jpanel_dados.remove(tArea_cSenha);
+                jpanel_dados.remove(cbox_dia);
+                jpanel_dados.remove(cbox_mes);
+                jpanel_dados.remove(cbox_ano);
+                jpanel_dados.remove(bt_excluir);
+                jpanel_dados.remove(bt_confirmar);
 
-        jpanel_fundo.remove(bt_criar_aula);
-        jpanel_fundo.remove(jScroll_aulas);
-        jpanel_fundo.remove(jpanel_dados);
+                jpanel_fundo.remove(bt_criar_aula);
+                jpanel_fundo.remove(jScroll_aulas);
+                jpanel_fundo.remove(jpanel_dados);
 
-        jpanel_cabecalho.remove(bt_professor);
+                jpanel_cabecalho.remove(bt_professor);
 
-        remove(jpanel_fundo);
-        remove(jpanel_cabecalho);
+                remove(jpanel_fundo);
+                remove(jpanel_cabecalho);
 
-        /* Deixa essa tela invisivel para o usuario */
-        setVisible(false);
+                /* Deixa essa tela invisivel para o usuario */
+                setVisible(false);
 
-        /* Leva ate o menu principal */
-        VisaoMain.getInstance().menu();
+                if(resposta == 0){
+                    cProfessor.remove(professor, true);
+
+                    /* Imprime uma mensagem de sucesso */
+                    JOptionPane.showMessageDialog(null,"Seu cadastrato foi excluido", "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
+
+                    /* Leva ate o menu principal */
+                    VisaoMain.getInstance().menu();
+                }
+                else
+                    paginaProfessor(cProfessor, professor);
+            }
+            else{
+                cProfessor.remove(professor, true);
+
+                /* Imprime uma mensagem de sucesso */
+                JOptionPane.showMessageDialog(null,"Seu cadastrato foi excluido", "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
+
+                /* Leva ate o menu principal */
+                VisaoMain.getInstance().menu();
+            }
+        }
     }
 
     /* Acao do botao confirmar */
@@ -450,7 +477,8 @@ public class VisaoProfessor extends JFrame {
         senha = tArea_senha.getText();
         cSenha = tArea_cSenha.getText();
 
-        condicao_alteracao = nome.equals("") && sobrenome.equals("") && email.equals("") && dia.equals("") && mes.equals("") && ano.equals("") &&  senha.equals("")&& cSenha.equals("");
+        condicao_alteracao = nome.equals("") && sobrenome.equals("") && email.equals("") && dia.equals("") &&
+        mes.equals("") && ano.equals("") &&  senha.equals("")&& cSenha.equals("");
 
         /* Se todas campos estiverem vazios nao tem como alterar, entao apenas na condicao de
          * pelo menos um nao estiver vazio, ocorre a alteracao */
@@ -552,7 +580,7 @@ public class VisaoProfessor extends JFrame {
 
         /* Labels */
         label_criar_aula.setFont(texto_sub_titulo);
-        label_criar_aula.setBounds(112, 25, 225,50);
+        label_criar_aula.setBounds(150, 25, 200,50);
 
         label_materia.setFont(texto_padrao);
         label_materia.setBounds(60, 140, 125,50);
@@ -654,7 +682,7 @@ public class VisaoProfessor extends JFrame {
             JOptionPane.showMessageDialog(null,"Nenhum dia selecionado", "ERRO",JOptionPane.ERROR_MESSAGE);
         else{
             /* Se uma das caixas de texto estiver em branco, exibe mensagem de erro */
-            if(materia.equals("") && capacidade.equals("") && duracao.equals(""))
+            if(materia.equals("") || capacidade.equals("") && duracao.equals(""))
                 JOptionPane.showMessageDialog(null,"Informação faltando", "ERRO",JOptionPane.ERROR_MESSAGE);
             else{
                 /* Atribui um valor pra frequencia de acordo com o item selecionado */
