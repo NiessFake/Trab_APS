@@ -13,14 +13,11 @@ public class VisaoUsuario extends JFrame {
     private Aluno aluno = new Aluno();
     private Professor professor = new Professor();
 
-    //private PersistenciaAluno cAluno = new PersistenciaAluno();
-    //private PersistenciaProfessor cProfessor = new PersistenciaProfessor();
 
     private ControleUsuario cUsuario;
     private ControleAluno cAluno;
     private ControleProfessor cProfessor;
     
-
     /* Variaveis que serao usadas */
     protected int idAux = 0;
     protected String nome, sobrenome, email, dia, mes, ano, papel, id, senha, cSenha;
@@ -35,6 +32,7 @@ public class VisaoUsuario extends JFrame {
     JPanel jpanel_fundo = new JPanel();
     JPanel jpanel_login = new JPanel();
     JPanel jpanel_cadastro = new JPanel();
+    JPanel jpanel_imagem = new JPanel();
 
     /* Botões */
     JButton bt_projeto = new JButton("PROJETO");
@@ -48,6 +46,7 @@ public class VisaoUsuario extends JFrame {
     /* Labels */
     JLabel label_cadatro = new JLabel("CADASTRO");
     JLabel label_login = new JLabel("LOGIN");
+    JLabel label_imagem_login = new JLabel("");
     JLabel label_recuperar = new JLabel("RECUPERAR ID");
     JLabel label_nome = new JLabel("NOME:");
     JLabel label_sobrenome = new JLabel("SOBRENOME:");
@@ -79,7 +78,9 @@ public class VisaoUsuario extends JFrame {
     Font texto_sub_titulo = new Font("ARIAL",Font.BOLD,20);
     Color cor_fundo = new Color(194,255,240);
     Color cor_cabecalho = new Color(0,204,155);
-    //Color cor_textos = new Color(163, 184, 204);
+
+    /* Imagens */
+    ImageIcon imagem_login = new ImageIcon("src/imagens/computador.jpg");
 
     /* Contrução do JFrame que será usado */
     public VisaoUsuario(){
@@ -288,6 +289,11 @@ public class VisaoUsuario extends JFrame {
         label_papel.setFont(texto_padrao);
         label_papel.setBounds(62, 245,100,50);
 
+
+        label_imagem_login.setBounds(0,0,370,500);
+        imagem_login.setImage(imagem_login.getImage().getScaledInstance(label_imagem_login.getWidth(),label_imagem_login.getHeight(),1));
+        label_imagem_login.setIcon(imagem_login);
+
         /* Caixas de texto */
         tArea_id.setFont(texto_padrao);
         tArea_id.setBounds(162, 185,150,25);
@@ -307,6 +313,12 @@ public class VisaoUsuario extends JFrame {
         jpanel_login.setLocation(375, 100);
         jpanel_login.setVisible(true);
 
+        jpanel_imagem.setLayout(null);
+        jpanel_imagem.setBackground(Color.darkGray);
+        jpanel_imagem.setSize(375, 500);
+        jpanel_imagem.setLocation(0, 100);
+        jpanel_imagem.setVisible(true);
+
         /* Adiciona elementos no painel */
         jpanel_login.add(bt_continuar_login);
         jpanel_login.add(bt_perdi);
@@ -318,7 +330,9 @@ public class VisaoUsuario extends JFrame {
         jpanel_login.add(label_papel);
         jpanel_login.add(cbox_papel);
 
+        jpanel_imagem.add(label_imagem_login);
         jpanel_fundo.add(jpanel_login);
+        jpanel_fundo.add(jpanel_imagem);
 
     }
 
@@ -477,6 +491,7 @@ public class VisaoUsuario extends JFrame {
         jpanel_login.remove(cbox_papel);
 
         jpanel_fundo.remove(jpanel_login);
+        jpanel_fundo.remove(jpanel_imagem);
 
         jpanel_cabecalho.remove(bt_login);
         jpanel_cabecalho.remove(bt_juntese);

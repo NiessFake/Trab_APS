@@ -13,22 +13,23 @@ import modelo.*;
 
 public class VisaoAula extends JFrame{
     /* Classes usadas */
-    Usuario usuario = new Usuario();
-    Aluno aluno = new Aluno();
-    Professor professor = new Professor();
-    Aula aula = new Aula();
-    ControleUsuario cUsuario;
-    ControleAluno cAluno;
-    ControleProfessor cProfessor;
-    ControleAula cAula;
+    private Usuario usuario = new Usuario();
+    private Aluno aluno = new Aluno();
+    private Professor professor = new Professor();
+    private Aula aula = new Aula();
+
+    private ControleUsuario cUsuario;
+    private ControleAluno cAluno;
+    private ControleProfessor cProfessor;
+    private ControleAula cAula;
 
 
     /* Variaveis auxiliares */
-    String[] colunas_aula = {"ID", "Materia", "Professor", "Capacidade", "Duracao","Frequente"};
-    String[] colunas_aluno = {"ID","Nome","Idade"};
-    int funcao, id, tamanho_voltar,tamanho_capacidade;
-    String capacidade;
-    int[] aulas_inscritas,alunos_inscritos;
+    protected int funcao, id, tamanho_voltar,tamanho_capacidade;
+    protected String capacidade;
+    protected int[] aulas_inscritas,alunos_inscritos;
+    protected String[] colunas_aula = {"ID", "Materia", "Professor", "Capacidade", "Duracao","Frequente"};
+    protected String[] colunas_aluno = {"ID","Nome","Idade"};
 
     /* Variavel que guarda a instancia unica */
     private static VisaoAula uniqueInstance;
@@ -46,6 +47,7 @@ public class VisaoAula extends JFrame{
     JScrollPane jScroll_alunos;
     
     /* Botões */
+    JButton bt_projeto = new JButton("PROJETO");
     JButton bt_aulas = new JButton("AULAS");
     JButton bt_mensagens = new JButton("MENSAGENS");
     JButton bt_login = new JButton("LOGIN");
@@ -59,7 +61,6 @@ public class VisaoAula extends JFrame{
 
     
     /* Labels */
-    JLabel projeto = new JLabel("PROJETO");
     JLabel label_aula = new JLabel("");
     JLabel label_professor = new JLabel("");
     JLabel label_capacidade = new JLabel("");
@@ -123,12 +124,12 @@ public class VisaoAula extends JFrame{
 
         /* Botões */
         bt_aulas.setFont(texto_padrao);
-        bt_aulas.setBounds(200,30,125,40);
+        bt_aulas.setBounds(240,30,125,40);
         bt_aulas.setBackground(Color.white);
 		bt_aulas.setForeground(Color.black);
 
         bt_mensagens.setFont(texto_padrao);
-        bt_mensagens.setBounds(330,30,125,40);
+        bt_mensagens.setBounds(370,30,125,40);
         bt_mensagens.setBackground(Color.white);
 		bt_mensagens.setForeground(Color.black);
 
@@ -158,14 +159,17 @@ public class VisaoAula extends JFrame{
             jpanel_cabecalho.add(bt_usuario);
         }
 
-        /* Labels */
-        projeto.setFont(texto_titulo);
-        projeto.setBounds(20,30,150,50);
+        bt_projeto.setFont(texto_titulo);
+        bt_projeto.setBounds(20, 30,200,50);
+        bt_projeto.setBackground(cor_cabecalho);
+		bt_projeto.setForeground(Color.black);
+        bt_projeto.setBorderPainted(false);
+        bt_projeto.addActionListener(this::projeto);
         
         /* Adiciona os elementos no cabecalho, em seguida adiciona-o no fundo e adiciona o fundo */
         jpanel_cabecalho.add(bt_aulas);
         jpanel_cabecalho.add(bt_mensagens);
-        jpanel_cabecalho.add(projeto);
+        jpanel_cabecalho.add(bt_projeto);
         
         add(jpanel_cabecalho);
         add(jpanel_fundo);
@@ -234,6 +238,7 @@ public class VisaoAula extends JFrame{
             }
         });
 
+        
         //Component celula = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
 
@@ -253,7 +258,7 @@ public class VisaoAula extends JFrame{
 
     public void paginaIndividual(){
         setVisible(true);
-
+        
         aula = cAula.buscaID(aula.getId());
 
         String vetor_dias[] = aula.getDias();
@@ -427,7 +432,7 @@ public class VisaoAula extends JFrame{
     private void adicionaAluno(ActionEvent actionEvent){
         /* Variaveis auxiliares */
         int[] aux_aluno,aux_aula;
-        Boolean count = true;
+        boolean count = true;
 
         /* Se o usuario nao estiver logado emite uma mensagem de erro */
         if(funcao == 0)
@@ -444,8 +449,12 @@ public class VisaoAula extends JFrame{
                     aulas_inscritas[0] = aula.getId();
                 }
                 else{
-                    /* Insere as aulas no vetor de alunos */
+                    /*Insere as aulas no vetor de alunos */
                     aux_aluno = aluno.getIdAulaInscritas();
+
+                    System.out.printf("\n"+aux_aluno+""+"\n");
+
+                    aulas_inscritas = new int[30];
                     aulas_inscritas[0] = aux_aluno[0];
                     for(int i = 1; i < 30 ;i++){
                         if(aux_aluno[i] == 0 && count){
@@ -468,17 +477,19 @@ public class VisaoAula extends JFrame{
                      * coloca atribui o valor do primeiro aluno ao primeiro elemento do vetor de armazenamento. Por fim
                      * armazena o restante dos elementos.  */
                     aux_aula = aula.getIdAlunos();
+                    alunos_inscritos = new int[aula.getCapacidade()];
                     alunos_inscritos[0] = aux_aula[0];
-                    for(int i = 1; i < aula.getCapacidade() ;i++){
-                        if(aux_aula[i] == 0 && count){
-                            alunos_inscritos[i] = aluno.getId();
+
+                    for(int j = 1; j < aula.getCapacidade() ;j++){
+                        if(aux_aula[j] == 0 && count){
+                            alunos_inscritos[j] = aluno.getId();
                             count = false;
                         }
                         else
-                            alunos_inscritos[i] = aux_aula[i];
+                            alunos_inscritos[j] = aux_aula[j];
                     }
                 }
-
+                
                 aluno.setIdAulaInscritas(aulas_inscritas);
                 cAluno.remove(aluno,false);
                 cAluno.insere(aluno);
@@ -599,10 +610,22 @@ public class VisaoAula extends JFrame{
         }
     }
 
+    /* Funcao que volta pro menu da Visao main */
+    private void projeto(ActionEvent actionEvent){
+        removeItens();
+
+        VisaoMain.getInstance().menu();
+
+        setVisible(false);
+
+    }
+
+
+    /* Funcao que remove todos os itens */
     public void removeItens(){
         jpanel_cabecalho.remove(bt_aulas);
         jpanel_cabecalho.remove(bt_mensagens);
-        jpanel_cabecalho.remove(projeto);
+        jpanel_cabecalho.remove(bt_projeto);
         jpanel_cabecalho.remove(bt_login);
         jpanel_cabecalho.remove(bt_juntese);
         jpanel_cabecalho.remove(bt_usuario);

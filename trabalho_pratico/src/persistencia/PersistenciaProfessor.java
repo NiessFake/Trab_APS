@@ -248,6 +248,7 @@ public class PersistenciaProfessor implements Persistencia{
 
         /* Variavel auxiliar */
         String aux;
+        int[] vetor_aux;
 
         /* Cria um conversor de JSON para texto para que seja possível percorrer o arquivo */
         JSONParser conversorJson = new JSONParser();
@@ -268,12 +269,27 @@ public class PersistenciaProfessor implements Persistencia{
 
                 /* Se achar o id no banco de dados, retorna-o */
                 if(id == Integer.parseInt(aux)){
+
+                    JSONArray vetor_aulas =(JSONArray) elemento.get("aulas");
+
+                    /* Se o vetor de aulas estiver vazio retorna null, senao retorna o vetor */
+                    if(vetor_aulas != null){
+                        vetor_aux = new int[vetor_aulas.size()];
+                        
+                        for(int j=0; j< vetor_aulas.size();j++){
+                            vetor_aux[j] = Integer.valueOf(vetor_aulas.get(j).toString());
+                        }
+                    }
+                    else
+                        vetor_aux = null;
+
                     mProfessor.setNome(elemento.get("nome").toString());
                     mProfessor.setSobrenome(elemento.get("sobrenome").toString());
                     mProfessor.setEmail(elemento.get("email").toString());
                     mProfessor.setDiaNasc(Integer.parseInt(elemento.get("diaNasc").toString()));
                     mProfessor.setMesNasc(Integer.parseInt(elemento.get("mesNasc").toString()));
                     mProfessor.setAnoNasc(Integer.parseInt(elemento.get("anoNasc").toString()));
+                    mProfessor.setIdAulaMinistradas(vetor_aux);
                     mProfessor.setId(Integer.parseInt(elemento.get("id").toString()));
                     mProfessor.setSenha(elemento.get("senha").toString());
                     return mProfessor;

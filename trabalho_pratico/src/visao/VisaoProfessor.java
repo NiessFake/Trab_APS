@@ -53,6 +53,7 @@ public class VisaoProfessor extends JFrame {
     /* Labels */
     JLabel label_alterar = new JLabel("ALTERAR DADOS");
     JLabel label_dados = new JLabel("DADOS PESSOAIS ");
+    JLabel label_imagem_login = new JLabel("CRIAR NOVA AULA");
     JLabel label_criar_aula = new JLabel("CRIAR NOVA AULA");
     JLabel label_nome = new JLabel();
     JLabel label_sobrenome = new JLabel("SOBRENOME: ");
@@ -98,14 +99,15 @@ public class VisaoProfessor extends JFrame {
     /* ScrollPane */
     JScrollPane jScroll_aulas;
 
-
     /* Fonte e Cores */
     Font texto_padrao = new Font("ARIAL",Font.BOLD,12);
     Font texto_titulo = new Font("ARIAL",Font.BOLD,30);
     Font texto_sub_titulo = new Font("ARIAL",Font.BOLD,20);
     Color cor_fundo = new Color(194,255,240);
     Color cor_cabecalho = new Color(0,204,155);
-    //Color cor_textos = new Color(163, 184, 204);
+    
+    /* Imagens */
+    ImageIcon imagem_login = new ImageIcon("src/imagens/login.png");
 
     /* Contrução do JFrame que será usado */
     public VisaoProfessor(){
@@ -225,7 +227,7 @@ public class VisaoProfessor extends JFrame {
         bt_alterar.addActionListener(this::alterar);
 
         bt_criar_aula.setFont(texto_padrao);
-        bt_criar_aula.setBounds(500, 375,200,40);
+        bt_criar_aula.setBounds(442, 330,200,40);
         bt_criar_aula.setBackground(Color.white);
         bt_criar_aula.setForeground(Color.black);
         bt_criar_aula.addActionListener(this::criarAula);
@@ -246,6 +248,9 @@ public class VisaoProfessor extends JFrame {
         label_dataNasc.setFont(texto_padrao);
         label_dataNasc.setBounds(25, 270,420,40);
 
+        label_imagem_login.setBounds(100,50,85,85);
+        imagem_login.setImage(imagem_login.getImage().getScaledInstance(label_imagem_login.getWidth(),label_imagem_login.getHeight(),1));
+        label_imagem_login.setIcon(imagem_login);
 
         /* Painel */
         jpanel_dados.setLayout(null);
@@ -259,6 +264,7 @@ public class VisaoProfessor extends JFrame {
         jpanel_dados.add(label_nome);
         jpanel_dados.add(label_email);
         jpanel_dados.add(label_dataNasc);
+        jpanel_dados.add(label_imagem_login);
         jpanel_dados.add(bt_alterar);
 
         jpanel_fundo.add(bt_criar_aula);
@@ -354,6 +360,7 @@ public class VisaoProfessor extends JFrame {
 
         jpanel_dados.remove(bt_alterar);
         jpanel_dados.remove(label_dados);
+        jpanel_dados.remove(label_imagem_login);
         jpanel_dados.add(label_alterar);
         jpanel_dados.add(label_sobrenome);
         jpanel_dados.add(label_senha);
@@ -526,6 +533,7 @@ public class VisaoProfessor extends JFrame {
         setVisible(false);
         /* Exclui os elementos antigos */
         jpanel_dados.remove(label_dados);
+        jpanel_dados.remove(label_imagem_login);
         jpanel_dados.remove(label_nome);
         jpanel_dados.remove(label_email);
         jpanel_dados.remove(label_dataNasc);
@@ -774,6 +782,7 @@ public class VisaoProfessor extends JFrame {
 
         /* Remove os elementos do painel */
         jpanel_dados.remove(label_dados);
+        jpanel_dados.remove(label_imagem_login);
         jpanel_dados.remove(label_nome);
         jpanel_dados.remove(label_email);
         jpanel_dados.remove(label_dataNasc);
@@ -807,6 +816,7 @@ public class VisaoProfessor extends JFrame {
         check_domingo.setSelected(false);
 
         jpanel_dados.remove(label_dados);
+        jpanel_dados.remove(label_imagem_login);
         jpanel_dados.remove(label_nome);
         jpanel_dados.remove(label_email);
         jpanel_dados.remove(label_dataNasc);
@@ -883,6 +893,7 @@ public class VisaoProfessor extends JFrame {
         /* REMOVE TUDO */
         
         jpanel_dados.remove(label_dados);
+        jpanel_dados.remove(label_imagem_login);
         jpanel_dados.remove(label_nome);
         jpanel_dados.remove(label_email);
         jpanel_dados.remove(label_dataNasc);

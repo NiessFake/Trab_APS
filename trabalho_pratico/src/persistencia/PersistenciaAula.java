@@ -407,8 +407,6 @@ public class PersistenciaAula implements Persistencia{
         return null;
     }
 
-    
-
     /* Funcao que busca um id no banco de dados e retorna o usuario*/
     public int numeroAlunos(Entidade entidade){
         /* Variavel auxiliar */
@@ -442,7 +440,7 @@ public class PersistenciaAula implements Persistencia{
                     if(vetorJSONAux != null){
                         vetor_alunos = new int[vetorJSONAux.size()];
                         for(int j = 0; j < vetorJSONAux.size();j++){
-                            if(vetor_alunos[i] ==0)
+                            if(vetor_alunos[i] != 0)
                                 contador++;
                         }
                         return contador;

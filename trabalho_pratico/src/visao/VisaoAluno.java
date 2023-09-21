@@ -22,6 +22,7 @@ public class VisaoAluno extends JFrame{
 
     protected String nome, sobrenome, email, dia, mes, ano , senha, cSenha;
     protected boolean condicao;
+    protected String[] coluna_aula;
 
     /* Paineis */
     JPanel jpanel_cabecalho = new JPanel();
@@ -41,6 +42,7 @@ public class VisaoAluno extends JFrame{
     JButton bt_projeto = new JButton("PROJETO");
     
     /* Labels */
+    JLabel label_imagem_login = new JLabel("");
     JLabel label_dados = new JLabel("DADOS PESSOAIS");
     JLabel label_alterar = new JLabel("ALTERAR DADOS");
     JLabel label_nome = new JLabel();
@@ -68,7 +70,9 @@ public class VisaoAluno extends JFrame{
     Font texto_sub_titulo = new Font("ARIAL",Font.BOLD,20);
     Color cor_fundo = new Color(194,255,240);
     Color cor_cabecalho = new Color(0,204,155);
-    //Color cor_textos = new Color(163, 184, 204);
+    
+    /* Imagens */
+    ImageIcon imagem_login = new ImageIcon("src/imagens/login.png");
     
     /* Contrução do JFrame que será usado */
     public VisaoAluno(){
@@ -173,6 +177,10 @@ public class VisaoAluno extends JFrame{
         label_dataNasc.setFont(texto_padrao);
         label_dataNasc.setBounds(25, 270,420,40);
 
+        label_imagem_login.setBounds(100,50,85,85);
+        imagem_login.setImage(imagem_login.getImage().getScaledInstance(label_imagem_login.getWidth(),label_imagem_login.getHeight(),1));
+        label_imagem_login.setIcon(imagem_login);
+
         /* Painel */
         jpanel_dados.setLayout(null);
         jpanel_dados.setBackground(Color.WHITE);
@@ -185,6 +193,7 @@ public class VisaoAluno extends JFrame{
         jpanel_dados.add(label_nome);
         jpanel_dados.add(label_email);
         jpanel_dados.add(label_dataNasc);
+        jpanel_dados.add(label_imagem_login);
         jpanel_dados.add(bt_alterar);
 
         jpanel_fundo.add(jpanel_dados);
@@ -268,6 +277,7 @@ public class VisaoAluno extends JFrame{
         /* Remove e adiciona elementos no painel */
         jpanel_dados.remove(bt_alterar);
         jpanel_dados.remove(label_dados);
+        jpanel_dados.remove(label_imagem_login);
         jpanel_dados.add(label_alterar);
         jpanel_dados.add(label_sobrenome);
         jpanel_dados.add(label_senha);
@@ -426,11 +436,13 @@ public class VisaoAluno extends JFrame{
         paginaAluno(cAluno,aluno);
     }
 
+    /* Funcao que vai para o menu da VisaoAula */
     private void irPAula(ActionEvent actionEvent){
         setVisible(false);
 
         /* Remove os elementos do painel */
         jpanel_dados.remove(label_dados);
+        jpanel_dados.remove(label_imagem_login);
         jpanel_dados.remove(label_nome);
         jpanel_dados.remove(label_email);
         jpanel_dados.remove(label_dataNasc);
@@ -446,6 +458,7 @@ public class VisaoAluno extends JFrame{
 
     }
 
+    /* Funcao que volta pro menu da Visao main */
     private void projeto(ActionEvent actionEvent){
         /* Deixa as caixas de texto em branco */
         tArea_nome.setText("");
@@ -477,6 +490,7 @@ public class VisaoAluno extends JFrame{
         jpanel_dados.remove(bt_excluir);
         jpanel_dados.remove(bt_confirmar);
         jpanel_dados.remove(label_dados);
+        jpanel_dados.remove(label_imagem_login);
         jpanel_dados.remove(label_nome);
         jpanel_dados.remove(label_email);
         jpanel_dados.remove(label_dataNasc);

@@ -34,6 +34,7 @@ public class VisaoMain extends JFrame {
     JLabel label_bem_vindos = new JLabel("SEJAM BEM-VINDES");
     JLabel label_aulas = new JLabel("CONHECA AS AULAS");
     JLabel label_noticias = new JLabel("CONFIRA AS  NOVIDADES");
+    JLabel label_imagem = new JLabel("CONFIRA AS  NOVIDADES");
 
     /* Text Areas */
     JTextArea tArea_aulas = new JTextArea();
@@ -45,6 +46,9 @@ public class VisaoMain extends JFrame {
     Font texto_titulo = new Font("ARIAL",Font.BOLD,30);
     Color cor_fundo = new Color(194,255,240);
     Color cor_cabecalho = new Color(0,204,155);
+
+    /* Imagens */
+    ImageIcon imagem_login = new ImageIcon("src/imagens/aula.jpg");
 
     /* Contrução do JFrame que será usado */
     public VisaoMain(){
@@ -64,7 +68,6 @@ public class VisaoMain extends JFrame {
 
     /* Interface do cabecalho */
     public void cabecalho(){
-        setVisible(false);
         /* Botões */
         bt_login.setFont(texto_padrao);
         bt_login.setBounds(520,30,100,40);
@@ -104,15 +107,11 @@ public class VisaoMain extends JFrame {
         
         add(jpanel_cabecalho);
         add(jpanel_fundo);
-
-        setVisible(true);
+;
     }
     
     public void menu(){
         setVisible(true);
-
-        /* Chama a funcao que adiciona o cabecalho */
-        cabecalho();
 
         /* instancia ControleAula e Usuario */
         this.cUsuario = new ControleUsuario();
@@ -142,6 +141,10 @@ public class VisaoMain extends JFrame {
         label_noticias.setFont(texto_sub_titulo);
         label_noticias.setBounds(19,20,215,20);
 
+        label_imagem.setBounds(0,100,750,500);
+        imagem_login.setImage(imagem_login.getImage().getScaledInstance(label_imagem.getWidth(),label_imagem.getHeight(),1));
+        label_imagem.setIcon(imagem_login);
+
         /* Text Areas */
         tArea_aulas.setText("Temos uma grande variedade de aulas disponiveis, venha conferir, se increver e crescer com a gente");
         tArea_aulas.setFont(texto_padrao);
@@ -169,6 +172,12 @@ public class VisaoMain extends JFrame {
         jpanel_noticias.setVisible(true);
         jpanel_noticias.setSize(250, 275);
         jpanel_noticias.setLocation(417, 300);
+
+        jpanel_fundo.setLayout(null);
+        jpanel_fundo.setBackground(cor_fundo);
+        jpanel_fundo.setVisible(true);
+        jpanel_fundo.setSize(750, 600);
+        jpanel_fundo.setLocation(0, 0);
         
         /* Adiciona no Layout */
         jpanel_aulas.add(bt_aula);        
@@ -182,6 +191,11 @@ public class VisaoMain extends JFrame {
         jpanel_fundo.add(label_bem_vindos);
         jpanel_fundo.add(jpanel_aulas);
         jpanel_fundo.add(jpanel_noticias);
+        jpanel_fundo.add(label_imagem);
+
+
+        /* Chama a funcao que adiciona o cabecalho */
+        cabecalho();
     }
 
     /* Faz com que ao apertar o botao seja redirecionado para o login */
@@ -200,6 +214,7 @@ public class VisaoMain extends JFrame {
         jpanel_cabecalho.remove(bt_projeto);
 
         jpanel_fundo.remove(label_bem_vindos);
+        jpanel_fundo.remove(label_imagem);
         jpanel_fundo.remove(jpanel_aulas);
         jpanel_fundo.remove(jpanel_noticias);
 
@@ -228,6 +243,7 @@ public class VisaoMain extends JFrame {
         jpanel_cabecalho.remove(bt_projeto);
 
         jpanel_fundo.remove(label_bem_vindos);
+        jpanel_fundo.remove(label_imagem);
         jpanel_fundo.remove(jpanel_aulas);
         jpanel_fundo.remove(jpanel_noticias);
 
@@ -243,9 +259,24 @@ public class VisaoMain extends JFrame {
      /* Faz com que ao apertar o botao seja redirecionado para o cadastro */
     private void aula(ActionEvent actionEvent){
         /* REMOVE O LAYOUT ANTERIOR */
-        remove(bt_juntese);
-        remove(bt_login);
-        jpanel_fundo.remove(jpanel_cabecalho);
+        jpanel_aulas.remove(bt_aula);        
+        jpanel_aulas.remove(label_aulas);  
+        jpanel_aulas.remove(tArea_aulas);
+
+        jpanel_noticias.remove(bt_noticias);
+        jpanel_noticias.remove(label_noticias);
+        jpanel_noticias.remove(tArea_noticias);
+        
+        jpanel_cabecalho.remove(bt_login);
+        jpanel_cabecalho.remove(bt_juntese);
+        jpanel_cabecalho.remove(bt_projeto);
+
+        jpanel_fundo.remove(label_bem_vindos);
+        jpanel_fundo.remove(label_imagem);
+        jpanel_fundo.remove(jpanel_aulas);
+        jpanel_fundo.remove(jpanel_noticias);
+
+        remove(jpanel_cabecalho);
         remove(jpanel_fundo);
 
         usuario.setId(0);
