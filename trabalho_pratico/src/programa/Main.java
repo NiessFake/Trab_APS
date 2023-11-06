@@ -1,5 +1,5 @@
 package programa;
-import visao.*;
+import visao.VisaoMain;
 
 public class Main {
    

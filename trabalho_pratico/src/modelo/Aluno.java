@@ -1,7 +1,7 @@
 package modelo;
 
 public class Aluno extends Usuario {
-    int[] idAulasInscritas;
+    Aula[] idAulasInscritas;
 
     /* Cria um novo Aluno com os dados em branco */
     public Aluno(){
@@ -10,18 +10,18 @@ public class Aluno extends Usuario {
     }
 
     /* Contrutor para o Aluno, preenchendo os dados */
-    public Aluno(String nome, String sobrenome, String email, int diaNasc, int mesNasc, int anoNasc, int id, String senha, int[] idAulasInscritas){
+    public Aluno(String nome, String sobrenome, String email, int diaNasc, int mesNasc, int anoNasc, int id, String senha, Aula[] idAulasInscritas){
         super(nome, sobrenome, email, diaNasc, mesNasc, anoNasc, id, senha);
         this.idAulasInscritas = idAulasInscritas;
     }
 
     /* Getters */
-    public int[] getIdAulaInscritas(){
+    public Aula[] getAulaInscritas(){
         return this.idAulasInscritas;
     }
 
     /* Setters */
-    public void setIdAulaInscritas(int[] idAulasInscritas){
+    public void setAulaInscritas(Aula[] idAulasInscritas){
         this.idAulasInscritas = idAulasInscritas;
     }
 

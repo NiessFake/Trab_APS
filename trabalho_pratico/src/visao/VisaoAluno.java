@@ -13,12 +13,13 @@ import modelo.Aluno;
 
 public class VisaoAluno extends JFrame{
     /* Atributo que vai guardar a única instância da interface */
-    private static VisaoAluno uniqueInstance;
+    //private static VisaoAluno uniqueInstance;
 
     /* Classes usadas */
     private Aluno aluno;
     private ControleAluno cAluno;
     private ControleAula cAula;
+    private VisaoMain vMain;
 
     protected String nome, sobrenome, email, dia, mes, ano , senha, cSenha;
     protected boolean condicao;
@@ -91,11 +92,11 @@ public class VisaoAluno extends JFrame{
     }
 
     /* Cria uma instancia única para essa interface (Padrao Singleton) */
-    public static VisaoAluno getInstance(){
+    /* public static VisaoAluno getInstance(){
 		if(uniqueInstance == null)
 			uniqueInstance = new VisaoAluno();
 		return uniqueInstance;
-	}
+	} */
 
     /* Interface do cabecalho */
     public void cabecalho(){
@@ -152,14 +153,18 @@ public class VisaoAluno extends JFrame{
         /* Chama a funcao que devolve um objeto contendo os dados do json */
         Object[][] objeto_tabela = cAluno.textoAlunos(aluno);
 
-        
-        /* Cria uma tabela de selecao unica e nao editavel */
-        tabela_aulas = new JTable(objeto_tabela, coluna_aula){   
-            public boolean isCellEditable(int row, int column) {                
-                return false;               
-            }
-        };
-        tabela_aulas.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        if(objeto_tabela != null){
+            /* Cria uma tabela de selecao unica e nao editavel */
+            tabela_aulas = new JTable(objeto_tabela, coluna_aula){   
+                public boolean isCellEditable(int row, int column) {                
+                    return false;               
+                }
+            };
+            tabela_aulas.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        }
+        else{
+            tabela_aulas = new JTable();
+        }
 
         /* Cria um novo JScrollPane e coloca a tabela nele */
         jScroll_aulas = new JScrollPane(tabela_aulas);
@@ -342,7 +347,7 @@ public class VisaoAluno extends JFrame{
             JOptionPane.showMessageDialog(null,"As senha nao digitadas ou divergem", "ERRO",JOptionPane.ERROR_MESSAGE);
         else{
             /* Se o vetor de aulas estiver vazio exclui, senao avisa que tem dependencia */
-            if(aluno.getIdAulaInscritas() != null){
+            if(aluno.getAulaInscritas() != null){
                 int resposta = JOptionPane.showOptionDialog(null,"Ha aulas que voce ainda esta inscrito, apagar esse cadastro significa apagar seu registro nelas. Deseja continuar?", "ULTIMA CHANCE",JOptionPane.WARNING_MESSAGE, 0, null,botoes,botoes[0]);
                 
                 /* Deixa as caixas de texto em branco */
@@ -394,7 +399,9 @@ public class VisaoAluno extends JFrame{
                     JOptionPane.showMessageDialog(null,"Seu cadastrato foi excluido", "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
 
                     /* Leva ate o menu principal */
-                    VisaoMain.getInstance().menu();
+                    this.vMain = new VisaoMain();
+                    vMain.menu();
+                    dispose();
                 }
                 else
                     paginaAluno(cAluno, aluno);
@@ -406,7 +413,9 @@ public class VisaoAluno extends JFrame{
                 JOptionPane.showMessageDialog(null,"Seu cadastrato foi excluido", "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
 
                 /* Leva ate o menu principal */
-                VisaoMain.getInstance().menu();
+                this.vMain = new VisaoMain();
+                vMain.menu();
+                dispose();
             }
         }
     }
@@ -493,79 +502,23 @@ public class VisaoAluno extends JFrame{
         remove(jpanel_fundo);
         remove(jpanel_cabecalho);
 
-        setVisible(false);
-        paginaAluno(cAluno,aluno);
+        this.vMain = new VisaoMain();
+        vMain.alunoPagina(cAluno,aluno);
+        dispose();
     }
 
     /* Funcao que vai para o menu da VisaoAula */
     private void irPAula(ActionEvent actionEvent){
-        setVisible(false);
-
-        /* Remove os elementos do painel */
-        jpanel_dados.remove(label_dados);
-        jpanel_dados.remove(label_imagem_login);
-        jpanel_dados.remove(label_nome);
-        jpanel_dados.remove(label_email);
-        jpanel_dados.remove(label_dataNasc);
-        jpanel_dados.remove(bt_alterar);
-
-        jpanel_fundo.remove(jpanel_dados);
-        jpanel_fundo.remove(bt_entrar_aula);
-
-        remove(jpanel_fundo);
-        remove(jpanel_cabecalho);
-
-        VisaoAula.getInstance().menuAulas(cAula,aluno,1);
-
+        this.vMain = new VisaoMain();
+        vMain.aulaMenu(cAula,aluno,1);
+        dispose();
     }
 
     /* Funcao que volta pro menu da Visao main */
     private void projeto(ActionEvent actionEvent){
-        /* Deixa as caixas de texto em branco */
-        tArea_nome.setText("");
-        tArea_nome.requestFocus();
-        tArea_sobrenome.setText("");
-        tArea_sobrenome.requestFocus();
-        tArea_email.setText("");
-        tArea_email.requestFocus();
-        cbox_dia.setSelectedItem("");
-        cbox_mes.setSelectedItem("");
-        cbox_ano.setSelectedItem("");
-        tArea_senha.setText("");
-        tArea_senha.requestFocus();
-        tArea_cSenha.setText("");
-        tArea_cSenha.requestFocus();
-
-        jpanel_dados.remove(label_alterar);
-        jpanel_dados.remove(label_sobrenome);
-        jpanel_dados.remove(label_senha);
-        jpanel_dados.remove(label_cSenha);
-        jpanel_dados.remove(tArea_nome);
-        jpanel_dados.remove(tArea_sobrenome);
-        jpanel_dados.remove(tArea_email);
-        jpanel_dados.remove(tArea_senha);
-        jpanel_dados.remove(tArea_cSenha);
-        jpanel_dados.remove(cbox_dia);
-        jpanel_dados.remove(cbox_mes);
-        jpanel_dados.remove(cbox_ano);
-        jpanel_dados.remove(bt_excluir);
-        jpanel_dados.remove(bt_confirmar);
-        jpanel_dados.remove(label_dados);
-        jpanel_dados.remove(label_imagem_login);
-        jpanel_dados.remove(label_nome);
-        jpanel_dados.remove(label_email);
-        jpanel_dados.remove(label_dataNasc);
-        jpanel_dados.remove(bt_alterar);
-
-        jpanel_fundo.remove(jpanel_dados);
-        jpanel_fundo.remove(bt_entrar_aula);
-
-        remove(jpanel_fundo);
-        remove(jpanel_cabecalho);
-
-        VisaoMain.getInstance().menu();
-
-        setVisible(false);
+        this.vMain = new VisaoMain();
+        vMain.menu();
+        dispose();
     }
 
     /* Tamanho dos vetores para o dia, mês e ano */

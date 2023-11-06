@@ -5,17 +5,26 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import javax.swing.*;
 import controle.*;
-import modelo.Usuario;
+import modelo.*;
 
 public class VisaoMain extends JFrame {
-    Usuario usuario = new Usuario();
+    private Usuario usuario;
+    private Aula aula;
+    private Aluno aluno;
+    private Professor professor;
+    private VisaoUsuario vUsuario;
+    private VisaoAula vAula;
+    private VisaoAluno vAluno;
+    private VisaoProfessor vProfessor;
 
     /* Cria um atributo do tipo Controle para acessar as funções */
     private ControleUsuario cUsuario;
     private ControleAula cAula;
+    private ControleAluno cAluno;
+    private ControleProfessor cProfessor;
 
     /* Atributo que vai guardar a única instância da interface */
-    private static VisaoMain uniqueInstance;
+    //private static VisaoMain uniqueInstance;
 
     /* Paineis */
     JPanel jpanel_cabecalho = new JPanel();
@@ -60,11 +69,12 @@ public class VisaoMain extends JFrame {
     }
 
     /* Cria uma instancia única para essa interface (Padrao Singleton) */
-    public static VisaoMain getInstance(){
+    /*public static VisaoMain getInstance(){
 		if(uniqueInstance == null)
 			uniqueInstance = new VisaoMain();
 		return uniqueInstance;
-	}
+	}    */
+
 
     /* Interface do cabecalho */
     public void cabecalho(){
@@ -222,9 +232,9 @@ public class VisaoMain extends JFrame {
         remove(jpanel_fundo);
 
         /* Chama a instancia unica do VisaoUsuario e vai até ela na funcao login */
-        VisaoUsuario.getInstance().login(cUsuario);
-
-        setVisible(false);
+        vUsuario = new VisaoUsuario();
+        vUsuario.login(cUsuario);
+        dispose();
     }
 
     /* Faz com que ao apertar o botao seja redirecionado para o cadastro */
@@ -250,10 +260,9 @@ public class VisaoMain extends JFrame {
         remove(jpanel_cabecalho);
         remove(jpanel_fundo);
 
-        /* Chama a instancia unica do VisaoUsuario e vai até ela na funcao cadastro */
-        VisaoUsuario.getInstance().cadastro(cUsuario);
-        
-        setVisible(false);
+        vUsuario = new VisaoUsuario();
+        vUsuario.cadastro(cUsuario);
+        dispose();
     }
 
      /* Faz com que ao apertar o botao seja redirecionado para o cadastro */
@@ -279,10 +288,124 @@ public class VisaoMain extends JFrame {
         remove(jpanel_cabecalho);
         remove(jpanel_fundo);
 
+        this.usuario = new Usuario();
+
         usuario.setId(0);
         /* Chama a instancia unica do VisaoUsuario e vai até ela na funcao cadastro */
-        VisaoAula.getInstance().menuAulas(cAula,usuario,0);
+        this.cAula = new ControleAula();
+        this.vAula = new VisaoAula();
+        vAula.menuAulas(cAula,usuario,0);
+        dispose();
+    }
+
+
+    public void usuarioLogin(){
+        this.cUsuario = new ControleUsuario();
+        this.vUsuario= new VisaoUsuario();
+        vUsuario.login(cUsuario);
+        dispose();
+    }
+
+    public void usuarioCadastro(){
+        this.cUsuario = new ControleUsuario();
+        this.vUsuario= new VisaoUsuario();
+        vUsuario.cadastro(cUsuario);
+        dispose();
+    }
+
+    /* Funcao que redireciona o usuario para a sua pagina apos o login */
+    public void usuarioContinuar(Boolean tipoUsuario, Entidade entidade){
+        /* Considerando true para Aluno e false para professor, uma comparacao eh feita e 
+         * leva o usuario para sua pagina correspondente de acordo com seu papel */
+        if(tipoUsuario){
+            this.cAluno = new ControleAluno();
+            this.vAluno = new VisaoAluno();
+            vAluno.paginaAluno(cAluno,(Aluno)entidade);
+            dispose();
+        }
+        else{
+            this.cProfessor = new ControleProfessor();
+            this.vProfessor = new VisaoProfessor();
+            vProfessor.paginaProfessor(cProfessor,(Professor)entidade);
+            dispose();
+        }
+    }   
+
+    public void alunoPagina(Controle controle, Entidade entidade){
+        this.cAluno = (ControleAluno)controle;
+        this.aluno = (Aluno)entidade;
+        this.vAluno = new VisaoAluno();
+        vAluno.paginaAluno(cAluno,aluno);
+        dispose();
+    }
+
+    public void professorPagina(Controle controle, Entidade entidade){
+        this.cProfessor = (ControleProfessor)controle;
+        this.professor = (Professor)entidade;
+        this.vProfessor = new VisaoProfessor();
+        vProfessor.paginaProfessor(cProfessor,professor);
+        dispose();
+    }
+
+
+    public void aulaMenu(Controle controle, Entidade entidade, int tipo){
+        this.cAula = (ControleAula)controle;
+        this.vAula = new VisaoAula();
+
+        switch (tipo) {
+            case 1:
+                this.aluno = (Aluno)entidade;
+                vAula.menuAulas(cAula,aluno,1);
+                break;
+
+            case 2:
+                this.professor = (Professor)entidade;
+                vAula.menuAulas(cAula,professor,2);
+                break;
         
-        setVisible(false);
+            default:
+                vAula.menuAulas(cAula,null,0);
+                break;
+        }
+        dispose();
+    }
+
+    public void aulaPI(Entidade entidade, Entidade entidade2, int tipo){
+        this.cAula = new ControleAula();
+        this.aula = (Aula)entidade;
+        this.vAula = new VisaoAula();
+        switch (tipo) {
+            case 1:
+                this.aluno = (Aluno)entidade2;
+                vAula.paginaIndividual(cAula,aula, aluno, tipo);
+                break;
+
+            case 2:
+                this.professor = (Professor)entidade2;
+                vAula.paginaIndividual(cAula,aula, professor, tipo);
+                break;
+        
+            default:
+                vAula.paginaIndividual(cAula,aula, null, tipo);
+                break;
+        }
+        dispose();
+    }
+
+    public void aulaAP(Entidade entidade, int funcao){
+        if(funcao == 1){   
+            this.cAluno = new ControleAluno();
+            this.aluno = (Aluno)entidade;
+            this.vAluno = new VisaoAluno();
+            vAluno.paginaAluno(cAluno,aluno);
+            dispose();
+        }
+        else{
+            this.cProfessor = new ControleProfessor();
+            this.professor = (Professor)entidade;
+            this.vProfessor = new VisaoProfessor();
+            vProfessor.paginaProfessor(cProfessor,professor);
+            dispose();
+        }
     }
 }

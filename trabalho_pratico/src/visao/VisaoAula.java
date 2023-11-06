@@ -3,6 +3,8 @@ package visao;
 /* Bibliotecas que serão necessárias*/
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.Arrays;
+
 //import java.awt.event.ActionListener;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -18,23 +20,22 @@ public class VisaoAula extends JFrame{
     private Professor professor = new Professor();
     private Aula aula = new Aula();
 
-    private ControleUsuario cUsuario;
     private ControleAluno cAluno;
-    private ControleProfessor cProfessor;
     private ControleAula cAula;
-
+    private VisaoMain vMain;
 
     /* Variaveis auxiliares */
-    protected int funcao, id, tamanho_voltar,tamanho_capacidade;
+    protected int funcao, tamanho_voltar,tamanho_capacidade, inscrito;
     protected String materia, capacidade, duracao, descricao;
     protected boolean frequencia;
-    protected int[] aulas_inscritas,alunos_inscritos;
+    protected Aula[] aulas_inscritas;
+    protected Aluno[] alunos_inscritos;
     protected String[] dias = new String[7];
     protected String[] colunas_aula = {"ID", "Materia", "Professor", "Capacidade", "Duracao","Frequente"};
     protected String[] colunas_aluno = {"ID","Nome","Idade"};
 
     /* Variavel que guarda a instancia unica */
-    private static VisaoAula uniqueInstance;
+    //private static VisaoAula uniqueInstance;
 
     /* Paineis */
     JPanel jpanel_cabecalho = new JPanel();
@@ -124,11 +125,11 @@ public class VisaoAula extends JFrame{
         setLocationRelativeTo(null);
     }
 
-    public static VisaoAula getInstance(){
+    /* public static VisaoAula getInstance(){
 		if(uniqueInstance == null)
 			uniqueInstance = new VisaoAula();
 		return uniqueInstance;
-	}
+	} */
     
     /* Interface do cabecalho */
     public void cabecalho(){
@@ -156,7 +157,16 @@ public class VisaoAula extends JFrame{
         bt_mensagens.setBackground(Color.white);
 		bt_mensagens.setForeground(Color.black);
 
-        if(id == 0){
+        if(funcao == 1 || funcao == 2){
+            bt_usuario.setFont(texto_padrao);
+            bt_usuario.setBounds(575,30,125,40);
+            bt_usuario.setBackground(Color.white);
+            bt_usuario.setForeground(Color.black);
+            bt_usuario.addActionListener(this::usuario);
+
+            jpanel_cabecalho.add(bt_usuario);            
+        }
+        else{
             bt_login.setFont(texto_padrao);
             bt_login.setBounds(520, 30,100,40);
             bt_login.setBackground(Color.white);
@@ -171,15 +181,6 @@ public class VisaoAula extends JFrame{
 
             jpanel_cabecalho.add(bt_login);
             jpanel_cabecalho.add(bt_juntese);
-        }
-        else{
-            bt_usuario.setFont(texto_padrao);
-            bt_usuario.setBounds(575,30,125,40);
-            bt_usuario.setBackground(Color.white);
-            bt_usuario.setForeground(Color.black);
-            bt_usuario.addActionListener(this::usuario);
-
-            jpanel_cabecalho.add(bt_usuario);
         }
 
         bt_projeto.setFont(texto_titulo);
@@ -204,27 +205,22 @@ public class VisaoAula extends JFrame{
         funcao = tipo;
         cAula = (ControleAula)controle;
 
-        this.cUsuario = new ControleUsuario();
         this.cAluno = new ControleAluno();
-        this.cProfessor = new ControleProfessor();
 
         bt_aulas.removeActionListener(this::menu);
 
         switch (tipo) {
             case 1:                
-                id = (((Aluno)entidade).getId());
                 aluno = (Aluno)entidade;
-                bt_usuario.setText(aluno.getNome());;
+                bt_usuario.setText(aluno.getNome());
                 break;
             
             case 2:                
-                id = (((Professor)entidade).getId());
                 professor = (Professor)entidade;
-                bt_usuario.setText(professor.getNome());;
+                bt_usuario.setText(professor.getNome());
                 break;
             
             default:
-                id = (((Usuario)entidade).getId());
                 break;
         }
 
@@ -258,8 +254,24 @@ public class VisaoAula extends JFrame{
                         /* Apaga tabela antiga */
                         jpanel_fundo.remove(jScroll_aula);
 
+                        aula = cAula.buscaID(aula.getId());
+
                         setVisible(false);
-                        paginaIndividual(cAula,aula);
+                        vMain = new VisaoMain();
+                        switch (funcao) {
+                            case 1:
+                                vMain.aulaPI(aula, aluno,funcao);
+                                break;
+
+                            case 2:
+                                vMain.aulaPI(aula, professor,funcao);
+                                break;
+                        
+                            default:
+                                vMain.aulaPI(aula, null,funcao);
+                                break;
+                        }
+                        dispose();
                 }
             }
         });
@@ -282,12 +294,33 @@ public class VisaoAula extends JFrame{
         
     }
 
-    public void paginaIndividual(Controle controle,Entidade entidade){
+    public void paginaIndividual(Controle controle, Entidade entidade, Entidade entidade2, int tipo){
+        cAluno = new ControleAluno();
+
+        funcao = tipo;
+        cabecalho();
+
+        switch (tipo) {
+            case 1:        
+                aluno = (Aluno)entidade2;        
+                bt_usuario.setText(aluno.getNome());
+                break;
+            
+            case 2: 
+                professor = (Professor)entidade2;               
+                bt_usuario.setText(professor.getNome());
+                break;
+            
+            default:
+                break;
+        }
+
         setVisible(true);
         
         bt_aulas.addActionListener(this::menu);
 
-        aula = cAula.buscaID(aula.getId());
+        cAula = (ControleAula)controle;
+        this.aula = (Aula)entidade;
 
         String vetor_dias[] = aula.getDias();
         tamanho_voltar = aula.getMateria().length()*15;
@@ -335,22 +368,30 @@ public class VisaoAula extends JFrame{
 		bt_tarefas.setForeground(Color.black);
         bt_tarefas.setBorderPainted(false);
 
-        if(funcao != 2){
-            bt_inscrever.setFont(texto_padrao);
-            bt_inscrever.setBounds(362,400,125,40);
-            bt_inscrever.setBackground(Color.white);
-            bt_inscrever.setForeground(Color.black);
-            bt_inscrever.addActionListener(this::adicionaAluno);
-            jpanel_dados.add(bt_inscrever);
-        }
-        else{
-            bt_editar.setFont(texto_padrao);
-            bt_editar.setBounds(362,400,125,40);
-            bt_editar.setBackground(Color.white);
-            bt_editar.setForeground(Color.black);
-            bt_editar.addActionListener(this::edita);
 
-            jpanel_dados.add(bt_editar);
+        inscrito = 0;
+
+        if(funcao == 1)
+            inscrito = cAula.jaInscrito(aula, aluno.getId());
+
+        if(inscrito == 0){
+            if(funcao != 2){
+                bt_inscrever.setFont(texto_padrao);
+                bt_inscrever.setBounds(362,400,125,40);
+                bt_inscrever.setBackground(Color.white);
+                bt_inscrever.setForeground(Color.black);
+                bt_inscrever.addActionListener(this::adicionaAluno);
+                jpanel_dados.add(bt_inscrever);
+            }
+            else{
+                bt_editar.setFont(texto_padrao);
+                bt_editar.setBounds(362,400,125,40);
+                bt_editar.setBackground(Color.white);
+                bt_editar.setForeground(Color.black);
+                bt_editar.addActionListener(this::edita);
+
+                jpanel_dados.add(bt_editar);
+            }
         }
 
         /* JLabels */
@@ -389,7 +430,7 @@ public class VisaoAula extends JFrame{
         label_frequencia.setFont(texto_padrao);
         label_frequencia.setBounds(400, 110,100,40);
 
-        professor = cProfessor.buscaID(aula.getIdProfessor());
+        professor = aula.getProfessor();
         label_professor.setText("PROFESSOR: " + professor.getNome() + " " + professor.getSobrenome());
         label_professor.setFont(texto_padrao);
         label_professor.setBounds(50, 162,225,40);
@@ -460,76 +501,56 @@ public class VisaoAula extends JFrame{
 
 
     private void adicionaAluno(ActionEvent actionEvent){
-        /* Variaveis auxiliares */
-        int[] aux_aluno,aux_aula;
-        boolean count = true;
-
         /* Se o usuario nao estiver logado emite uma mensagem de erro */
-        if(funcao == 0)
+        if(funcao == 0){
             JOptionPane.showMessageDialog(null,"Faca Login", "ERRO",JOptionPane.ERROR_MESSAGE);
-        else{
-            /* Se a aula ja estiver lotada, nao permite uma nova entrada de alunos */
-            if((aula.getCapacidade()-cAula.numeroAlunos(aula)) < 0)
-                JOptionPane.showMessageDialog(null,"Numero de inscritos excedidos", "ERRO",JOptionPane.ERROR_MESSAGE);
-            else{
-                /* Se o vetor de aulas estiver vazio, cria um novo vetor e armazena o id da aula na primeira posicao.
-                 * Caso contrario, copia o vetor e adiciona o novo elemento a ele. */
-                if(aluno.getIdAulaInscritas() == null){
-                    aulas_inscritas = new int[30];
-                    aulas_inscritas[0] = aula.getId();
-                }
-                else{
-                    /*Insere as aulas no vetor de alunos */
-                    aux_aluno = aluno.getIdAulaInscritas();
-
-                    aulas_inscritas = new int[30];
-                    aulas_inscritas[0] = aux_aluno[0];
-                    for(int i = 1; i < 30 ;i++){
-                        if(aux_aluno[i] == 0 && count){
-                            aulas_inscritas[i] = aula.getId();
-                            count = false;
-                        }
-                        else
-                            aulas_inscritas[i] = aux_aluno[i];
-                    }
-                }
-
-                /* Se o vetor de alunos estiver vazio, cria um novo vetor e armazena o id do aluno na primeira posicao.
-                 * Caso contrario, copia o vetor e adiciona o novo elemento a ele. */
-                if(aula.getIdAlunos() == null){
-                    alunos_inscritos = new int[aula.getCapacidade()];
-                    alunos_inscritos[0] = aluno.getId();
-                }
-                else{
-                    /* Insere os alunos no vetor da aula. Primeiro salva o vetor numa variavel auxiliar. Em seguida
-                     * coloca atribui o valor do primeiro aluno ao primeiro elemento do vetor de armazenamento. Por fim
-                     * armazena o restante dos elementos.  */
-                    aux_aula = aula.getIdAlunos();
-                    alunos_inscritos = new int[aula.getCapacidade()];
-                    alunos_inscritos[0] = aux_aula[0];
-
-                    for(int j = 1; j < aula.getCapacidade() ;j++){
-                        if(aux_aula[j] == 0 && count){
-                            alunos_inscritos[j] = aluno.getId();
-                            count = false;
-                        }
-                        else
-                            alunos_inscritos[j] = aux_aula[j];
-                    }
-                }
-                
-                aluno.setIdAulaInscritas(aulas_inscritas);
-                cAluno.remove(aluno,false);
-                cAluno.insere(aluno);
-
-                aula.setIdAlunos(alunos_inscritos);
-                cAula.remove(aula, false);
-                cAula.insere(aula);
-
-                //JOptionPane.showMessageDialog(null,"Parabens "+aluno.getNome()+"!! Voce entrou na aula.", "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
-                
-            }
+            return;
         }
+        /* Se a aula ja estiver lotada, nao permite uma nova entrada de alunos */
+        if((aula.getCapacidade() - cAula.numeroAlunos(aula)) <= 0){
+            JOptionPane.showMessageDialog(null,"Numero de inscritos excedidos", "ERRO",JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        /* Se o vetor de aulas estiver vazio, cria um novo vetor e armazena o id da aula na primeira posicao.
+            * Caso contrario, copia o vetor e adiciona o novo elemento a ele. */
+        Aula[] aulas_inscritas;
+        if (aluno.getAulaInscritas() == null) {
+            aulas_inscritas = new Aula[1];
+            aulas_inscritas[0] = aula;
+        } else {
+            Aula[] aux_aluno = aluno.getAulaInscritas();
+            aulas_inscritas = Arrays.copyOf(aux_aluno, aux_aluno.length + 1);
+            aulas_inscritas[aulas_inscritas.length - 1] = aula;
+        }
+
+        aluno.setAulaInscritas(aulas_inscritas);
+        cAluno.remove(aluno,false);
+        cAluno.insere(aluno);
+
+        /* Adiciona o aluno à aula */
+        Aluno[] alunos_inscritos;
+        if (aula.getAlunos() == null) {
+            alunos_inscritos = new Aluno[1];
+            alunos_inscritos[0] = aluno;
+        } 
+        else {
+            Aluno[] aux_aula = aula.getAlunos();
+            alunos_inscritos = Arrays.copyOf(aux_aula, aux_aula.length + 1);
+            alunos_inscritos[alunos_inscritos.length - 1] = aluno;
+        }
+
+        /* Atualiza o vetor de alunos inscritos na aula */
+        aula.setAlunos(alunos_inscritos);
+        cAula.remove(aula, false);
+        cAula.insere(aula);
+
+        aula.setAlunos(alunos_inscritos);
+        cAula.remove(aula, false);
+        cAula.insere(aula);
+
+        JOptionPane.showMessageDialog(null,"Parabens "+aluno.getNome()+"!! Voce entrou na aula.", "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
+        
+        
         
     }
 
@@ -741,36 +762,44 @@ public class VisaoAula extends JFrame{
             check_sabado.setSelected(false);
             check_domingo.setSelected(false);
 
-            home(actionEvent);         
+            this.vMain = new VisaoMain();
+            switch (funcao) {
+                case 1:
+                    vMain.aulaPI(aula, aluno,funcao);
+                    break;
+
+                case 2:
+                    vMain.aulaPI(aula, professor,funcao);
+                    break;
+            
+                default:
+                    break;
+            }
+            dispose(); 
         }
     }
 
     private void login(ActionEvent actionEvent){
-        removeItens();
-        setVisible(false);
-        
-        /* Chama a instancia unica do VisaoUsuario e vai até ela na funcao login */
-        VisaoUsuario.getInstance().login(cUsuario);
+        this.vMain = new VisaoMain();
+        vMain.usuarioLogin();
+        dispose();
     } 
 
     private void cadastro(ActionEvent actionEvent){
-        removeItens();
-        setVisible(false);
-
-        /* Chama a instancia unica do VisaoUsuario e vai até ela na funcao cadastro */
-        VisaoUsuario.getInstance().cadastro(cUsuario);
+        this.vMain = new VisaoMain();
+        vMain.usuarioLogin();
+        dispose();
     }
 
     private void usuario(ActionEvent actionEvent){
-        removeItens();
-        setVisible(false);
-
+        vMain = new VisaoMain();
         /* Chama a instancia unica do VisaoAluno ou do Visao Professor, redirecionando para suas
          * respectivas paginas de acordo com sua funcao*/
         if(funcao == 1)
-            VisaoAluno.getInstance().paginaAluno(cAluno, aluno);
+            vMain.aulaAP(aluno,1);
         else
-            VisaoProfessor.getInstance().paginaProfessor(cProfessor, professor);
+            vMain.aulaAP(professor,2);
+        dispose();
     }
 
     private void alunos(ActionEvent actionEvent){
@@ -822,103 +851,48 @@ public class VisaoAula extends JFrame{
     }
 
     private void home(ActionEvent actionEvent){  
-        setVisible(false);   
-        jpanel_cadastro.remove(label_editar_aula);
-        jpanel_cadastro.remove(label_materia);
-        jpanel_cadastro.remove(label_capacidade);
-        jpanel_cadastro.remove(label_frequencia);
-        jpanel_cadastro.remove(label_duracao);
-        jpanel_cadastro.remove(label_dias);
-        jpanel_cadastro.remove(label_minutos);
-        jpanel_cadastro.remove(label_descricao);
-        jpanel_cadastro.remove(tArea_materia);
-        jpanel_cadastro.remove(tArea_capacidade);
-        jpanel_cadastro.remove(tArea_duracao);
-        jpanel_cadastro.remove(tArea_descricao_cadastro);
-        jpanel_cadastro.remove(check_frequencia);
-        jpanel_cadastro.remove(check_segunda);
-        jpanel_cadastro.remove(check_terca);
-        jpanel_cadastro.remove(check_quarta);
-        jpanel_cadastro.remove(check_quinta);
-        jpanel_cadastro.remove(check_sexta);
-        jpanel_cadastro.remove(check_sabado);
-        jpanel_cadastro.remove(check_domingo);
-        jpanel_cadastro.remove(bt_continuar_cadastro);
+        vMain = new VisaoMain();
+        switch (funcao) {
+            case 1:
+                vMain.aulaPI(aula, aluno,funcao);
+                break;
 
-        jpanel_fundo.remove(jpanel_cadastro);
-
-        jpanel_dados.remove(jScroll_alunos);
-
-        bt_home.removeActionListener(this::home);
-
-        paginaIndividual(cAula,aula);     
+            case 2:
+                vMain.aulaPI(aula, professor,funcao);
+                break;
+        
+            default:
+                vMain.aulaPI(aula, null,funcao);
+                break;
+        }
+        dispose(); 
     }
 
-    private void menu(ActionEvent actionEvent){        
-        bt_home.removeActionListener(this::home);
-        bt_alunos.removeActionListener(this::alunos);
+    private void menu(ActionEvent actionEvent){       
+        this.vMain = new VisaoMain();
 
-        removeItens();
-        
         switch (funcao) {
-            case 1:                                
-                menuAulas(cAula, aluno, 1);
+            case 1:                               
+                vMain.aulaMenu(cAula, aluno, 1);
+                dispose();
                 break;
             
             case 2:                       
-                menuAulas(cAula, professor, 2);
+                vMain.aulaMenu(cAula, professor, 2);
+                dispose();
                 break;
             
             default:       
-                menuAulas(cAula, usuario, 0);
+                vMain.aulaMenu(cAula, usuario, 0);
+                dispose();
                 break;
         }
     }
 
     /* Funcao que volta pro menu da Visao main */
     private void projeto(ActionEvent actionEvent){
-        removeItens();
-
-        VisaoMain.getInstance().menu();
-
-        setVisible(false);
-
+        vMain = new VisaoMain();
+        vMain.menu();
+        dispose();
     }
-
-
-    /* Funcao que remove todos os itens */
-    public void removeItens(){
-        jpanel_cabecalho.remove(bt_aulas);
-        jpanel_cabecalho.remove(bt_mensagens);
-        jpanel_cabecalho.remove(bt_projeto);
-        jpanel_cabecalho.remove(bt_login);
-        jpanel_cabecalho.remove(bt_juntese);
-        jpanel_cabecalho.remove(bt_usuario);
-        
-        jpanel_dados.remove(label_professor);
-        jpanel_dados.remove(label_frequencia);
-        jpanel_dados.remove(label_capacidade);
-        jpanel_dados.remove(label_segunda);
-        jpanel_dados.remove(label_terca);
-        jpanel_dados.remove(label_quarta);
-        jpanel_dados.remove(label_quinta);
-        jpanel_dados.remove(label_sexta);
-        jpanel_dados.remove(label_sabado);
-        jpanel_dados.remove(label_domingo);
-        jpanel_dados.remove(tArea_descricao);
-        jpanel_dados.remove(jpanel_materia);
-        jpanel_dados.remove(bt_editar);
-        jpanel_dados.remove(bt_inscrever);
-        //jpanel_dados.remove(jScroll_alunos);
-        
-
-        jpanel_fundo.remove(jpanel_dados);
-        jpanel_fundo.remove(jpanel_botoes);
-        jpanel_fundo.remove(jScroll_aula);
-
-        remove(jpanel_cabecalho);
-        remove(jpanel_fundo);
-    }
-
-
 }

@@ -13,8 +13,8 @@ public class VisaoUsuario extends JFrame {
     private Aluno aluno = new Aluno();
     private Professor professor = new Professor();
 
+    private VisaoMain vMain;
 
-    private ControleUsuario cUsuario;
     private ControleAluno cAluno;
     private ControleProfessor cProfessor;
     
@@ -26,7 +26,7 @@ public class VisaoUsuario extends JFrame {
     protected String[] papelVetor = {"","Aluno","Professor"};
 
     /* Atributo que vai guardar a única instância da interface */
-    private static VisaoUsuario uniqueInstance;
+    //private static VisaoUsuario uniqueInstance;
 
     /* Paineis */
     JPanel jpanel_cabecalho = new JPanel();
@@ -90,14 +90,18 @@ public class VisaoUsuario extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setResizable(false);
         setLocationRelativeTo(null);
+        // Inicialize vUsuario
+        //this.vUsuario = this;
     }
 
     /* Cria uma instancia única para essa interface (Padrao Singleton) */
-    public static VisaoUsuario getInstance(){
+    /* public static VisaoUsuario getInstance(){
 		if(uniqueInstance == null)
 			uniqueInstance = new VisaoUsuario();
 		return uniqueInstance;
 	}
+ */
+
 
     /* Interface do cabecalho */
     public void cabecalho(){
@@ -146,10 +150,8 @@ public class VisaoUsuario extends JFrame {
     /* Interface para o cadastro */
     public void cadastro(Controle controle){
         setVisible(true);
-
+        
         cabecalho();
-
-        cUsuario = (ControleUsuario)controle;
 
         /* Inicializa os controles */
         this.cAluno = new ControleAluno();
@@ -256,8 +258,6 @@ public class VisaoUsuario extends JFrame {
         setVisible(true);
 
         cabecalho();
-
-        cUsuario = (ControleUsuario)controle;
 
         /* Inicializa os controles */
         this.cAluno = new ControleAluno();
@@ -420,8 +420,52 @@ public class VisaoUsuario extends JFrame {
                 tArea_cSenha.setText("");
                 tArea_cSenha.requestFocus();
 
-                /* Chama a funcao que redireciona para o login */
-                vaiPLogin(actionEvent);
+                /* remove tudo do painel */
+                jpanel_cadastro.remove(label_cadatro);
+                jpanel_cadastro.remove(label_nome);
+                jpanel_cadastro.remove(tArea_nome);
+                jpanel_cadastro.remove(label_sobrenome);
+                jpanel_cadastro.remove(tArea_sobrenome);
+                jpanel_cadastro.remove(label_email);
+                jpanel_cadastro.remove(tArea_email);
+                jpanel_cadastro.remove(label_dataNasc);
+                jpanel_cadastro.remove(cbox_dia);
+                jpanel_cadastro.remove(cbox_mes);
+                jpanel_cadastro.remove(cbox_ano);
+                jpanel_cadastro.remove(label_papel);
+                jpanel_cadastro.remove(cbox_papel);
+                jpanel_cadastro.remove(label_senha);
+                jpanel_cadastro.remove(tArea_senha);
+                jpanel_cadastro.remove(label_cSenha);
+                jpanel_cadastro.remove(tArea_cSenha);
+                jpanel_cadastro.remove(bt_continuar_cadastro);
+                jpanel_login.remove(label_recuperar);
+                jpanel_login.remove(label_email);
+                jpanel_login.remove(label_dataNasc);
+                jpanel_login.remove(label_papel);
+                jpanel_login.remove(tArea_email);
+                jpanel_login.remove(cbox_papel);
+                jpanel_login.remove(cbox_dia);
+                jpanel_login.remove(cbox_mes);
+                jpanel_login.remove(cbox_ano);
+                jpanel_login.remove(bt_continuar_recupera);
+
+                jpanel_fundo.remove(jpanel_cadastro);
+
+                jpanel_cabecalho.remove(bt_login);
+                jpanel_cabecalho.remove(bt_juntese);
+                jpanel_cabecalho.remove(bt_projeto);
+
+                
+                remove(jpanel_cabecalho);
+                remove(jpanel_fundo);
+
+                setVisible(false);
+
+                /* Manda pro login */
+                this.vMain = new VisaoMain();
+                vMain.usuarioLogin();
+                dispose();
             }
         }
     }
@@ -452,7 +496,36 @@ public class VisaoUsuario extends JFrame {
                     JOptionPane.showMessageDialog(null,"Senha incorreta", "ERRO",JOptionPane.ERROR_MESSAGE);
                 else{
                     JOptionPane.showMessageDialog(null,"Seja bem-vinde " + aluno.getNome(), "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
-                    continuarUsuario(true, aluno);
+                    
+                    tArea_id.setText("");
+                    tArea_id.requestFocus();
+                    tArea_senha.setText("");
+                    tArea_senha.requestFocus();
+                    cbox_papel.setSelectedItem("");
+
+                    /* Exclui o layout do cadastro e do login */
+                    jpanel_login.remove(bt_continuar_login);
+                    jpanel_login.remove(label_login);
+                    jpanel_login.remove(label_id);
+                    jpanel_login.remove(tArea_id);
+                    jpanel_login.remove(label_senha);
+                    jpanel_login.remove(tArea_senha);
+                    jpanel_login.remove(label_papel);
+                    jpanel_login.remove(cbox_papel);
+
+                    jpanel_fundo.remove(jpanel_login);
+                    jpanel_fundo.remove(jpanel_imagem);
+
+                    jpanel_cabecalho.remove(bt_login);
+                    jpanel_cabecalho.remove(bt_juntese);
+                    jpanel_cabecalho.remove(bt_projeto);
+
+                    remove(jpanel_cabecalho);
+                    remove(jpanel_fundo);
+                    
+                    this.vMain = new VisaoMain();
+                    vMain.usuarioContinuar(true, aluno);
+                    dispose();
                 }
             }
                 
@@ -467,50 +540,41 @@ public class VisaoUsuario extends JFrame {
                  * Caso seja igual imprime uma mensagem de sucesso e redireciona para a pagina do usuario. */
                 if(professor.getSenha().equals(senha)){
                     JOptionPane.showMessageDialog(null,"Seja bem-vinde " + professor.getNome(), "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
-                    continuarUsuario(false, professor);
+                    
+                    tArea_id.setText("");
+                    tArea_id.requestFocus();
+                    tArea_senha.setText("");
+                    tArea_senha.requestFocus();
+                    cbox_papel.setSelectedItem("");
+
+                    /* Exclui o layout do cadastro e do login */
+                    jpanel_login.remove(bt_continuar_login);
+                    jpanel_login.remove(label_login);
+                    jpanel_login.remove(label_id);
+                    jpanel_login.remove(tArea_id);
+                    jpanel_login.remove(label_senha);
+                    jpanel_login.remove(tArea_senha);
+                    jpanel_login.remove(label_papel);
+                    jpanel_login.remove(cbox_papel);
+
+                    jpanel_fundo.remove(jpanel_login);
+                    jpanel_fundo.remove(jpanel_imagem);
+
+                    jpanel_cabecalho.remove(bt_login);
+                    jpanel_cabecalho.remove(bt_juntese);
+                    jpanel_cabecalho.remove(bt_projeto);
+
+                    remove(jpanel_cabecalho);
+                    remove(jpanel_fundo);
+                    
+                    this.vMain = new VisaoMain();
+                    vMain.usuarioContinuar(false, professor);
+                    dispose();
                 }
                 else
                     JOptionPane.showMessageDialog(null,"Senha incorreta", "ERRO",JOptionPane.ERROR_MESSAGE);
             } 
         }
-    }
-
-    /* Funcao que redireciona o usuario para a sua pagina apos o login */
-    public void continuarUsuario(Boolean tipoUsuario, Entidade entidade){
-        tArea_id.setText("");
-        tArea_id.requestFocus();
-        tArea_senha.setText("");
-        tArea_senha.requestFocus();
-        cbox_papel.setSelectedItem("");
-
-        /* Exclui o layout do cadastro e do login */
-        jpanel_login.remove(bt_continuar_login);
-        jpanel_login.remove(label_login);
-        jpanel_login.remove(label_id);
-        jpanel_login.remove(tArea_id);
-        jpanel_login.remove(label_senha);
-        jpanel_login.remove(tArea_senha);
-        jpanel_login.remove(label_papel);
-        jpanel_login.remove(cbox_papel);
-
-        jpanel_fundo.remove(jpanel_login);
-        jpanel_fundo.remove(jpanel_imagem);
-
-        jpanel_cabecalho.remove(bt_login);
-        jpanel_cabecalho.remove(bt_juntese);
-        jpanel_cabecalho.remove(bt_projeto);
-
-        remove(jpanel_cabecalho);
-        remove(jpanel_fundo);
-
-        setVisible(false);
-
-        /* Considerando true para Aluno e false para professor, uma comparacao eh feita e 
-         * leva o usuario para sua pagina correspondente de acordo com seu papel */
-        if(tipoUsuario)
-            VisaoAluno.getInstance().paginaAluno(cAluno,(Aluno)entidade);
-        else
-            VisaoProfessor.getInstance().paginaProfessor(cProfessor,(Professor)entidade);
     }
 
     public void perdiId(ActionEvent actionEvent){
@@ -599,25 +663,50 @@ public class VisaoUsuario extends JFrame {
         if(email.equals("") || dia.equals("") || mes.equals("") || ano.equals("") || papel.equals(""))
             JOptionPane.showMessageDialog(null,"Informação faltando", "ERRO",JOptionPane.ERROR_MESSAGE);
         else{
-            if(papel.equals("Aluno")){
+            if(papel.equals("Aluno"))
                 idAux = cAluno.devolveIdPerdido(email, Integer.parseInt(dia), Integer.parseInt(mes), Integer.parseInt(ano));
-                if(idAux ==0 )
-                    JOptionPane.showMessageDialog(null,"Dados divergem", "ERRO",JOptionPane.ERROR_MESSAGE);
-                else{
-                    JOptionPane.showMessageDialog(null,"Seu id é: "+ idAux + "\nFavor nao perde-lo de novo", "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
-                    /* exlui td */
-                    limpaRecuperacao();
-                }
-            }
-            else{
+            else
                 idAux = cProfessor.devolveIdPerdido(email, Integer.parseInt(dia), Integer.parseInt(mes), Integer.parseInt(ano));
-                if(idAux ==0 )
-                    JOptionPane.showMessageDialog(null,"i", "ERRO",JOptionPane.ERROR_MESSAGE);
-                else{
-                    JOptionPane.showMessageDialog(null,"Seu id é: "+ idAux + "\nFavor nao perde-lo de novo", "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
-                    /* exlui td */
-                    limpaRecuperacao();
-                }
+            if(idAux == 0)
+                JOptionPane.showMessageDialog(null,"Dados divergem", "ERRO",JOptionPane.ERROR_MESSAGE);
+            else{
+                JOptionPane.showMessageDialog(null,"Seu id é: "+ idAux, "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
+                /* exlui td */
+                /* Deixa as caixas de texto em branco */
+                tArea_email.setText("");
+                tArea_email.requestFocus();
+                cbox_dia.setSelectedItem("");
+                cbox_mes.setSelectedItem("");
+                cbox_ano.setSelectedItem("");
+                cbox_papel.setSelectedItem("");
+
+                /* Remove Layout da recuperacao */
+                jpanel_login.remove(label_recuperar);
+                jpanel_login.remove(label_email);
+                jpanel_login.remove(label_dataNasc);
+                jpanel_login.remove(label_papel);
+                jpanel_login.remove(tArea_email);
+                jpanel_login.remove(cbox_papel);
+                jpanel_login.remove(cbox_dia);
+                jpanel_login.remove(cbox_mes);
+                jpanel_login.remove(cbox_ano);
+                jpanel_login.remove(bt_continuar_recupera);
+
+                jpanel_fundo.remove(jpanel_cadastro);
+
+                jpanel_cabecalho.remove(bt_login);
+                jpanel_cabecalho.remove(bt_juntese);
+                jpanel_cabecalho.remove(bt_projeto);
+
+                remove(jpanel_cabecalho);
+                remove(jpanel_fundo);
+
+                setVisible(false);
+
+                /* Manda pro login */
+                this.vMain = new VisaoMain();
+                vMain.usuarioLogin();
+                dispose();
             }
         }
 
@@ -681,7 +770,9 @@ public class VisaoUsuario extends JFrame {
         setVisible(false);
 
         /* Manda pro login */
-        login(cUsuario);
+        this.vMain = new VisaoMain();
+        vMain.usuarioLogin();
+        dispose();
     }
 
     /* Funcao que remove tudo do painel e vai para o cdastro */
@@ -719,46 +810,11 @@ public class VisaoUsuario extends JFrame {
         setVisible(false);
 
         /* Manda pro cadastro */
-        cadastro(cUsuario);
+
+        this.vMain = new VisaoMain();
+        vMain.usuarioCadastro();
+        dispose();
     }
-
-    /* Funcao que remove o Layout da recuperacao e volta pro login */
-    public void limpaRecuperacao(){
-        /* Deixa as caixas de texto em branco */
-        tArea_email.setText("");
-        tArea_email.requestFocus();
-        cbox_dia.setSelectedItem("");
-        cbox_mes.setSelectedItem("");
-        cbox_ano.setSelectedItem("");
-        cbox_papel.setSelectedItem("");
-
-        /* Remove Layout da recuperacao */
-        jpanel_login.remove(label_recuperar);
-        jpanel_login.remove(label_email);
-        jpanel_login.remove(label_dataNasc);
-        jpanel_login.remove(label_papel);
-        jpanel_login.remove(tArea_email);
-        jpanel_login.remove(cbox_papel);
-        jpanel_login.remove(cbox_dia);
-        jpanel_login.remove(cbox_mes);
-        jpanel_login.remove(cbox_ano);
-        jpanel_login.remove(bt_continuar_recupera);
-
-        jpanel_fundo.remove(jpanel_cadastro);
-
-        jpanel_cabecalho.remove(bt_login);
-        jpanel_cabecalho.remove(bt_juntese);
-        jpanel_cabecalho.remove(bt_projeto);
-
-        remove(jpanel_cabecalho);
-        remove(jpanel_fundo);
-
-        setVisible(false);
-
-        /* Manda pro login */
-        login(cUsuario);
-    }
-
 
     public void projeto(ActionEvent actionEvent){
         /* Deixa a caixa de texto de algumas das caixas de texto */
@@ -824,7 +880,8 @@ public class VisaoUsuario extends JFrame {
         remove(jpanel_cabecalho);
         remove(jpanel_fundo);
 
-        VisaoMain.getInstance().menu();
+        this.vMain = new VisaoMain();
+        vMain.menu();
 
         setVisible(false);
     }

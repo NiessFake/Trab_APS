@@ -1,1 +1,1 @@
-{"professor":[{"senha":"9","mesNasc":4,"anoNasc":2003,"aulas":[1,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"diaNasc":9,"nome":"ADELSON","id":1,"sobrenome":"JR","email":"ADELSON@EMAIL"}]}
+{"professor":[{"senha":"9","mesNasc":4,"anoNasc":2003,"aulas":[0,0],"diaNasc":9,"nome":"Adelson","id":1,"sobrenome":"Junior","email":"adelson@email.com"}]}

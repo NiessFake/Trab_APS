@@ -17,6 +17,10 @@ public class ControleProfessor extends Controle{
         return ((PersistenciaProfessor)persistencia).buscaID(id);
     }
 
+    public Professor buscaIDParcial(int id){
+        return ((PersistenciaProfessor)persistencia).buscaIDParcial(id);
+    }
+
     public int devolveIdPerdido(String email, int dia, int mes, int ano){
         return ((PersistenciaProfessor)persistencia).devolveIdPerdido(email, dia, mes, ano);
     }

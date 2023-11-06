@@ -18,6 +18,10 @@ public class ControleAula extends Controle {
         return ((PersistenciaAula)persistencia).buscaID(id);
     }
 
+    public Aula buscaIDParcial(int id){
+        return ((PersistenciaAula)persistencia).buscaIDParcial(id);
+    }
+
     public Object[][] textoTabelas(){
         return ((PersistenciaAula)persistencia).textoTabelas();
     }
@@ -34,4 +38,7 @@ public class ControleAula extends Controle {
         return ((PersistenciaAula)persistencia).numeroAlunos(entidade);
     }
 
+    public int jaInscrito(Entidade entidade, int id_aluno){
+        return ((PersistenciaAula)persistencia).jaInscrito(entidade, id_aluno);
+    }
 }

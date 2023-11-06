@@ -6,8 +6,8 @@ public class Aula extends Entidade{
     protected String materia;
     protected String descricao;
     protected int capacidade;
-    protected int[] idAlunos;
-    protected int idProfessor;
+    protected Aluno[] idAlunos;
+    protected Professor idProfessor;
     protected int duracao;
     protected boolean frequencia;
     protected String[] dias = new String[7];
@@ -19,18 +19,18 @@ public class Aula extends Entidade{
         this.descricao = null;
         this.capacidade = 0;
         this.idAlunos = null;
-        this.idProfessor = 0;
+        this.idProfessor = null;
         this.duracao = 0;
         this.frequencia = true;         //default: true
     }
 
     /* Construtor com valores para a classe Aula */ 
-    public Aula(int id, String materia, String descricao, int capacidade, int[] idAlunos, int idProfessor, int duracao, boolean frequencia, String[] dias){
+    public Aula(int id, String materia, String descricao, int capacidade, Aluno[] idAlunos, Professor idProfessor, int duracao, boolean frequencia, String[] dias){
         this.id = id;
         this.materia = materia;
         this.descricao = descricao;
         this.capacidade = capacidade;
-        this.idAlunos = new int[capacidade];
+        this.idAlunos = new Aluno[capacidade];
         this.idAlunos = idAlunos;
         this.idProfessor = idProfessor;
         this.duracao = duracao;
@@ -52,10 +52,10 @@ public class Aula extends Entidade{
     public int getCapacidade(){
         return this.capacidade;
     }
-    public int[] getIdAlunos(){
+    public Aluno[] getAlunos(){
         return this.idAlunos;
     }
-    public int getIdProfessor(){
+    public Professor getProfessor(){
         return this.idProfessor;
     }
     public int getDuracao(){
@@ -81,10 +81,10 @@ public class Aula extends Entidade{
     public void setCapacidade(int capacidade){
         this.capacidade = capacidade;
     }
-    public void setIdAlunos(int[] idAlunos){
+    public void setAlunos(Aluno[] idAlunos){
         this.idAlunos = idAlunos;
     }
-    public void setIdProfessor(int idProfessor){
+    public void setProfessor(Professor idProfessor){
         this.idProfessor = idProfessor;
     }
     public void setDuracao(int duracao){

@@ -3,32 +3,33 @@ package visao;
 /* Bibliotecas que serão necessárias*/
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.Arrays;
+
 import javax.swing.*;
 
 import controle.Controle;
-import controle.ControleUsuario;
 import controle.ControleAula;
 import controle.ControleProfessor;
 import modelo.Entidade;
+import modelo.Aluno;
 import modelo.Aula;
 import modelo.Professor;
 
 public class VisaoProfessor extends JFrame {
     /* Atributo que vai guardar a única instância da interface */
-    private static VisaoProfessor uniqueInstance;
+    //private static VisaoProfessor uniqueInstance;
 
     /* Classes usadas */
     private Aula aula;
-    private ControleUsuario cUsuario;
     private ControleAula cAula;
     private Professor professor = new Professor();
     private ControleProfessor cProfessor;
+    private VisaoMain vMain;
 
     /* Variaveis auxiliares */
     protected int tamanho_vetor_aula;
     protected String nome, sobrenome, email, dia, mes, ano , senha, cSenha, materia, capacidade, duracao;
     protected boolean condicao_alteracao, condicao_cadastro, frequencia;
-    protected int[] aulas_ministradas;
     protected String[] dias = new String[7];
     protected String[] colunas = {"ID", "Materia", "Capacidade"};
     protected String[] botoes = { "Sim", "Nao" };
@@ -120,11 +121,11 @@ public class VisaoProfessor extends JFrame {
     }
 
     /* Cria uma instancia única para essa interface (Padrao Singleton) */
-    public static VisaoProfessor getInstance(){
+    /* public static VisaoProfessor getInstance(){
 		if(uniqueInstance == null)
 			uniqueInstance = new VisaoProfessor();
 		return uniqueInstance;
-	}
+	} */
 
 
     /* Interface do cabecalho */
@@ -395,7 +396,7 @@ public class VisaoProfessor extends JFrame {
             JOptionPane.showMessageDialog(null,"As senha nao digitadas ou divergem", "ERRO",JOptionPane.ERROR_MESSAGE);
         else{
             /* Se o vetor de aulas estiver vazio exclui, senao avisa que tem dependencia */
-            if(professor.getIdAulaMinistradas() != null){
+            if(professor.getAulaMinistradas() != null){
                 int resposta = JOptionPane.showOptionDialog(null,"Ainda ha aulas que sao administradas por voce, apagar esse cadastro significa apagar elas. Deseja continuar?", "ULTIMA CHANCE",JOptionPane.WARNING_MESSAGE, 0, null,botoes,botoes[0]);
                 
                 /* Deixa as caixas de texto em branco */
@@ -448,7 +449,9 @@ public class VisaoProfessor extends JFrame {
                     JOptionPane.showMessageDialog(null,"Seu cadastrato foi excluido", "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
 
                     /* Leva ate o menu principal */
-                    VisaoMain.getInstance().menu();
+                    this.vMain = new VisaoMain();
+                    vMain.menu();
+                    dispose();
                 }
                 else
                     paginaProfessor(cProfessor, professor);
@@ -460,7 +463,9 @@ public class VisaoProfessor extends JFrame {
                 JOptionPane.showMessageDialog(null,"Seu cadastrato foi excluido", "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
 
                 /* Leva ate o menu principal */
-                VisaoMain.getInstance().menu();
+                this.vMain = new VisaoMain();
+                vMain.menu();
+                dispose();
             }
         }
     }
@@ -551,8 +556,9 @@ public class VisaoProfessor extends JFrame {
         remove(jpanel_fundo);
         remove(jpanel_cabecalho);
 
-        setVisible(false);
-        paginaProfessor(cProfessor,professor);
+        this.vMain = new VisaoMain();
+        vMain.professorPagina(cProfessor,professor);
+        dispose();
     }
 
 
@@ -665,8 +671,6 @@ public class VisaoProfessor extends JFrame {
     }
 
     private void continuarCadastro(ActionEvent actionEvent){
-        int aux[] = new int[30];
-        boolean count = true;
 
         /* Atribuicao  dos valores no texto para salvar nas variaveis locais*/
         materia = tArea_materia.getText();
@@ -721,32 +725,27 @@ public class VisaoProfessor extends JFrame {
                 else
                     dias[6]= "";
 
-                aula = new Aula(0, materia, null,Integer.parseInt(capacidade), null, professor.getId(), Integer.parseInt(duracao), frequencia, dias);
+                aula = new Aula(cAula.devolveMaiorID(), materia, null,Integer.parseInt(capacidade), new Aluno[0], professor, Integer.parseInt(duracao), frequencia, dias);
                 
-                /* Insere a aula no sistema */
-                cAula.insere(aula);
+                Aula[] aulas_ministradas;
 
-                if(professor.getIdAulaMinistradas() == null){
-                    aulas_ministradas = new int[30];
-                    aulas_ministradas[0] = cAula.devolveMaiorID();
-                }
-                else{
-                    aux = professor.getIdAulaMinistradas();
-                    aulas_ministradas[0] = aux[0];
-                    for(int i = 1; i < 30 ;i++){
-                        if(aux[i] == 0 && count){
-                            aulas_ministradas[i] = cAula.devolveMaiorID();
-                            count = false;
-                        }
-                        else
-                            aulas_ministradas[i] = aux[i];
-                    }
+                if (professor.getAulaMinistradas() == null) {
+                    aulas_ministradas = new Aula[1];
+                    aulas_ministradas[0] = aula;
+                } 
+                else {
+                    Aula[] aux_professor = professor.getAulaMinistradas();
+                    aulas_ministradas = Arrays.copyOf(aux_professor, aux_professor.length + 1);
+                    aulas_ministradas[aulas_ministradas.length - 1] = aula;
                 }
 
-                professor.setIdAulaMinistradas(aulas_ministradas);
+                professor.setAulaMinistradas(aulas_ministradas);
 
                 cProfessor.remove(professor,false);
                 cProfessor.insere(professor);
+
+                /* Insere a aula no sistema */
+                cAula.insere(aula);
 
                 /* Uma mensagem de sucesso aparece e apresenta o id do usuário */
                 JOptionPane.showMessageDialog(null,"Parabéns, sua aula foi cadastrada com sucesso.", "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
@@ -768,214 +767,56 @@ public class VisaoProfessor extends JFrame {
                 check_sabado.setSelected(false);
                 check_domingo.setSelected(false);
 
-                /* Chama a funcao que redireciona para a pagina do professor */
-                vaiPPaginaProfessor();
+                jpanel_aulas.remove(label_criar_aula);
+                jpanel_aulas.remove(label_materia);
+                jpanel_aulas.remove(label_capacidade);
+                jpanel_aulas.remove(label_frequencia);
+                jpanel_aulas.remove(label_duracao);
+                jpanel_aulas.remove(label_dias);
+                jpanel_aulas.remove(label_minutos);
+                jpanel_aulas.remove(tArea_materia);
+                jpanel_aulas.remove(tArea_capacidade);
+                jpanel_aulas.remove(tArea_duracao);
+                jpanel_aulas.remove(check_frequencia);
+                jpanel_aulas.remove(check_segunda);
+                jpanel_aulas.remove(check_terca);
+                jpanel_aulas.remove(check_quarta);
+                jpanel_aulas.remove(check_quinta);
+                jpanel_aulas.remove(check_sexta);
+                jpanel_aulas.remove(check_sabado);
+                jpanel_aulas.remove(check_domingo);
+                jpanel_aulas.remove(bt_continuar_cadastro);
+
+                jpanel_fundo.remove(jpanel_aulas);
+
+                remove(jpanel_fundo);
+                remove(jpanel_cabecalho);
+
+                this.vMain = new VisaoMain();
+                vMain.professorPagina(cProfessor,professor);
+                dispose();
             }
         }
     }
 
-    public void vaiPPaginaProfessor(){
-        setVisible(false);
-
-        jpanel_aulas.remove(label_criar_aula);
-        jpanel_aulas.remove(label_materia);
-        jpanel_aulas.remove(label_capacidade);
-        jpanel_aulas.remove(label_frequencia);
-        jpanel_aulas.remove(label_duracao);
-        jpanel_aulas.remove(label_dias);
-        jpanel_aulas.remove(label_minutos);
-        jpanel_aulas.remove(tArea_materia);
-        jpanel_aulas.remove(tArea_capacidade);
-        jpanel_aulas.remove(tArea_duracao);
-        jpanel_aulas.remove(check_frequencia);
-        jpanel_aulas.remove(check_segunda);
-        jpanel_aulas.remove(check_terca);
-        jpanel_aulas.remove(check_quarta);
-        jpanel_aulas.remove(check_quinta);
-        jpanel_aulas.remove(check_sexta);
-        jpanel_aulas.remove(check_sabado);
-        jpanel_aulas.remove(check_domingo);
-        jpanel_aulas.remove(bt_continuar_cadastro);
-
-        jpanel_fundo.remove(jpanel_aulas);
-
-        remove(jpanel_fundo);
-        remove(jpanel_cabecalho);
-        
-        paginaProfessor(cProfessor, professor);
-    }
-
     private void irPAula(ActionEvent actionEvent){
-        setVisible(false);
-
-        /* Remove os elementos do painel */
-        jpanel_dados.remove(label_dados);
-        jpanel_dados.remove(label_imagem_login);
-        jpanel_dados.remove(label_nome);
-        jpanel_dados.remove(label_email);
-        jpanel_dados.remove(label_dataNasc);
-        jpanel_dados.remove(bt_alterar);
-
-        jpanel_fundo.remove(jpanel_dados);
-        jpanel_fundo.remove(bt_criar_aula);
-
-        remove(jpanel_fundo);
-        remove(jpanel_cabecalho);
-
-        VisaoAula.getInstance().menuAulas(cAula,professor,2);
-
+        this.vMain = new VisaoMain();
+        vMain.aulaMenu(cAula,professor,2);
+        dispose();
     }
 
     private void sair(ActionEvent actionEvent){
-        /* Deixa as caixas de texto em branco */
-        tArea_materia.setText("");
-        tArea_materia.requestFocus();
-        tArea_capacidade.setText("");
-        tArea_capacidade.requestFocus();
-        tArea_duracao.setText("");
-        tArea_duracao.requestFocus();
-        check_frequencia.setSelected(false);
-        check_segunda.setSelected(false);
-        check_terca.setSelected(false);
-        check_quarta.setSelected(false);
-        check_quinta.setSelected(false);
-        check_sexta.setSelected(false);
-        check_sabado.setSelected(false);
-        check_domingo.setSelected(false);
-
-        jpanel_dados.remove(label_dados);
-        jpanel_dados.remove(label_imagem_login);
-        jpanel_dados.remove(label_nome);
-        jpanel_dados.remove(label_email);
-        jpanel_dados.remove(label_dataNasc);
-        jpanel_dados.remove(bt_alterar);
-
-        jpanel_aulas.remove(label_criar_aula);
-        jpanel_aulas.remove(label_materia);
-        jpanel_aulas.remove(label_capacidade);
-        jpanel_aulas.remove(label_frequencia);
-        jpanel_aulas.remove(label_duracao);
-        jpanel_aulas.remove(label_dias);
-        jpanel_aulas.remove(label_minutos);
-        jpanel_aulas.remove(tArea_materia);
-        jpanel_aulas.remove(tArea_capacidade);
-        jpanel_aulas.remove(tArea_duracao);
-        jpanel_aulas.remove(check_frequencia);
-        jpanel_aulas.remove(check_segunda);
-        jpanel_aulas.remove(check_terca);
-        jpanel_aulas.remove(check_quarta);
-        jpanel_aulas.remove(check_quinta);
-        jpanel_aulas.remove(check_sexta);
-        jpanel_aulas.remove(check_sabado);
-        jpanel_aulas.remove(check_domingo);
-        jpanel_aulas.remove(bt_continuar_cadastro);
-
-        jpanel_fundo.remove(jpanel_aulas);
-        jpanel_fundo.remove(bt_criar_aula);
-        jpanel_fundo.remove(jpanel_dados);
-
-        jpanel_cabecalho.remove(bt_professor);
-        jpanel_cabecalho.remove(bt_sair);
-
-        remove(jpanel_fundo);
-        remove(jpanel_cabecalho);
-
-        this.cUsuario = new ControleUsuario();
-
-        VisaoUsuario.getInstance().login(cUsuario);
-        setVisible(false);
+        this.vMain = new VisaoMain();
+        vMain.usuarioLogin();
+        dispose();
     }
 
 
     /* Botao que leva para o menu da VisaoMain */
     private void projeto(ActionEvent actionEvent){
-        /* Deixa as caixas de texto em branco */
-        tArea_nome.setText("");
-        tArea_nome.requestFocus();
-        tArea_sobrenome.setText("");
-        tArea_sobrenome.requestFocus();
-        tArea_email.setText("");
-        tArea_email.requestFocus();
-        cbox_dia.setSelectedItem("");
-        cbox_mes.setSelectedItem("");
-        cbox_ano.setSelectedItem("");
-        tArea_senha.setText("");
-        tArea_senha.requestFocus();
-        tArea_cSenha.setText("");
-        tArea_cSenha.requestFocus();
-        tArea_materia.setText("");
-        tArea_materia.requestFocus();
-        tArea_capacidade.setText("");
-        tArea_capacidade.requestFocus();
-        tArea_duracao.setText("");
-        tArea_duracao.requestFocus();
-        check_frequencia.setSelected(false);
-        check_segunda.setSelected(false);
-        check_terca.setSelected(false);
-        check_quarta.setSelected(false);
-        check_quinta.setSelected(false);
-        check_sexta.setSelected(false);
-        check_sabado.setSelected(false);
-        check_domingo.setSelected(false);
-
-        /* REMOVE TUDO */
-        
-        jpanel_dados.remove(label_dados);
-        jpanel_dados.remove(label_imagem_login);
-        jpanel_dados.remove(label_nome);
-        jpanel_dados.remove(label_email);
-        jpanel_dados.remove(label_dataNasc);
-        jpanel_dados.remove(bt_alterar);
-        jpanel_dados.remove(label_alterar);
-        jpanel_dados.remove(label_sobrenome);
-        jpanel_dados.remove(label_senha);
-        jpanel_dados.remove(label_cSenha);
-        jpanel_dados.remove(tArea_nome);
-        jpanel_dados.remove(tArea_sobrenome);
-        jpanel_dados.remove(tArea_email);
-        jpanel_dados.remove(tArea_senha);
-        jpanel_dados.remove(tArea_cSenha);
-        jpanel_dados.remove(cbox_dia);
-        jpanel_dados.remove(cbox_mes);
-        jpanel_dados.remove(cbox_ano);
-        jpanel_dados.remove(bt_excluir);
-        jpanel_dados.remove(bt_confirmar);
-
-        jpanel_aulas.remove(label_criar_aula);
-        jpanel_aulas.remove(label_materia);
-        jpanel_aulas.remove(label_capacidade);
-        jpanel_aulas.remove(label_frequencia);
-        jpanel_aulas.remove(label_duracao);
-        jpanel_aulas.remove(label_dias);
-        jpanel_aulas.remove(label_minutos);
-        jpanel_aulas.remove(tArea_materia);
-        jpanel_aulas.remove(tArea_capacidade);
-        jpanel_aulas.remove(tArea_duracao);
-        jpanel_aulas.remove(check_frequencia);
-        jpanel_aulas.remove(check_segunda);
-        jpanel_aulas.remove(check_terca);
-        jpanel_aulas.remove(check_quarta);
-        jpanel_aulas.remove(check_quinta);
-        jpanel_aulas.remove(check_sexta);
-        jpanel_aulas.remove(check_sabado);
-        jpanel_aulas.remove(check_domingo);
-        jpanel_aulas.remove(bt_continuar_cadastro);
-
-        jpanel_fundo.remove(jpanel_aulas);
-        jpanel_fundo.remove(bt_criar_aula);
-        jpanel_fundo.remove(jpanel_dados);
-        jpanel_fundo.remove(jScroll_aulas);
-
-        jpanel_cabecalho.remove(bt_professor);
-        jpanel_cabecalho.remove(bt_sair);
-
-        remove(jpanel_fundo);
-        remove(jpanel_cabecalho);
-
-        /* vai pro menu da VisaoMain */
-        VisaoMain.getInstance().menu();
-
-        setVisible(false);
+        this.vMain = new VisaoMain();
+        vMain.professorPagina(cProfessor,professor);
+        dispose();
     }
 
     /* Tamanho dos vetores para o dia, mês e ano */

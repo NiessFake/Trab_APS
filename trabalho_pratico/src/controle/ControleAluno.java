@@ -18,6 +18,10 @@ public class ControleAluno extends Controle{
         return ((PersistenciaAluno)persistencia).buscaID(id);
     }
 
+    public Aluno buscaIDParcial(int id){
+        return ((PersistenciaAluno)persistencia).buscaIDParcial(id);
+    }
+
     public int devolveIdPerdido(String email, int dia, int mes, int ano){
         return ((PersistenciaAluno)persistencia).devolveIdPerdido(email, dia, mes, ano);
     }

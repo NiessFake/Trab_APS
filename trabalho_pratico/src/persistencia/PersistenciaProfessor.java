@@ -23,7 +23,7 @@ public class PersistenciaProfessor implements Persistencia{
     private String file = "src/arquivo/arquivoProfessor.json";
 
     /* Variaveis auxiliares */
-    int vetor_aulas[];
+    Aula vetor_aulas[];
 
     /* Função que insere um usuário no arquivo */
     public void insere(Entidade entidade){
@@ -47,13 +47,14 @@ public class PersistenciaProfessor implements Persistencia{
             
             /* Se existir alguma aula no professor, cria um vetor JSON q armazena elas e depois 
              * coloca no objeto. Em caso negativo salva um vetor vazio */
-            if(((Professor) entidade).getIdAulaMinistradas() != null){
-                vetor_aulas = ((Professor) entidade).getIdAulaMinistradas();
+            if(((Professor) entidade).getAulaMinistradas() != null){
+                vetor_aulas = ((Professor) entidade).getAulaMinistradas();
                 JSONArray vetorAulas = new JSONArray();
 
-                for(int j = 0; j < vetor_aulas.length ;j++)
-                    vetorAulas.add(vetor_aulas[j]);
-
+                for(int j = 0; j < vetor_aulas.length; j++) {
+                    if (vetor_aulas[j] != null)
+                        vetorAulas.add(vetor_aulas[j].getId());
+                }
                 hashJSON.put("aulas", vetorAulas);
             }
             else
@@ -243,11 +244,12 @@ public class PersistenciaProfessor implements Persistencia{
 
     /* Funcao que busca um id no banco de dados e retorna o usuario*/
     public Professor buscaID(int id){
+        PersistenciaAula pAula = new PersistenciaAula();
         Professor mProfessor = new Professor();
 
         /* Variavel auxiliar */
         String aux;
-        int[] vetor_aux;
+        Aula[] vetor_aux;
 
         /* Cria um conversor de JSON para texto para que seja possível percorrer o arquivo */
         JSONParser conversorJson = new JSONParser();
@@ -273,11 +275,10 @@ public class PersistenciaProfessor implements Persistencia{
 
                     /* Se o vetor de aulas estiver vazio retorna null, senao retorna o vetor */
                     if(vetor_aulas != null){
-                        vetor_aux = new int[vetor_aulas.size()];
+                        vetor_aux = new Aula[vetor_aulas.size()];
                         
-                        for(int j=0; j< vetor_aulas.size();j++){
-                            vetor_aux[j] = Integer.valueOf(vetor_aulas.get(j).toString());
-                        }
+                        for(int j=0; j< vetor_aulas.size();j++)
+                            vetor_aux[j]= pAula.buscaIDParcial(Integer.valueOf(vetor_aulas.get(j).toString()));
                     }
                     else
                         vetor_aux = null;
@@ -288,7 +289,63 @@ public class PersistenciaProfessor implements Persistencia{
                     mProfessor.setDiaNasc(Integer.parseInt(elemento.get("diaNasc").toString()));
                     mProfessor.setMesNasc(Integer.parseInt(elemento.get("mesNasc").toString()));
                     mProfessor.setAnoNasc(Integer.parseInt(elemento.get("anoNasc").toString()));
-                    mProfessor.setIdAulaMinistradas(vetor_aux);
+                    mProfessor.setAulaMinistradas(vetor_aux);
+                    mProfessor.setId(Integer.parseInt(elemento.get("id").toString()));
+                    mProfessor.setSenha(elemento.get("senha").toString());
+                    return mProfessor;
+                }
+            }
+            
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (org.json.simple.parser.ParseException e) {
+
+            e.printStackTrace();
+        }
+
+        /* Retorna 0 caso não encontre o id */;
+        return mProfessor;
+    }
+
+    /* Funcao que busca um id no banco de dados e retorna o usuario*/
+    public Professor buscaIDParcial(int id){
+        Professor mProfessor = new Professor();
+
+        /* Variavel auxiliar */
+        String aux;
+        Aula[] vetor_aux;
+
+        /* Cria um conversor de JSON para texto para que seja possível percorrer o arquivo */
+        JSONParser conversorJson = new JSONParser();
+        try {
+            /* Converte os elementos no arquivo para um objeto JSON*/
+            JSONObject professor = (JSONObject) conversorJson.parse(new FileReader(file));
+            
+            /* Pega o vetor dentro do objeto JSON e o guarda em um vetor JSON */
+            JSONArray vetorJson = (JSONArray) professor.get("professor");
+            
+            /* Loop for que percorre os elementos do vetor até o seu fim */
+            for (int i = 0; i < vetorJson.size() ; i++){
+                /* Cria um objeto para aquele elemento que será analisado */
+                JSONObject elemento = (JSONObject) vetorJson.get(i);
+
+                /* Converte o id daquele elemento para String */
+                aux = elemento.get("id").toString();
+
+                /* Se achar o id no banco de dados, retorna-o */
+                if(id == Integer.parseInt(aux)){
+
+                    vetor_aux = null;
+
+                    mProfessor.setNome(elemento.get("nome").toString());
+                    mProfessor.setSobrenome(elemento.get("sobrenome").toString());
+                    mProfessor.setEmail(elemento.get("email").toString());
+                    mProfessor.setDiaNasc(Integer.parseInt(elemento.get("diaNasc").toString()));
+                    mProfessor.setMesNasc(Integer.parseInt(elemento.get("mesNasc").toString()));
+                    mProfessor.setAnoNasc(Integer.parseInt(elemento.get("anoNasc").toString()));
+                    mProfessor.setAulaMinistradas(vetor_aux);
                     mProfessor.setId(Integer.parseInt(elemento.get("id").toString()));
                     mProfessor.setSenha(elemento.get("senha").toString());
                     return mProfessor;
