@@ -329,7 +329,7 @@ public class VisaoAluno extends JFrame{
         tArea_senha.setText("");
         tArea_senha.requestFocus();
         tArea_cSenha.setText("");
-        tArea_cSenha.requestFocus();
+        tArea_cSenha.requestFocus();  
 
         /* Remove tudo do cabecario */
         jpanel_dados.remove(label_alterar);
@@ -453,6 +453,14 @@ public class VisaoAluno extends JFrame{
         aluno.setIdAulaInscritas(aux);
         pAluno.remove(aluno);
         pAluno.insere(aluno);
+    }
+
+    private void mensagem(ActionEvent actionEvent){
+        JFrame frame = new JFrame("Mensagens recebidas");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(400, 400);
+
+        
     }
 
     /* Tamanho dos vetores para o dia, mês e ano */

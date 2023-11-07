@@ -2,7 +2,8 @@ package persistencia;
 
 /* Import das bibliotecas necessárias para implementar o json */
 import java.io.*;
-import org.json.simple.*;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 
 import java.nio.file.Files;
