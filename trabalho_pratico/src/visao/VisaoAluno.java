@@ -52,6 +52,7 @@ public class VisaoAluno extends JFrame{
     JButton bt_aulas = new JButton("AULAS");
     JButton bt_mensagens = new JButton("MENSAGENS");
     JButton bt_enviar_mensagem = new JButton("ESCREVER MENSAGEM");
+    JButton bt_tarefas = new JButton("VER TAREFAS");
     JButton bt_sair = new JButton("SAIR");
     JButton bt_aluno = new JButton("");
     JButton bt_alterar = new JButton("ALTERAR DADOS");
@@ -123,6 +124,12 @@ public class VisaoAluno extends JFrame{
         bt_mensagens.setBackground(Color.white);
 		bt_mensagens.setForeground(Color.black);
         bt_aulas.addActionListener(this::mensagens);
+
+        bt_tarefas.setFont(texto_padrao);
+        bt_tarefas.setBounds(420, 30,125, 40 );
+        bt_tarefas.setBackground(cor_cabecalho);
+        bt_tarefas.setBackground(Color.white);
+        bt_tarefas.setForeground(Color.black);
 
         bt_aluno.setFont(texto_padrao);
         bt_aluno.setBounds(575,30,125,40);

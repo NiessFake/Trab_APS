@@ -60,6 +60,7 @@ public class VisaoProfessor extends JFrame {
     JButton bt_confirmar = new JButton("CONFIRMAR");
     JButton bt_criar_aula = new JButton("CRIAR AULA");
     JButton bt_continuar_cadastro = new JButton("CRIAR AULA");
+    JButton bt_tarefa= new JButton("ADICIONAR TAREFA");
 
     /* Labels */
     JLabel label_alterar = new JLabel("ALTERAR DADOS");
@@ -150,6 +151,11 @@ public class VisaoProfessor extends JFrame {
         bt_mensagens.setBounds(370,30,125,40);
         bt_mensagens.setBackground(Color.white);
 		bt_mensagens.setForeground(Color.black);
+
+        bt_tarefa.setFont(texto_padrao);
+        bt_tarefa.setBounds(440,30,125,40);
+        bt_tarefa.setBackground(Color.white);
+		bt_tarefa.setForeground(Color.black);
 
         bt_sair.setFont(texto_padrao);
         bt_sair.setBounds(575,30,125,40);

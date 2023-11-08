@@ -1,5 +1,7 @@
 package modelo;
 
+import java.util.ArrayList;
+
 public class Aula extends Entidade{
     /* Atributos da classe Aula */
     protected int id;
@@ -11,6 +13,7 @@ public class Aula extends Entidade{
     protected int duracao;
     protected boolean frequencia;
     protected String[] dias = new String[7];
+    protected ArrayList<Tarefa> tarefas;
 
     /* Construtor simples para a classe Aula */ 
     public Aula(){
@@ -21,7 +24,8 @@ public class Aula extends Entidade{
         this.idAlunos = null;
         this.idProfessor = null;
         this.duracao = 0;
-        this.frequencia = true;         //default: true
+        this.frequencia = true;
+        this.tarefas = null;         //default: true
     }
 
     /* Construtor com valores para a classe Aula */ 
@@ -36,6 +40,7 @@ public class Aula extends Entidade{
         this.duracao = duracao;
         this.frequencia = frequencia;
         this.dias = dias;
+        this.tarefas = null;
     }
 
 
@@ -67,6 +72,9 @@ public class Aula extends Entidade{
     public String[] getDias(){
         return this.dias;
     }
+    public ArrayList<Tarefa> getTarefas(){
+        return this.tarefas;
+    }
 
     /* Getters */
     public void setId(int id){
@@ -95,6 +103,9 @@ public class Aula extends Entidade{
     }
     public void setDias(String[] dias){
         this.dias = dias;
+    }
+    public void setTarefas(ArrayList<Tarefa> tarefas){
+        this.tarefas = tarefas;
     }
 
 

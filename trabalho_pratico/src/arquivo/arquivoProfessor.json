@@ -1,2 +1,1 @@
 {"professor":[{"senha":"45","mesNasc":12,"anoNasc":1989,"aulas":null,"diaNasc":13,"nome":"TAYLOR","id":1,"sobrenome":"SWIFT","email":"SWIFT@EMAIL.COM"},{"senha":"9","mesNasc":2,"anoNasc":1946,"aulas":[0,3],"diaNasc":30,"nome":"FULANO","id":2,"sobrenome":"BELTRANO","email":"FULANO@EMAIL.COM"}]}
-{"professor":[{"senha":"9","mesNasc":4,"anoNasc":2003,"aulas":[0,0],"diaNasc":9,"nome":"Adelson","id":1,"sobrenome":"Junior","email":"adelson@email.com"}]}
