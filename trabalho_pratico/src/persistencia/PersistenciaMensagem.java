@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -18,12 +19,13 @@ import org.json.simple.parser.JSONParser;
 import modelo.Aluno;
 import modelo.Entidade;
 import modelo.Mensagem;
+import modelo.Usuario;
 
 public class PersistenciaMensagem implements Persistencia, Serializable{
 
     private String file = "src/arquivo/arquivoMensagem.json";
 
-    public void insere(Entidade mensagem){
+    public void insere(Entidade entidade){
        /* Cria um conversor de JSON para texto para que seja possível escrever o arquivo */
        JSONParser conversorJson = new JSONParser();
        try {
@@ -31,14 +33,18 @@ public class PersistenciaMensagem implements Persistencia, Serializable{
            /* Chama uma função que confere se o caminho existe */
            caminhoExiste();
 
-           /* Cria um objeto JSON que vai armazenar os dados do aluno */
-           JSONObject insereObj = new JSONObject();
-           insereObj.put("Id", ((Mensagem)mensagem).getId());
-           insereObj.put("titulo", ((Mensagem)mensagem).getTitulo());
-           insereObj.put("texto", ((Mensagem)mensagem).getTexto());
-           insereObj.put("data", ((Mensagem)mensagem).getData());
-           insereObj.put("dest", ((Mensagem)mensagem).getDestnatario());
-           insereObj.put("remet", ((Mensagem)mensagem).getRemetente());
+
+           HashMap<String,Object> hashJSON = new HashMap<String,Object>();
+            hashJSON.put("Id", ((Mensagem)entidade).getId());
+            hashJSON.put("titulo", ((Mensagem)entidade).getTitulo());
+            hashJSON.put("texto", ((Mensagem)entidade).getTexto());
+            hashJSON.put("data", ((Mensagem)entidade).getData());
+            hashJSON.put("dest", ((Mensagem)entidade).getRemetente());
+            hashJSON.put("remet", ((Mensagem)entidade).getDestnatario());
+
+            /* Cria um objeto JSON que vai armazenar o objeto Hash */
+            JSONObject insereObj = new JSONObject(hashJSON);
+    
            /* Cria um objeto que armazena o objeto que contém todas as mensagens do sistema */
            JSONObject mensagens = (JSONObject) conversorJson.parse(new FileReader(file));
 
@@ -47,9 +53,12 @@ public class PersistenciaMensagem implements Persistencia, Serializable{
            JSONArray vetorJSON = (JSONArray) mensagens.get("mensagem");          
            vetorJSON.add(insereObj);
 
-           /* Cria um objeto que irá armazenar esse vetor de usuários */
-           JSONObject guarda = new JSONObject();
-           guarda.put("mensagem",vetorJSON);
+           /* Armazena numa objeto da hash a string */
+           HashMap<String,Object> hashGuarda = new HashMap<String,Object>();
+           hashGuarda.put("aluno",vetorJSON);
+
+           /* Cria um objeto que irá armazenar o objeto da hash */
+           JSONObject guarda = new JSONObject(hashGuarda);
 
            /* Chama a função que escreve no arquivo */
            escreveArquivo(guarda);
@@ -64,47 +73,55 @@ public class PersistenciaMensagem implements Persistencia, Serializable{
        }
     }
 
-    public void remove(Entidade mensagem){
-        /* Variavel auxiliar */
-        String aux;
-
-        /* Cria um conversor de JSON para texto para que seja possível escrever o arquivo */
-        JSONParser conversorJson = new JSONParser();
-        try {
-            /* Converte os elementos no arquivo para um objeto JSON*/
-            JSONObject msg = (JSONObject) conversorJson.parse(new FileReader(file));
+    public void remove(Entidade entidade, boolean condicao){
+         /* Variavel auxiliar */
+         String aux;
+         Aluno[] vetor_aux;
+ 
+ 
+         /* Cria um conversor de JSON para texto para que seja possível escrever o arquivo */
+         JSONParser conversorJson = new JSONParser();
+         try {
+             /* Converte os elementos no arquivo para um objeto JSON*/
+             JSONObject mensagem = (JSONObject) conversorJson.parse(new FileReader(file));
+             
+             /* Pega o vetor dentro do objeto JSON e o guarda em um vetor JSON */
+             JSONArray vetorJson = (JSONArray) mensagem.get("mensagem");
+             
+             JSONArray vetorJSONAux;
+ 
+             /* Loop for que percorre os elementos do vetor até o seu fim */
+             for (int i = 0; i < vetorJson.size() ; i++){
+                 /* Cria um objeto para aquele elemento que será analisado */
+                 JSONObject elemento = (JSONObject) vetorJson.get(i);
+ 
+                 /* Converte o id daquele elemento para String */
+                 aux = elemento.get("Id").toString();
+ 
+                 /* Se achar o id que deseja excluir, exclui e depois  */
+                 if(Integer.parseInt(aux)== ((Mensagem)entidade).getId()){
             
-            /* Pega o vetor dentro do objeto JSON e o guarda em um vetor JSON */
-            JSONArray vetorJson = (JSONArray) msg.get("mensagem");
-            
-            /* Loop for que percorre os elementos do vetor até o seu fim */
-            for (int i = 0; i < vetorJson.size() ; i++){
-                /* Cria um objeto para aquele elemento que será analisado */
-                JSONObject elemento = (JSONObject) vetorJson.get(i);
-
-                /* Converte o id daquele elemento para String */
-                aux = elemento.get("id").toString();
-
-                /* Se achar o id que deseja excluir, exclui e depois  */
-                if(Integer.parseInt(aux)== ((Mensagem)mensagem).getId())
-                    vetorJson.remove(elemento);
-            }
-
-            /* Cria um objeto que irá armazenar esse vetor de usuários */
-            JSONObject guarda = new JSONObject();
-            guarda.put("aluno",vetorJson);
-
-            /* Chama a função que escreve no arquivo */
-            escreveArquivo(guarda);
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (org.json.simple.parser.ParseException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+                     vetorJson.remove(elemento);
+                 }
+             }
+ 
+             /* Hash que converte o texto em um objeto */
+             HashMap<String,Object> hashJSON = new HashMap<String,Object>();
+             hashJSON.put("aluno",vetorJson);
+ 
+             /* Cria um objeto JSON que irá armazenar o objeto gerado pela hash */
+             JSONObject guarda = new JSONObject(hashJSON);
+ 
+             /* Chama a função que escreve no arquivo */
+             escreveArquivo(guarda);
+ 
+         } catch (FileNotFoundException e) {
+             e.printStackTrace();
+         } catch (IOException e) {
+             e.printStackTrace();
+         } catch (org.json.simple.parser.ParseException e) {
+             e.printStackTrace();
+         }
     }
 
     /* Função que confere a existência de um caminho para a leitura do arquivo */
@@ -141,9 +158,8 @@ public class PersistenciaMensagem implements Persistencia, Serializable{
         }
     }
 
-    public JSONArray buscaMensagens(String[] usuario){
+    public ArrayList<Mensagem>  buscaMensagens(String usuario){
 
-        JSONArray VetMensagem = new JSONArray();
         Mensagem auxMensagem = new Mensagem();
         ArrayList<Mensagem> arrayM = new ArrayList<>();
         /* Variavel auxiliar */
@@ -166,16 +182,16 @@ public class PersistenciaMensagem implements Persistencia, Serializable{
                 /* Converte o id daquele elemento para String */
                 aux = elemento.get("dest").toString();
 
-                /* Se achar o id no banco de dados, retorna-o */
+                /* se o usuario é o destinatario salvar mensagem*/
                 if(usuario.equals(aux)){
                     auxMensagem.setId(Integer.parseInt(elemento.get("Id").toString()));
                     auxMensagem.setTitulo(elemento.get("titulo").toString());
                     auxMensagem.setTexto(elemento.get("texto").toString());
                     auxMensagem.setData(elemento.get("data").toString());
-                    auxMensagem.setRemet(elemento.get("remet").toString()));
-                    auxMensagem.setDest(elemento.get("dest").toString());
-                    VetMensagem.add(elemento);
-                    
+                    auxMensagem.setRemet((Usuario)elemento.get("remet"));
+                    auxMensagem.setDest((Usuario)elemento.get("dest"));
+                    //VetMensagem.add(elemento);
+                    arrayM.add(auxMensagem);
                 }
             }
             
@@ -187,9 +203,7 @@ public class PersistenciaMensagem implements Persistencia, Serializable{
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
-        /* Retorna 0 caso não encontre o id */;
-        return VetMensagem;
+        return arrayM;
     }
 
 }

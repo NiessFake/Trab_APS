@@ -1,6 +1,7 @@
 package controle;
 
 import modelo.Entidade;
+import modelo.Usuario;
 import modelo.Aluno;
 import persistencia.PersistenciaAluno;
 
@@ -28,6 +29,10 @@ public class ControleAluno extends Controle{
 
     public Object[][] textoAlunos(Entidade entidade){
         return ((PersistenciaAluno)persistencia).textoAlunos(entidade);
+    }
+
+    public Usuario procuraUsuario(String nome){
+        return ((PersistenciaAluno)persistencia).procuraUsuario(nome);
     }
     
 }
