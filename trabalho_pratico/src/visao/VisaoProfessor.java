@@ -9,8 +9,10 @@ import javax.swing.*;
 
 import controle.Controle;
 import controle.ControleAula;
+import controle.ControleNoticias;
 import controle.ControleProfessor;
 import modelo.Entidade;
+import modelo.Noticias;
 import modelo.Aluno;
 import modelo.Aula;
 import modelo.Professor;
@@ -24,11 +26,13 @@ public class VisaoProfessor extends JFrame {
     private ControleAula cAula;
     private Professor professor = new Professor();
     private ControleProfessor cProfessor;
+    private Noticias noticias;
+    private ControleNoticias cNoticias;
     private VisaoMain vMain;
 
     /* Variaveis auxiliares */
     protected int tamanho_vetor_aula;
-    protected String nome, sobrenome, email, dia, mes, ano , senha, cSenha, materia, capacidade, duracao;
+    protected String nome, sobrenome, email, dia, mes, ano , senha, cSenha, materia, capacidade, duracao, descricao, titulo;
     protected boolean condicao_alteracao, condicao_cadastro, frequencia;
     protected String[] dias = new String[7];
     protected String[] colunas = {"ID", "Materia", "Capacidade"};
@@ -39,24 +43,28 @@ public class VisaoProfessor extends JFrame {
     JPanel jpanel_fundo = new JPanel();
     JPanel jpanel_dados = new JPanel();
     JPanel jpanel_aulas = new JPanel();
+    JPanel jpanel_noticias = new JPanel();
 
     /* Botões */
     JButton bt_projeto = new JButton("PROJETO");
     JButton bt_aulas = new JButton("AULAS");
-    JButton bt_mensagens = new JButton("MENSAGENS");
+    JButton bt_noticias = new JButton("NOTICIAS");
     JButton bt_professor = new JButton("");
     JButton bt_sair = new JButton("SAIR");
     JButton bt_alterar = new JButton("ALTERAR DADOS");
     JButton bt_excluir = new JButton("EXCLUIR");
     JButton bt_confirmar = new JButton("CONFIRMAR");
     JButton bt_criar_aula = new JButton("CRIAR AULA");
+    JButton bt_criar_noticias = new JButton("CRIAR NOTICIAS");
     JButton bt_continuar_cadastro = new JButton("CRIAR AULA");
+    JButton bt_continuar_noticias = new JButton("CRIAR NOTICIAS");
 
     /* Labels */
     JLabel label_alterar = new JLabel("ALTERAR DADOS");
     JLabel label_dados = new JLabel("DADOS PESSOAIS ");
     JLabel label_imagem_login = new JLabel("CRIAR NOVA AULA");
     JLabel label_criar_aula = new JLabel("CRIAR NOVA AULA");
+    JLabel label_criar_noticias = new JLabel("CRIAR NOVA NOTICIA");
     JLabel label_nome = new JLabel();
     JLabel label_sobrenome = new JLabel("SOBRENOME: ");
     JLabel label_email = new JLabel();
@@ -69,6 +77,8 @@ public class VisaoProfessor extends JFrame {
     JLabel label_frequencia = new JLabel("FREQUENTE: ");
     JLabel label_dias = new JLabel("DIAS DA SEMANA: ");
     JLabel label_minutos = new JLabel("minutos");
+    JLabel label_descricao = new JLabel("DESCRICAO: ");
+    JLabel label_titulo = new JLabel("TITULO: ");
 
     /* TextAreas */
     JTextArea tArea_nome = new JTextArea();
@@ -79,6 +89,8 @@ public class VisaoProfessor extends JFrame {
     JTextArea tArea_materia = new JTextArea();
     JTextArea tArea_capacidade = new JTextArea();
     JTextArea tArea_duracao = new JTextArea();
+    JTextArea tArea_descricao = new JTextArea();
+    JTextArea tArea_titulo = new JTextArea();
 
     /*ComboBoxes */
     JComboBox <String> cbox_dia = new JComboBox<>(preencheVetor(32, 1, true));
@@ -137,10 +149,11 @@ public class VisaoProfessor extends JFrame {
 		bt_aulas.setForeground(Color.black);
         bt_aulas.addActionListener(this::irPAula);
 
-        bt_mensagens.setFont(texto_padrao);
-        bt_mensagens.setBounds(370,30,125,40);
-        bt_mensagens.setBackground(Color.white);
-		bt_mensagens.setForeground(Color.black);
+        bt_noticias.setFont(texto_padrao);
+        bt_noticias.setBounds(370,30,125,40);
+        bt_noticias.setBackground(Color.white);
+		bt_noticias.setForeground(Color.black);
+        bt_noticias.addActionListener(this::noticias);
 
         bt_sair.setFont(texto_padrao);
         bt_sair.setBounds(575,30,125,40);
@@ -170,7 +183,7 @@ public class VisaoProfessor extends JFrame {
         
         /* Adiciona os elementos no cabecalho, em seguida adiciona-o no fundo e adiciona o fundo */
         jpanel_cabecalho.add(bt_aulas);
-        jpanel_cabecalho.add(bt_mensagens);
+        jpanel_cabecalho.add(bt_noticias);
         jpanel_cabecalho.add(bt_sair);
         jpanel_cabecalho.add(bt_projeto);
         
@@ -214,6 +227,7 @@ public class VisaoProfessor extends JFrame {
         professor = (Professor)entidade;
         cProfessor = (ControleProfessor)controle;
         this.cAula = new ControleAula();
+        this.cNoticias = new ControleNoticias();
 
         cabecalho();
         tabelaAulasProf();
@@ -233,6 +247,12 @@ public class VisaoProfessor extends JFrame {
         bt_criar_aula.setBackground(Color.white);
         bt_criar_aula.setForeground(Color.black);
         bt_criar_aula.addActionListener(this::criarAula);
+
+        bt_criar_noticias.setFont(texto_padrao);
+        bt_criar_noticias.setBounds(442,380,200,40);
+        bt_criar_noticias.setBackground(Color.white);
+        bt_criar_noticias.setForeground(Color.black);
+        bt_criar_noticias.addActionListener(this::criarNoticias);
 
         /* Labels */
         label_dados.setFont(texto_padrao);
@@ -270,6 +290,7 @@ public class VisaoProfessor extends JFrame {
         jpanel_dados.add(bt_alterar);
 
         jpanel_fundo.add(bt_criar_aula);
+        jpanel_fundo.add(bt_criar_noticias);
         jpanel_fundo.add(jpanel_dados);
     }
 
@@ -358,6 +379,7 @@ public class VisaoProfessor extends JFrame {
 
         /* Remove e adiciona elementos no painel */
         jpanel_fundo.remove(bt_criar_aula);
+        jpanel_fundo.remove(bt_criar_noticias);
         jpanel_fundo.remove(jScroll_aulas);
 
         jpanel_dados.remove(bt_alterar);
@@ -431,6 +453,7 @@ public class VisaoProfessor extends JFrame {
                 jpanel_dados.remove(bt_confirmar);
 
                 jpanel_fundo.remove(bt_criar_aula);
+                jpanel_fundo.remove(bt_criar_noticias);
                 jpanel_fundo.remove(jScroll_aulas);
                 jpanel_fundo.remove(jpanel_dados);
 
@@ -549,6 +572,7 @@ public class VisaoProfessor extends JFrame {
         jpanel_dados.remove(bt_confirmar);
 
         jpanel_fundo.remove(bt_criar_aula);
+        jpanel_fundo.remove(bt_criar_noticias);
         jpanel_fundo.remove(jpanel_dados);
 
         jpanel_cabecalho.remove(bt_professor);
@@ -576,6 +600,7 @@ public class VisaoProfessor extends JFrame {
         jpanel_fundo.remove(jpanel_dados);
         jpanel_fundo.remove(jScroll_aulas);
         jpanel_fundo.remove(bt_criar_aula);
+        jpanel_fundo.remove(bt_criar_noticias);
 
         /* Botões */
         bt_continuar_cadastro.setFont(texto_padrao);
@@ -750,48 +775,6 @@ public class VisaoProfessor extends JFrame {
                 /* Uma mensagem de sucesso aparece e apresenta o id do usuário */
                 JOptionPane.showMessageDialog(null,"Parabéns, sua aula foi cadastrada com sucesso.", "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
                 
-        
-                /* Deixa as caixas de texto em branco */
-                tArea_materia.setText("");
-                tArea_materia.requestFocus();
-                tArea_capacidade.setText("");
-                tArea_capacidade.requestFocus();
-                tArea_duracao.setText("");
-                tArea_duracao.requestFocus();
-                check_frequencia.setSelected(false);
-                check_segunda.setSelected(false);
-                check_terca.setSelected(false);
-                check_quarta.setSelected(false);
-                check_quinta.setSelected(false);
-                check_sexta.setSelected(false);
-                check_sabado.setSelected(false);
-                check_domingo.setSelected(false);
-
-                jpanel_aulas.remove(label_criar_aula);
-                jpanel_aulas.remove(label_materia);
-                jpanel_aulas.remove(label_capacidade);
-                jpanel_aulas.remove(label_frequencia);
-                jpanel_aulas.remove(label_duracao);
-                jpanel_aulas.remove(label_dias);
-                jpanel_aulas.remove(label_minutos);
-                jpanel_aulas.remove(tArea_materia);
-                jpanel_aulas.remove(tArea_capacidade);
-                jpanel_aulas.remove(tArea_duracao);
-                jpanel_aulas.remove(check_frequencia);
-                jpanel_aulas.remove(check_segunda);
-                jpanel_aulas.remove(check_terca);
-                jpanel_aulas.remove(check_quarta);
-                jpanel_aulas.remove(check_quinta);
-                jpanel_aulas.remove(check_sexta);
-                jpanel_aulas.remove(check_sabado);
-                jpanel_aulas.remove(check_domingo);
-                jpanel_aulas.remove(bt_continuar_cadastro);
-
-                jpanel_fundo.remove(jpanel_aulas);
-
-                remove(jpanel_fundo);
-                remove(jpanel_cabecalho);
-
                 this.vMain = new VisaoMain();
                 vMain.professorPagina(cProfessor,professor);
                 dispose();
@@ -799,9 +782,122 @@ public class VisaoProfessor extends JFrame {
         }
     }
 
+    private void criarNoticias(ActionEvent actionEvent){
+        setVisible(false);
+        /* Exclui os elementos antigos */
+        jpanel_dados.remove(label_dados);
+        jpanel_dados.remove(label_imagem_login);
+        jpanel_dados.remove(label_nome);
+        jpanel_dados.remove(label_email);
+        jpanel_dados.remove(label_dataNasc);
+        jpanel_dados.remove(bt_alterar);
+
+        jpanel_fundo.remove(jpanel_dados);
+        jpanel_fundo.remove(jScroll_aulas);
+        jpanel_fundo.remove(bt_criar_aula);
+        jpanel_fundo.remove(bt_criar_noticias);
+
+        /* Botões */
+        bt_continuar_noticias.setFont(texto_padrao);
+        bt_continuar_noticias.setBounds(180, 385, 150,40);
+        bt_continuar_noticias.setBackground(Color.white);
+		bt_continuar_noticias.setForeground(Color.black);
+        bt_continuar_noticias.addActionListener(this::continuarNoticias);
+
+        /* Labels */
+        label_criar_noticias.setFont(texto_sub_titulo);
+        label_criar_noticias.setBounds(125, 25, 250,50);
+
+        label_titulo.setFont(texto_padrao);
+        label_titulo.setBounds(60, 100, 125,50);
+
+        label_dias.setFont(texto_padrao);
+        label_dias.setBounds(60, 135,125,50);
+
+        label_descricao.setFont(texto_padrao);
+        label_descricao.setBounds(60, 170, 125,50);
+
+
+        /* Caixas de texto */
+        tArea_titulo.setFont(texto_padrao);
+        tArea_titulo.setBounds(190, 110,250,25);
+        tArea_titulo.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
+
+        tArea_descricao.setFont(texto_padrao);
+        tArea_descricao.setBounds(190, 180,250,125);
+        tArea_descricao.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
+
+        /* CheckBOXes */
+        cbox_dia.setBounds(190, 145, 80, 25);
+
+        cbox_mes.setBounds(275, 145, 80, 25);
+
+        cbox_ano.setBounds(360, 145, 80, 25);
+
+        /* Painel */   
+        jpanel_noticias.setLayout(null);
+        jpanel_noticias.setBackground(Color.WHITE);
+        jpanel_noticias.setSize(500, 500);
+        jpanel_noticias.setLocation(125, 100);
+        jpanel_noticias.setVisible(true);
+
+        /* Adiciona elementos no painel */
+        jpanel_noticias.add(label_criar_aula);
+        jpanel_noticias.add(label_criar_noticias);
+        jpanel_noticias.add(label_titulo);
+        jpanel_noticias.add(label_descricao);
+        jpanel_noticias.add(label_dias);
+        jpanel_noticias.add(tArea_titulo);
+        jpanel_noticias.add(tArea_descricao);
+        jpanel_noticias.add(cbox_dia);
+        jpanel_noticias.add(cbox_mes);
+        jpanel_noticias.add(cbox_ano);
+        jpanel_noticias.add(bt_continuar_noticias);
+
+        jpanel_fundo.add(jpanel_noticias);
+
+        setVisible(true);
+    }
+
+    private void continuarNoticias(ActionEvent actionEvent){
+
+        descricao = tArea_descricao.getText();
+        titulo = tArea_titulo.getText();
+        dia = cbox_dia.getSelectedItem()+"";
+        mes = cbox_mes.getSelectedItem()+"";
+        ano = cbox_ano.getSelectedItem()+"";
+
+        if(descricao.equals("") || titulo.equals("") || dia.equals("") || mes.equals("") || ano.equals(""))
+            JOptionPane.showMessageDialog(null,"Informação faltando", "ERRO",JOptionPane.ERROR_MESSAGE);
+        else{
+            noticias = new Noticias(cNoticias.devolveMaiorID(), Integer.parseInt(dia), Integer.parseInt(mes),
+            Integer.parseInt(ano), descricao, titulo, professor);
+            cNoticias.insere(noticias);
+            JOptionPane.showMessageDialog(null,"Parabéns!! Sua noticia foi adicionada com sucesso.", "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
+        
+            this.vMain = new VisaoMain();
+            vMain.professorPagina(cProfessor,professor);
+            dispose();
+        }
+    }
+
+
+    /* Botao que leva para o menu da VisaoMain */
+    private void projeto(ActionEvent actionEvent){
+        this.vMain = new VisaoMain();
+        vMain.menu();
+        dispose();
+    }
+
     private void irPAula(ActionEvent actionEvent){
         this.vMain = new VisaoMain();
         vMain.aulaMenu(cAula,professor,2);
+        dispose();
+    }
+
+    private void noticias(ActionEvent actionEvent){
+        this.vMain = new VisaoMain();
+        vMain.noticiasMenu(cNoticias,professor,2);
         dispose();
     }
 
@@ -811,13 +907,6 @@ public class VisaoProfessor extends JFrame {
         dispose();
     }
 
-
-    /* Botao que leva para o menu da VisaoMain */
-    private void projeto(ActionEvent actionEvent){
-        this.vMain = new VisaoMain();
-        vMain.professorPagina(cProfessor,professor);
-        dispose();
-    }
 
     /* Tamanho dos vetores para o dia, mês e ano */
     public String[] preencheVetor(int tamanho, int comeco, boolean orientacao) {

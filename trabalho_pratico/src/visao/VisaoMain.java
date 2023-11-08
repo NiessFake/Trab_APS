@@ -12,16 +12,19 @@ public class VisaoMain extends JFrame {
     private Aula aula;
     private Aluno aluno;
     private Professor professor;
+    private Noticias noticias;
     private VisaoUsuario vUsuario;
     private VisaoAula vAula;
     private VisaoAluno vAluno;
     private VisaoProfessor vProfessor;
+    private VisaoNoticias vNoticias;
 
     /* Cria um atributo do tipo Controle para acessar as funções */
     private ControleUsuario cUsuario;
     private ControleAula cAula;
     private ControleAluno cAluno;
     private ControleProfessor cProfessor;
+    private ControleNoticias cNoticias;
 
     /* Atributo que vai guardar a única instância da interface */
     //private static VisaoMain uniqueInstance;
@@ -140,6 +143,7 @@ public class VisaoMain extends JFrame {
         bt_noticias.setBackground(cor_cabecalho);
 		bt_noticias.setForeground(Color.white);
 		bt_noticias.setBorderPainted(false);
+        bt_noticias.addActionListener(this::noticias);
 
         /* LABELS */
         label_bem_vindos.setFont(texto_titulo);
@@ -267,27 +271,6 @@ public class VisaoMain extends JFrame {
 
      /* Faz com que ao apertar o botao seja redirecionado para o cadastro */
     private void aula(ActionEvent actionEvent){
-        /* REMOVE O LAYOUT ANTERIOR */
-        jpanel_aulas.remove(bt_aula);        
-        jpanel_aulas.remove(label_aulas);  
-        jpanel_aulas.remove(tArea_aulas);
-
-        jpanel_noticias.remove(bt_noticias);
-        jpanel_noticias.remove(label_noticias);
-        jpanel_noticias.remove(tArea_noticias);
-        
-        jpanel_cabecalho.remove(bt_login);
-        jpanel_cabecalho.remove(bt_juntese);
-        jpanel_cabecalho.remove(bt_projeto);
-
-        jpanel_fundo.remove(label_bem_vindos);
-        jpanel_fundo.remove(label_imagem);
-        jpanel_fundo.remove(jpanel_aulas);
-        jpanel_fundo.remove(jpanel_noticias);
-
-        remove(jpanel_cabecalho);
-        remove(jpanel_fundo);
-
         this.usuario = new Usuario();
 
         usuario.setId(0);
@@ -295,6 +278,17 @@ public class VisaoMain extends JFrame {
         this.cAula = new ControleAula();
         this.vAula = new VisaoAula();
         vAula.menuAulas(cAula,usuario,0);
+        dispose();
+    }
+
+    private void noticias(ActionEvent actionEvent){
+        this.usuario = new Usuario();
+
+        usuario.setId(0);
+        /* Chama a instancia unica do VisaoUsuario e vai até ela na funcao cadastro */
+        this.cNoticias = new ControleNoticias();
+        this.vNoticias = new VisaoNoticias();
+        vNoticias.menuNoticias(cNoticias,usuario,0);
         dispose();
     }
 
@@ -407,5 +401,58 @@ public class VisaoMain extends JFrame {
             vProfessor.paginaProfessor(cProfessor,professor);
             dispose();
         }
+    }
+
+    public void noticiasMenu(Controle controle, Entidade entidade, int tipo){
+        this.cNoticias = (ControleNoticias)controle;
+        this.vNoticias = new VisaoNoticias();
+
+        switch (tipo) {
+            case 1:
+                this.aluno = (Aluno)entidade;
+                vNoticias.menuNoticias(cNoticias,aluno,1);
+                break;
+
+            case 2:
+                this.professor = (Professor)entidade;
+                vNoticias.menuNoticias(cNoticias,professor,2);
+                break;
+        
+            default:
+                vNoticias.menuNoticias(cNoticias,null,0);
+                break;
+        }
+        dispose();
+    }
+
+    public void noticiasPI(Entidade entidade, Entidade entidade2, int tipo){
+        this.cNoticias = new ControleNoticias();
+        this.noticias = (Noticias)entidade;
+        this.vNoticias = new VisaoNoticias();
+        switch (tipo) {
+            case 1:
+                this.aluno = (Aluno)entidade2;
+                vNoticias.paginaIndividual(cNoticias,noticias, aluno, tipo);
+                break;
+
+            case 2:
+                this.professor = (Professor)entidade2;
+                vNoticias.paginaIndividual(cNoticias,noticias, professor, tipo);
+                break;
+        
+            default:
+                vNoticias.paginaIndividual(cNoticias,noticias, null, tipo);
+                break;
+        }
+        dispose();
+    }
+
+    public void noticiasAlterar(Entidade entidade, Entidade entidade2){
+        this.cNoticias = new ControleNoticias();
+        this.noticias = (Noticias)entidade;
+        this.vNoticias = new VisaoNoticias();
+        this.professor = (Professor)entidade2;
+        vNoticias.alterar(cNoticias,noticias, professor);
+        dispose();
     }
 }

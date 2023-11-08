@@ -8,6 +8,7 @@ import javax.swing.*;
 import controle.Controle;
 import controle.ControleAluno;
 import controle.ControleAula;
+import controle.ControleNoticias;
 import modelo.Entidade;
 import modelo.Aluno;
 
@@ -18,6 +19,7 @@ public class VisaoAluno extends JFrame{
     /* Classes usadas */
     private Aluno aluno;
     private ControleAluno cAluno;
+    private ControleNoticias cNoticias;
     private ControleAula cAula;
     private VisaoMain vMain;
 
@@ -40,7 +42,7 @@ public class VisaoAluno extends JFrame{
 
     /* Botões */
     JButton bt_aulas = new JButton("AULAS");
-    JButton bt_mensagens = new JButton("MENSAGENS");
+    JButton bt_noticias = new JButton("NOTICIAS");
     JButton bt_sair = new JButton("SAIR");
     JButton bt_aluno = new JButton("");
     JButton bt_alterar = new JButton("ALTERAR DADOS");
@@ -107,15 +109,17 @@ public class VisaoAluno extends JFrame{
 		bt_aulas.setForeground(Color.black);
         bt_aulas.addActionListener(this::irPAula);
 
-        bt_mensagens.setFont(texto_padrao);
-        bt_mensagens.setBounds(370,30,125,40);
-        bt_mensagens.setBackground(Color.white);
-		bt_mensagens.setForeground(Color.black);
+        bt_noticias.setFont(texto_padrao);
+        bt_noticias.setBounds(370,30,125,40);
+        bt_noticias.setBackground(Color.white);
+		bt_noticias.setForeground(Color.black);
+        bt_noticias.addActionListener(this::noticias);
 
         bt_aluno.setFont(texto_padrao);
         bt_aluno.setBounds(575,30,125,40);
         bt_aluno.setBackground(Color.white);
 		bt_aluno.setForeground(Color.black);
+        bt_aluno.addActionListener(this::sair);
 
         bt_projeto.setFont(texto_titulo);
         bt_projeto.setBounds(20, 30,200,50);
@@ -139,7 +143,7 @@ public class VisaoAluno extends JFrame{
         
         /* Adiciona os elementos no cabecalho, em seguida adiciona-o no fundo e adiciona o fundo */
         jpanel_cabecalho.add(bt_aulas);
-        jpanel_cabecalho.add(bt_mensagens);
+        jpanel_cabecalho.add(bt_noticias);
         jpanel_cabecalho.add(bt_aluno);
         jpanel_cabecalho.add(bt_projeto);
         
@@ -187,6 +191,7 @@ public class VisaoAluno extends JFrame{
         cAluno = (ControleAluno)controle;
 
         this.cAula = new ControleAula();
+        this.cNoticias = new ControleNoticias();
 
         cabecalho();
         tabelaAulas();
@@ -333,6 +338,9 @@ public class VisaoAluno extends JFrame{
         jpanel_dados.add(bt_excluir);
         jpanel_dados.add(bt_confirmar);
 
+        
+        jpanel_fundo.remove(jScroll_aulas);
+
         setVisible(true);
     }
 
@@ -381,7 +389,7 @@ public class VisaoAluno extends JFrame{
                 jpanel_dados.remove(bt_excluir);
                 jpanel_dados.remove(bt_confirmar);
 
-                //jpanel_fundo.remove(jScroll_aulas);
+                jpanel_fundo.remove(jScroll_aulas);
                 jpanel_fundo.remove(jpanel_dados);
 
                 jpanel_cabecalho.remove(bt_aluno);
@@ -393,7 +401,7 @@ public class VisaoAluno extends JFrame{
                 setVisible(false);
 
                 if(resposta == 0){
-                    //cAluno.remove(aluno, true);
+                    cAluno.remove(aluno, true);
 
                     /* Imprime uma mensagem de sucesso */
                     JOptionPane.showMessageDialog(null,"Seu cadastrato foi excluido", "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
@@ -407,7 +415,7 @@ public class VisaoAluno extends JFrame{
                     paginaAluno(cAluno, aluno);
             }
             else{
-                //cAluno.remove(aluno, true);
+                cAluno.remove(aluno, true);
 
                 /* Imprime uma mensagem de sucesso */
                 JOptionPane.showMessageDialog(null,"Seu cadastrato foi excluido", "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
@@ -507,6 +515,13 @@ public class VisaoAluno extends JFrame{
         dispose();
     }
 
+    /* Funcao que volta pro menu da Visao main */
+    private void projeto(ActionEvent actionEvent){
+        this.vMain = new VisaoMain();
+        vMain.menu();
+        dispose();
+    }
+
     /* Funcao que vai para o menu da VisaoAula */
     private void irPAula(ActionEvent actionEvent){
         this.vMain = new VisaoMain();
@@ -514,10 +529,15 @@ public class VisaoAluno extends JFrame{
         dispose();
     }
 
-    /* Funcao que volta pro menu da Visao main */
-    private void projeto(ActionEvent actionEvent){
+    private void noticias(ActionEvent actionEvent){
         this.vMain = new VisaoMain();
-        vMain.menu();
+        vMain.noticiasMenu(cNoticias,aluno,1);
+        dispose();
+    }
+
+    private void sair(ActionEvent actionEvent){
+        this.vMain = new VisaoMain();
+        vMain.usuarioLogin();
         dispose();
     }
 

@@ -7,6 +7,5 @@ public class Main {
 		VisaoMain j = new VisaoMain(); 
 		j.menu();
 		j.setVisible(true);
-
 	}
 }	

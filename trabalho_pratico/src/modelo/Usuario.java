@@ -93,7 +93,7 @@ public class Usuario extends Entidade {
     @Override
     public String toString(){
         String texto = "Nome: "+ nome + "\nSobrenome" + sobrenome +"\nEmail" + email +
-        "\nDia do Nascimento: " + diaNasc + "\nMess do Nascimento: " + mesNasc + 
+        "\nDia do Nascimento: " + diaNasc + "\nMes do Nascimento: " + mesNasc + 
         "\nAno do Nascimento: " + anoNasc + "\nUsername: " + id+ "\nSenha: " + senha;
         return super.toString() + texto;
     }

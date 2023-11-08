@@ -22,6 +22,7 @@ public class VisaoAula extends JFrame{
 
     private ControleAluno cAluno;
     private ControleAula cAula;
+    private ControleNoticias cNoticias;
     private VisaoMain vMain;
 
     /* Variaveis auxiliares */
@@ -53,7 +54,7 @@ public class VisaoAula extends JFrame{
     /* Botões */
     JButton bt_projeto = new JButton("PROJETO");
     JButton bt_aulas = new JButton("AULAS");
-    JButton bt_mensagens = new JButton("MENSAGENS");
+    JButton bt_noticias = new JButton("NOTICIAS");
     JButton bt_login = new JButton("LOGIN");
     JButton bt_juntese = new JButton("JUNTE-SE");
     JButton bt_usuario = new JButton("");
@@ -152,10 +153,11 @@ public class VisaoAula extends JFrame{
         bt_aulas.setBackground(Color.white);
 		bt_aulas.setForeground(Color.black);
 
-        bt_mensagens.setFont(texto_padrao);
-        bt_mensagens.setBounds(370,30,125,40);
-        bt_mensagens.setBackground(Color.white);
-		bt_mensagens.setForeground(Color.black);
+        bt_noticias.setFont(texto_padrao);
+        bt_noticias.setBounds(370,30,125,40);
+        bt_noticias.setBackground(Color.white);
+		bt_noticias.setForeground(Color.black);
+        bt_noticias.addActionListener(this::noticia); 
 
         if(funcao == 1 || funcao == 2){
             bt_usuario.setFont(texto_padrao);
@@ -192,7 +194,7 @@ public class VisaoAula extends JFrame{
         
         /* Adiciona os elementos no cabecalho, em seguida adiciona-o no fundo e adiciona o fundo */
         jpanel_cabecalho.add(bt_aulas);
-        jpanel_cabecalho.add(bt_mensagens);
+        jpanel_cabecalho.add(bt_noticias);
         jpanel_cabecalho.add(bt_projeto);
         
         add(jpanel_cabecalho);
@@ -295,7 +297,9 @@ public class VisaoAula extends JFrame{
     }
 
     public void paginaIndividual(Controle controle, Entidade entidade, Entidade entidade2, int tipo){
-        cAluno = new ControleAluno();
+        cAluno = new ControleAluno(); 
+        cAula = (ControleAula)controle;
+        this.aula = (Aula)entidade;
 
         funcao = tipo;
         cabecalho();
@@ -318,9 +322,6 @@ public class VisaoAula extends JFrame{
         setVisible(true);
         
         bt_aulas.addActionListener(this::menu);
-
-        cAula = (ControleAula)controle;
-        this.aula = (Aula)entidade;
 
         String vetor_dias[] = aula.getDias();
         tamanho_voltar = aula.getMateria().length()*15;
@@ -384,13 +385,15 @@ public class VisaoAula extends JFrame{
                 jpanel_dados.add(bt_inscrever);
             }
             else{
-                bt_editar.setFont(texto_padrao);
-                bt_editar.setBounds(362,400,125,40);
-                bt_editar.setBackground(Color.white);
-                bt_editar.setForeground(Color.black);
-                bt_editar.addActionListener(this::edita);
+                if(professor.getId() == (aula.getProfessor()).getId()){
+                    bt_editar.setFont(texto_padrao);
+                    bt_editar.setBounds(362,400,125,40);
+                    bt_editar.setBackground(Color.white);
+                    bt_editar.setForeground(Color.black);
+                    bt_editar.addActionListener(this::edita);
 
-                jpanel_dados.add(bt_editar);
+                    jpanel_dados.add(bt_editar);
+                }
             }
         }
 
@@ -848,6 +851,28 @@ public class VisaoAula extends JFrame{
 
         
         setVisible(true);
+    }
+
+    private void noticia(ActionEvent actionEvent){
+        this.cNoticias = new ControleNoticias();
+        vMain = new VisaoMain();
+        
+        switch (funcao) {
+            case 1:                               
+                vMain.noticiasMenu(cNoticias, aluno, 1);
+                dispose();
+                break;
+            
+            case 2:                       
+                vMain.noticiasMenu(cNoticias, professor, 2);
+                dispose();
+                break;
+            
+            default:       
+                vMain.noticiasMenu(cNoticias, null, 0);
+                dispose();
+                break;
+        }
     }
 
     private void home(ActionEvent actionEvent){  
