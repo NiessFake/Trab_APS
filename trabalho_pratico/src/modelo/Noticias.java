@@ -63,8 +63,8 @@ public class Noticias extends Entidade{
     /* Retorna o texto contendo todos os elementos (normalmente usada para testes) */
     @Override
     public String toString(){
-        String texto = "Titulo: "+ titulo + "\nData:" + data +"\nProfessor:" + professor +
-        "\nMatéria: " + materia + "\nMensagem " + mensagem;
-        return super.toString() + texto;
+        String text = "Titulo: "+ titulo + "\nData:" + data +"\nProfessor:" + professor +
+        "\nMatéria: " + materia + "\nMensagem " + texto;
+        return super.toString() + text;
     }
 }

@@ -4,50 +4,51 @@ package visao;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import javax.swing.*;
-import javax.swing.border.Border;
 
 import controle.*;
 import modelo.*;
-import persistencia.*;
 
 public class VisaoUsuario extends JFrame {
     /* Cria atributos do tipo modelo e controle */
     private Aluno aluno = new Aluno();
     private Professor professor = new Professor();
 
-    private PersistenciaAluno pAluno = new PersistenciaAluno();
-    private PersistenciaProfessor pProfessor = new PersistenciaProfessor();
+    private VisaoMain vMain;
 
-    private ControleUsuario cUsuario;
-    //private ControleAluno cAluno;
-    //private ControleProfessor cProfessor;
+    private ControleAluno cAluno;
+    private ControleProfessor cProfessor;
     
-
     /* Variaveis que serao usadas */
-    String[] papelVetor = {"","Aluno","Professor"};
-    String nome, sobrenome, email, dia, mes, ano, papel, id, senha, cSenha;
-    int idAux = 0;
-    boolean condicao;
+    protected int idAux = 0;
+    protected String nome, sobrenome, email, dia, mes, ano, papel, id, senha, cSenha;
+    protected boolean condicao;
+    protected boolean condicao_imagem_unica = true;
+    protected String[] papelVetor = {"","Aluno","Professor"};
 
     /* Atributo que vai guardar a única instância da interface */
-    private static VisaoUsuario uniqueInstance;
+    //private static VisaoUsuario uniqueInstance;
 
     /* Paineis */
-    JPanel jpanel_cabecario = new JPanel();
+    JPanel jpanel_cabecalho = new JPanel();
     JPanel jpanel_fundo = new JPanel();
     JPanel jpanel_login = new JPanel();
     JPanel jpanel_cadastro = new JPanel();
+    JPanel jpanel_imagem = new JPanel();
 
     /* Botões */
-    JButton bt_login = new JButton("Login");
-    JButton bt_juntese = new JButton("Junte-se");
-    JButton bt_continuar_cadastro = new JButton("Continuar");
-    JButton bt_continuar_login = new JButton("Continuar");
+    JButton bt_projeto = new JButton("PROJETO");
+    JButton bt_login = new JButton("LOGIN");
+    JButton bt_juntese = new JButton("JUNTE-SE");
+    JButton bt_continuar_cadastro = new JButton("CONTINUAR");
+    JButton bt_continuar_login = new JButton("CONTINUAR");
+    JButton bt_continuar_recupera = new JButton("CONTINUAR");
+    JButton bt_perdi = new JButton("perdi o id");
 
     /* Labels */
-    JLabel projeto = new JLabel("PROJETO");
     JLabel label_cadatro = new JLabel("CADASTRO");
     JLabel label_login = new JLabel("LOGIN");
+    JLabel label_imagem_login = new JLabel("");
+    JLabel label_recuperar = new JLabel("RECUPERAR ID");
     JLabel label_nome = new JLabel("NOME:");
     JLabel label_sobrenome = new JLabel("SOBRENOME:");
     JLabel label_email = new JLabel("EMAIL:");
@@ -66,18 +67,21 @@ public class VisaoUsuario extends JFrame {
     JTextArea tArea_cSenha = new JTextArea();
 
     /*ComboBox */
-    JComboBox cbox_dia = new JComboBox<>(preencheVetor(32, 1, true));
-    JComboBox cbox_mes = new JComboBox<>(preencheVetor(13, 1, true));
-    JComboBox cbox_ano = new JComboBox<>(preencheVetor(151, 1874, false));
-    JComboBox cbox_papel = new JComboBox<>(papelVetor);
+    JComboBox <String> cbox_dia = new JComboBox<>(preencheVetor(32, 1, true));
+    JComboBox <String>cbox_mes = new JComboBox<>(preencheVetor(13, 1, true));
+    JComboBox <String> cbox_ano = new JComboBox<>(preencheVetor(151, 1874, false));
+    JComboBox <String> cbox_papel = new JComboBox <String> (papelVetor);
 
     /* Fonte e Cores */
     Font texto_padrao = new Font("ARIAL",Font.BOLD,12);
+    Font texto_singelo = new Font("ARIAL",Font.BOLD,12);
     Font texto_titulo = new Font("ARIAL",Font.BOLD,30);
     Font texto_sub_titulo = new Font("ARIAL",Font.BOLD,20);
     Color cor_fundo = new Color(194,255,240);
-    Color cor_cabecario = new Color(0,204,155);
-    Color cor_textos = new Color(163, 184, 204);
+    Color cor_cabecalho = new Color(0,204,155);
+
+    /* Imagens */
+    ImageIcon imagem_login = new ImageIcon("src/imagens/computador.jpg");
 
     /* Contrução do JFrame que será usado */
     public VisaoUsuario(){
@@ -86,43 +90,47 @@ public class VisaoUsuario extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setResizable(false);
         setLocationRelativeTo(null);
+        // Inicialize vUsuario
+        //this.vUsuario = this;
     }
 
     /* Cria uma instancia única para essa interface (Padrao Singleton) */
-    public static VisaoUsuario getInstance(){
+    /* public static VisaoUsuario getInstance(){
 		if(uniqueInstance == null)
 			uniqueInstance = new VisaoUsuario();
 		return uniqueInstance;
 	}
+ */
 
-    /* Interface do cabecario */
-    public void cabecario(){
+
+    /* Interface do cabecalho */
+    public void cabecalho(){
         /* Botões */
         bt_login.setFont(texto_padrao);
-        bt_login.setBounds(0,0,100,40);
-		bt_login.setLocation(520, 30);
+        bt_login.setBounds(520, 30,100,40);
         bt_login.setBackground(Color.white);
 		bt_login.setForeground(Color.black);
         bt_login.addActionListener(this::vaiPLogin);
 
         bt_juntese.setFont(texto_padrao);
-        bt_juntese.setBounds(0,0,100,40);
-		bt_juntese.setLocation(625, 30);
+        bt_juntese.setBounds(625, 30,100,40);
         bt_juntese.setBackground(Color.white);
 		bt_juntese.setForeground(Color.black);
         bt_juntese.addActionListener(this::vaiPCadastro);
 
-        /* Labels */
-        projeto.setFont(texto_titulo);
-        projeto.setBounds(0,0,150,50);
-		projeto.setLocation(20, 30);
+        bt_projeto.setFont(texto_titulo);
+        bt_projeto.setBounds(20, 30,200,50);
+        bt_projeto.setBackground(cor_cabecalho);
+		bt_projeto.setForeground(Color.black);
+        bt_projeto.setBorderPainted(false);
+        bt_projeto.addActionListener(this::projeto);
 
         /* Paineis */
-        jpanel_cabecario.setLayout(null);
-        jpanel_cabecario.setBackground(cor_cabecario);
-        jpanel_cabecario.setSize(750, 100);
-        jpanel_cabecario.setLocation(0, 0);
-        jpanel_cabecario.setVisible(true);
+        jpanel_cabecalho.setLayout(null);
+        jpanel_cabecalho.setBackground(cor_cabecalho);
+        jpanel_cabecalho.setSize(750, 100);
+        jpanel_cabecalho.setLocation(0, 0);
+        jpanel_cabecalho.setVisible(true);
 
         jpanel_fundo.setLayout(null);
         jpanel_fundo.setBackground(cor_fundo);
@@ -130,20 +138,24 @@ public class VisaoUsuario extends JFrame {
         jpanel_fundo.setLocation(0, 0);
         jpanel_fundo.setVisible(true);
         
-        /* Adiciona os elementos no cabecario, em seguida adiciona-o no fundo e adiciona o fundo */
-        jpanel_cabecario.add(bt_login);
-        jpanel_cabecario.add(bt_juntese);
-        jpanel_cabecario.add(projeto);
+        /* Adiciona os elementos no cabecalho, em seguida adiciona-o no fundo e adiciona o fundo */
+        jpanel_cabecalho.add(bt_login);
+        jpanel_cabecalho.add(bt_juntese);
+        jpanel_cabecalho.add(bt_projeto);
         
-        add(jpanel_cabecario);
+        add(jpanel_cabecalho);
         add(jpanel_fundo);
     }
 
     /* Interface para o cadastro */
     public void cadastro(Controle controle){
         setVisible(true);
+        
+        cabecalho();
 
-        cabecario();
+        /* Inicializa os controles */
+        this.cAluno = new ControleAluno();
+        this.cProfessor = new ControleProfessor();
 
         /* Botões */
         bt_continuar_cadastro.setFont(texto_padrao);
@@ -155,75 +167,59 @@ public class VisaoUsuario extends JFrame {
 
         /* Labels */
         label_cadatro.setFont(texto_sub_titulo);
-        label_cadatro.setBounds(0,0,125,50);
-		label_cadatro.setLocation(187, 25);
+        label_cadatro.setBounds(187, 25,125,50);
 
         label_nome.setFont(texto_padrao);
-        label_nome.setBounds(0,0,175,50);
-		label_nome.setLocation(37, 110);
+        label_nome.setBounds(37, 110,175,50);
 
         label_sobrenome.setFont(texto_padrao);
-        label_sobrenome.setBounds(0,0,175,50);
-		label_sobrenome.setLocation(37, 140);
+        label_sobrenome.setBounds(37, 140,175,50);
 
         label_email.setFont(texto_padrao);
-        label_email.setBounds(0,0,175,50);
-		label_email.setLocation(37, 170);
+        label_email.setBounds(37, 170,175,50);
 
+        label_dataNasc.setText("DATA DE NASCIMENTO");
         label_dataNasc.setFont(texto_padrao);
-        label_dataNasc.setBounds(0,0,175,50);
-		label_dataNasc.setLocation(37, 200);
+        label_dataNasc.setBounds(37, 200,175,50);
 
         label_papel.setFont(texto_padrao);
-        label_papel.setBounds(0,0,175,50);
-		label_papel.setLocation(37, 230);
+        label_papel.setBounds(37, 230,175,50);
 
         label_senha.setFont(texto_padrao);
-        label_senha.setBounds(0,0,175,50);
-		label_senha.setLocation(37, 260);
+        label_senha.setBounds(37, 260,175,50);
 
         label_cSenha.setFont(texto_padrao);
-        label_cSenha.setBounds(0,0,175,50);
-		label_cSenha.setLocation(37, 290);
+        label_cSenha.setBounds(37, 290,175,50);
 
         /* Caixas de texto */
         tArea_nome.setFont(texto_padrao);
-        tArea_nome.setBounds(0,0,250,25);
-		tArea_nome.setLocation(218, 125);
-        tArea_nome.setBackground(cor_textos);
+        tArea_nome.setBounds(218, 125,250,25);
+        tArea_nome.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
 
         tArea_sobrenome.setFont(texto_padrao);
-        tArea_sobrenome.setBounds(0,0,250,25);
-		tArea_sobrenome.setLocation(218, 155);
-        tArea_sobrenome.setBackground(cor_textos);
+        tArea_sobrenome.setBounds(218, 155,250,25);
+        tArea_sobrenome.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
 
         tArea_email.setFont(texto_padrao);
-        tArea_email.setBounds(0,0,250,25);
-		tArea_email.setLocation(218, 185);
-        tArea_email.setBackground(cor_textos);
+        tArea_email.setBounds(218, 185,250,25);
+        tArea_email.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
 
         tArea_senha.setFont(texto_padrao);
-        tArea_senha.setBounds(0,0,250,25);
-		tArea_senha.setLocation(218, 275);
-        tArea_senha.setBackground(cor_textos);
+        tArea_senha.setBounds(218, 275,250,25);
+        tArea_senha.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
 
         tArea_cSenha.setFont(texto_padrao);
-        tArea_cSenha.setBounds(0,0,250,25);
-		tArea_cSenha.setLocation(218, 305);
-        tArea_cSenha.setBackground(cor_textos);
+        tArea_cSenha.setBounds(218, 305,250,25);
+        tArea_cSenha.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
 
         /* ComboBOXes */
-        cbox_dia.setBounds(0,0,80,25);
-		cbox_dia.setLocation(218, 215);
+        cbox_dia.setBounds(218, 215,80,25);
 
-        cbox_mes.setBounds(0,0,80,25);
-		cbox_mes.setLocation(303, 215);
+        cbox_mes.setBounds(303, 215,80,25);
 
-        cbox_ano.setBounds(0,0,80,25);
-		cbox_ano.setLocation(388, 215);
+        cbox_ano.setBounds(388, 215,80,25);
 
-        cbox_papel.setBounds(0,0,250,25);
-		cbox_papel.setLocation(218, 245);
+        cbox_papel.setBounds(218, 245,250,25);
 
         /* Painel */   
         jpanel_cadastro.setLayout(null);
@@ -261,47 +257,57 @@ public class VisaoUsuario extends JFrame {
     public void login(Controle controle){
         setVisible(true);
 
-        cabecario();
+        cabecalho();
+
+        /* Inicializa os controles */
+        this.cAluno = new ControleAluno();
+        this.cProfessor = new ControleProfessor();
 
         /* Botões */
         bt_continuar_login.setFont(texto_padrao);
-        bt_continuar_login.setBounds(0,0,125,25);
-		bt_continuar_login.setLocation(125, 325);
+        bt_continuar_login.setBounds(125, 325,125,25);
         bt_continuar_login.setBackground(Color.white);
 		bt_continuar_login.setForeground(Color.black);
         bt_continuar_login.addActionListener(this::continuarLogin);
 
+        bt_perdi.setFont(texto_singelo);
+        bt_perdi.setBounds(125, 360,125,25);
+        bt_perdi.setBorderPainted(false);;
+        bt_perdi.setBackground(Color.white);
+		bt_perdi.setForeground(cor_cabecalho);
+        bt_perdi.addActionListener(this::perdiId);
+
         /* Labels */
         label_login.setFont(texto_sub_titulo);
-        label_login.setBounds(0,0,70,50);
-		label_login.setLocation(152, 100);
+        label_login.setBounds(152, 100,70,50);
 
         label_id.setFont(texto_padrao);
-        label_id.setBounds(0,0,100,50);
-		label_id.setLocation(62, 175);
+        label_id.setBounds(62, 175,100,50);
 
         label_senha.setFont(texto_padrao);
-        label_senha.setBounds(0,0,100,50);
-		label_senha.setLocation(62, 210);
+        label_senha.setBounds(62, 210,100,50);
 
         label_papel.setFont(texto_padrao);
-        label_papel.setBounds(0,0,100,50);
-		label_papel.setLocation(62, 245);
+        label_papel.setBounds(62, 245,100,50);
+
+        if(condicao_imagem_unica){
+            label_imagem_login.setBounds(0,0,370,500);
+            imagem_login.setImage(imagem_login.getImage().getScaledInstance(label_imagem_login.getWidth(),label_imagem_login.getHeight(),1));
+            label_imagem_login.setIcon(imagem_login);
+            condicao_imagem_unica = false;
+        }
 
         /* Caixas de texto */
         tArea_id.setFont(texto_padrao);
-        tArea_id.setBounds(0,0,150,25);
-		tArea_id.setLocation(162, 185);
-        tArea_id.setBackground(cor_textos);
+        tArea_id.setBounds(162, 185,150,25);
+        tArea_id.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
 
         tArea_senha.setFont(texto_padrao);
-        tArea_senha.setBounds(0,0,150,25);
-		tArea_senha.setLocation(162, 220);
-        tArea_senha.setBackground(cor_textos);
+        tArea_senha.setBounds(162, 220,150,25);
+        tArea_senha.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
 
         /* ComboBoxes */
-        cbox_papel.setBounds(0,0,150,25);
-		cbox_papel.setLocation(162, 255);
+        cbox_papel.setBounds(162, 255,150,25);
 
         /* Paineis */
         jpanel_login.setLayout(null);
@@ -310,8 +316,15 @@ public class VisaoUsuario extends JFrame {
         jpanel_login.setLocation(375, 100);
         jpanel_login.setVisible(true);
 
+        jpanel_imagem.setLayout(null);
+        jpanel_imagem.setBackground(Color.darkGray);
+        jpanel_imagem.setSize(375, 500);
+        jpanel_imagem.setLocation(0, 100);
+        jpanel_imagem.setVisible(true);
+
         /* Adiciona elementos no painel */
         jpanel_login.add(bt_continuar_login);
+        jpanel_login.add(bt_perdi);
         jpanel_login.add(label_login);
         jpanel_login.add(label_id);
         jpanel_login.add(tArea_id);
@@ -320,7 +333,9 @@ public class VisaoUsuario extends JFrame {
         jpanel_login.add(label_papel);
         jpanel_login.add(cbox_papel);
 
+        jpanel_imagem.add(label_imagem_login);
         jpanel_fundo.add(jpanel_login);
+        jpanel_fundo.add(jpanel_imagem);
 
     }
 
@@ -329,6 +344,7 @@ public class VisaoUsuario extends JFrame {
     /* Ações dos botões */
     /* Acoes do botao continuar do cadastro */
     private void continuarCadastro(ActionEvent actionEvent){
+
         /* Atribuicao  dos valores no texto para salvar nas variaveis locais*/
         nome = tArea_nome.getText();
         sobrenome = tArea_sobrenome.getText();
@@ -337,29 +353,24 @@ public class VisaoUsuario extends JFrame {
         mes = cbox_mes.getSelectedItem()+"";
         ano = cbox_ano.getSelectedItem()+"";
         senha = tArea_senha.getText();
+        papel = cbox_papel.getSelectedItem()+"";
         cSenha = tArea_cSenha.getText();
 
         /* expressão para saber se os dados do usuario fotam preenchidas */
-        condicao = nome.equals("") && sobrenome.equals("") && email.equals("") && dia.equals("") &&
-        mes.equals("") && ano.equals("") && senha.equals("") && cSenha.equals("");
-        if(condicao){
-            tArea_senha.setText("");
-            tArea_senha.requestFocus();
-            tArea_cSenha.setText("");
-            tArea_cSenha.requestFocus();
+        condicao = nome.equals("") || sobrenome.equals("") || email.equals("") || dia.equals("") ||
+        mes.equals("") || ano.equals("") || senha.equals("") || papel.equals("") || cSenha.equals("");
+        if(condicao)
+            /* Exibe a mensagem de erro */
             JOptionPane.showMessageDialog(null,"Informação faltando", "ERRO",JOptionPane.ERROR_MESSAGE);
-        }
         else{
             /* Compara se as senhas digitas são iguais. Em caso de serem diferentes, imprime uma 
              * mensagem de erro. Do contrário prossegue com a inserção */
-            if(!(senha.equals(cSenha)))
+            if(!(senha.equals(cSenha) && !(senha.equals(""))))
                 JOptionPane.showMessageDialog(null,"Senhas divergem", "ERRO",JOptionPane.ERROR_MESSAGE);
             else{
-                /* Variável que converte o item do ComboBox para texto, especificamente da funcao */
-                String aux = cbox_papel.getSelectedItem()+"";
 
                 /* Insere o usuário de acordo com a funcao selecionada */
-                if(aux.equals("Aluno")){
+                if(papel.equals("Aluno")){
                     /* Pega os dados digitados e insere o usuário no sistema */
                     aluno.setNome(nome);
                     aluno.setSobrenome(sobrenome);
@@ -370,10 +381,10 @@ public class VisaoUsuario extends JFrame {
                     aluno.setSenha(senha);
 
                     /* Insere o aluno no sistema */
-                    pAluno.insere(aluno);
+                    cAluno.insere(aluno);
 
                     /* Uma mensagem de sucesso aparece e apresenta o id do usuário */
-                    JOptionPane.showMessageDialog(null,"Parabéns, você foi cadastrado com sucesso.\nSeu id é: "+ pAluno.devolveMaiorID(), "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(null,"Parabéns!! Você foi cadastrado com sucesso.\nSeu id é: "+ cAluno.devolveMaiorID(), "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
                 }
                 else{
                     /* Pega os dados digitados e insere o usuário no sistema */
@@ -386,10 +397,10 @@ public class VisaoUsuario extends JFrame {
                     professor.setSenha(senha);
 
                     /* Insere o professor no sistema */
-                    pProfessor.insere(professor);
+                    cProfessor.insere(professor);
 
                     /* Uma mensagem de sucesso aparece e apresenta o id do usuário */
-                    JOptionPane.showMessageDialog(null,"Parabéns, você foi cadastrado com sucesso.\nSeu id é: "+ pProfessor.devolveMaiorID(), "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(null,"Parabéns!! Você foi cadastrado com sucesso.\nSeu id é: "+ cProfessor.devolveMaiorID(), "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
                 }
         
                 
@@ -409,8 +420,52 @@ public class VisaoUsuario extends JFrame {
                 tArea_cSenha.setText("");
                 tArea_cSenha.requestFocus();
 
-                /* Chama a funcao que redireciona para o login */
-                vaiPLogin(actionEvent);
+                /* remove tudo do painel */
+                jpanel_cadastro.remove(label_cadatro);
+                jpanel_cadastro.remove(label_nome);
+                jpanel_cadastro.remove(tArea_nome);
+                jpanel_cadastro.remove(label_sobrenome);
+                jpanel_cadastro.remove(tArea_sobrenome);
+                jpanel_cadastro.remove(label_email);
+                jpanel_cadastro.remove(tArea_email);
+                jpanel_cadastro.remove(label_dataNasc);
+                jpanel_cadastro.remove(cbox_dia);
+                jpanel_cadastro.remove(cbox_mes);
+                jpanel_cadastro.remove(cbox_ano);
+                jpanel_cadastro.remove(label_papel);
+                jpanel_cadastro.remove(cbox_papel);
+                jpanel_cadastro.remove(label_senha);
+                jpanel_cadastro.remove(tArea_senha);
+                jpanel_cadastro.remove(label_cSenha);
+                jpanel_cadastro.remove(tArea_cSenha);
+                jpanel_cadastro.remove(bt_continuar_cadastro);
+                jpanel_login.remove(label_recuperar);
+                jpanel_login.remove(label_email);
+                jpanel_login.remove(label_dataNasc);
+                jpanel_login.remove(label_papel);
+                jpanel_login.remove(tArea_email);
+                jpanel_login.remove(cbox_papel);
+                jpanel_login.remove(cbox_dia);
+                jpanel_login.remove(cbox_mes);
+                jpanel_login.remove(cbox_ano);
+                jpanel_login.remove(bt_continuar_recupera);
+
+                jpanel_fundo.remove(jpanel_cadastro);
+
+                jpanel_cabecalho.remove(bt_login);
+                jpanel_cabecalho.remove(bt_juntese);
+                jpanel_cabecalho.remove(bt_projeto);
+
+                
+                remove(jpanel_cabecalho);
+                remove(jpanel_fundo);
+
+                setVisible(false);
+
+                /* Manda pro login */
+                this.vMain = new VisaoMain();
+                vMain.usuarioLogin();
+                dispose();
             }
         }
     }
@@ -424,9 +479,12 @@ public class VisaoUsuario extends JFrame {
         /* Variável que converte o item do ComboBox para texto, especificamente da funcao */
         String aux = cbox_papel.getSelectedItem()+"";
 
+        if(id.equals(""))
+            id = "0";
+
         /* Insere o usuário de acordo com a funcao selecionada */
         if(aux.equals("Aluno")){
-            aluno = pAluno.buscaID(Integer.parseInt(id));
+            aluno = cAluno.buscaID(Integer.parseInt(id));
             
             /* Se o id for igual a 0, o usuario nao existe e uma mensagem de erro eh exibida */
             if(aluno.getId()==0)
@@ -437,14 +495,43 @@ public class VisaoUsuario extends JFrame {
                 if(!(aluno.getSenha().equals(senha)))
                     JOptionPane.showMessageDialog(null,"Senha incorreta", "ERRO",JOptionPane.ERROR_MESSAGE);
                 else{
-                    JOptionPane.showMessageDialog(null,"Seja bem-vinde", "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
-                    continuarUsuario(true, aluno);
+                    JOptionPane.showMessageDialog(null,"Seja bem-vinde " + aluno.getNome(), "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
+                    
+                    tArea_id.setText("");
+                    tArea_id.requestFocus();
+                    tArea_senha.setText("");
+                    tArea_senha.requestFocus();
+                    cbox_papel.setSelectedItem("");
+
+                    /* Exclui o layout do cadastro e do login */
+                    jpanel_login.remove(bt_continuar_login);
+                    jpanel_login.remove(label_login);
+                    jpanel_login.remove(label_id);
+                    jpanel_login.remove(tArea_id);
+                    jpanel_login.remove(label_senha);
+                    jpanel_login.remove(tArea_senha);
+                    jpanel_login.remove(label_papel);
+                    jpanel_login.remove(cbox_papel);
+
+                    jpanel_fundo.remove(jpanel_login);
+                    jpanel_fundo.remove(jpanel_imagem);
+
+                    jpanel_cabecalho.remove(bt_login);
+                    jpanel_cabecalho.remove(bt_juntese);
+                    jpanel_cabecalho.remove(bt_projeto);
+
+                    remove(jpanel_cabecalho);
+                    remove(jpanel_fundo);
+                    
+                    this.vMain = new VisaoMain();
+                    vMain.usuarioContinuar(true, aluno);
+                    dispose();
                 }
             }
                 
         }
         else{
-           professor = pProfessor.buscaID(Integer.parseInt(id));
+           professor = cProfessor.buscaID(Integer.parseInt(id));
             /* Se o id for igual a 0, o usuario nao existe e uma mensagem de erro eh exibida */
             if(professor.getId()==0)
                 JOptionPane.showMessageDialog(null,"ID não encontrado", "ERRO",JOptionPane.ERROR_MESSAGE);
@@ -452,8 +539,37 @@ public class VisaoUsuario extends JFrame {
                 /* Caso a senha digitada nao seja igual a armazenada pelo usuario, exibe mensagem de erro.
                  * Caso seja igual imprime uma mensagem de sucesso e redireciona para a pagina do usuario. */
                 if(professor.getSenha().equals(senha)){
-                    JOptionPane.showMessageDialog(null,"Seja bem-vinde", "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
-                    continuarUsuario(false, professor);
+                    JOptionPane.showMessageDialog(null,"Seja bem-vinde " + professor.getNome(), "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
+                    
+                    tArea_id.setText("");
+                    tArea_id.requestFocus();
+                    tArea_senha.setText("");
+                    tArea_senha.requestFocus();
+                    cbox_papel.setSelectedItem("");
+
+                    /* Exclui o layout do cadastro e do login */
+                    jpanel_login.remove(bt_continuar_login);
+                    jpanel_login.remove(label_login);
+                    jpanel_login.remove(label_id);
+                    jpanel_login.remove(tArea_id);
+                    jpanel_login.remove(label_senha);
+                    jpanel_login.remove(tArea_senha);
+                    jpanel_login.remove(label_papel);
+                    jpanel_login.remove(cbox_papel);
+
+                    jpanel_fundo.remove(jpanel_login);
+                    jpanel_fundo.remove(jpanel_imagem);
+
+                    jpanel_cabecalho.remove(bt_login);
+                    jpanel_cabecalho.remove(bt_juntese);
+                    jpanel_cabecalho.remove(bt_projeto);
+
+                    remove(jpanel_cabecalho);
+                    remove(jpanel_fundo);
+                    
+                    this.vMain = new VisaoMain();
+                    vMain.usuarioContinuar(false, professor);
+                    dispose();
                 }
                 else
                     JOptionPane.showMessageDialog(null,"Senha incorreta", "ERRO",JOptionPane.ERROR_MESSAGE);
@@ -461,16 +577,18 @@ public class VisaoUsuario extends JFrame {
         }
     }
 
-    /* Funcao que redireciona o usuario para a sua pagina apos o login */
-    public void continuarUsuario(Boolean tipoUsuario, Entidade entidade){
+    public void perdiId(ActionEvent actionEvent){
+        setVisible(false);
+        /* Deixa as caixas de texto em branco */
         tArea_id.setText("");
         tArea_id.requestFocus();
         tArea_senha.setText("");
         tArea_senha.requestFocus();
         cbox_papel.setSelectedItem("");
 
-        /* Exclui o layout do cadastro e do login */
-        jpanel_login.remove(bt_continuar_login);
+        /* Apaga tudo do painel */
+		jpanel_login.remove(bt_continuar_login);
+		jpanel_login.remove(bt_perdi);
         jpanel_login.remove(label_login);
         jpanel_login.remove(label_id);
         jpanel_login.remove(tArea_id);
@@ -479,28 +597,136 @@ public class VisaoUsuario extends JFrame {
         jpanel_login.remove(label_papel);
         jpanel_login.remove(cbox_papel);
 
-        jpanel_fundo.remove(jpanel_login);
+        /* cria novo layout */
 
-        jpanel_cabecario.remove(bt_login);
-        jpanel_cabecario.remove(bt_juntese);
-        jpanel_cabecario.remove(projeto);
+        /* Botoes*/
+        bt_continuar_recupera.setFont(texto_padrao);
+        bt_continuar_recupera.setBounds(125, 325,125,25);
+        bt_continuar_recupera.setBackground(Color.white);
+		bt_continuar_recupera.setForeground(Color.black);
+        bt_continuar_recupera.addActionListener(this::continuarRecuperacao);
 
-        remove(jpanel_cabecario);
-        remove(jpanel_fundo);
+        /* Labels */
+        label_recuperar.setFont(texto_sub_titulo);
+        label_recuperar.setBounds(100, 100,175,50);
 
-        setVisible(false);
+        label_email.setFont(texto_padrao);
+        label_email.setBounds(40, 175,100,50);
 
-        /* Considerando true para Aluno e false para professor, uma comparacao eh feita e 
-         * leva o usuario para sua pagina correspondente de acordo com seu papel */
-        if(tipoUsuario)
-            VisaoAluno.getInstance().paginaAluno(entidade);
-        else
-            VisaoProfessor.getInstance().paginaProfessor(entidade);
+        label_dataNasc.setText("DATA NASC.:");
+        label_dataNasc.setFont(texto_padrao);
+        label_dataNasc.setBounds(40, 210,100,50);
+
+        label_papel.setFont(texto_padrao);
+        label_papel.setBounds(40, 245,100,50);
+
+        /* Caixas de texto */
+        tArea_email.setFont(texto_padrao);
+        tArea_email.setBounds(140, 185,190,25);
+        tArea_email.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
+
+        /* ComboBoxes */
+        cbox_papel.setBounds(140, 255,190,25);
+
+        cbox_dia.setBounds(140, 220,60,25);
+
+        cbox_mes.setBounds(205, 220,60,25);
+
+        cbox_ano.setBounds(270, 220,60,25);
+        
+        /* Adicionar no painel */
+        jpanel_login.add(label_recuperar);
+        jpanel_login.add(label_email);
+        jpanel_login.add(label_dataNasc);
+        jpanel_login.add(label_papel);
+        jpanel_login.add(tArea_email);
+        jpanel_login.add(cbox_papel);
+        jpanel_login.add(cbox_dia);
+        jpanel_login.add(cbox_mes);
+        jpanel_login.add(cbox_ano);
+        jpanel_login.add(bt_continuar_recupera);
+        setVisible(true);
+
     }
 
+    /* Funcao do botao que prossegue na recuperacao da senha */
+    public void continuarRecuperacao(ActionEvent actionEvent){
+        idAux = 0;
+        /* Pega os dados digitados */
+        email = tArea_email.getText();
+        dia = cbox_dia.getSelectedItem()+"";
+        mes = cbox_mes.getSelectedItem()+"";
+        ano = cbox_ano.getSelectedItem()+"";
+        papel = cbox_papel.getSelectedItem()+"";
+
+        /* Se algum dado estiver em branco, retorna mensagem de erro */
+        if(email.equals("") || dia.equals("") || mes.equals("") || ano.equals("") || papel.equals(""))
+            JOptionPane.showMessageDialog(null,"Informação faltando", "ERRO",JOptionPane.ERROR_MESSAGE);
+        else{
+            if(papel.equals("Aluno"))
+                idAux = cAluno.devolveIdPerdido(email, Integer.parseInt(dia), Integer.parseInt(mes), Integer.parseInt(ano));
+            else
+                idAux = cProfessor.devolveIdPerdido(email, Integer.parseInt(dia), Integer.parseInt(mes), Integer.parseInt(ano));
+            if(idAux == 0)
+                JOptionPane.showMessageDialog(null,"Dados divergem", "ERRO",JOptionPane.ERROR_MESSAGE);
+            else{
+                JOptionPane.showMessageDialog(null,"Seu id é: "+ idAux, "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
+                /* exlui td */
+                /* Deixa as caixas de texto em branco */
+                tArea_email.setText("");
+                tArea_email.requestFocus();
+                cbox_dia.setSelectedItem("");
+                cbox_mes.setSelectedItem("");
+                cbox_ano.setSelectedItem("");
+                cbox_papel.setSelectedItem("");
+
+                /* Remove Layout da recuperacao */
+                jpanel_login.remove(label_recuperar);
+                jpanel_login.remove(label_email);
+                jpanel_login.remove(label_dataNasc);
+                jpanel_login.remove(label_papel);
+                jpanel_login.remove(tArea_email);
+                jpanel_login.remove(cbox_papel);
+                jpanel_login.remove(cbox_dia);
+                jpanel_login.remove(cbox_mes);
+                jpanel_login.remove(cbox_ano);
+                jpanel_login.remove(bt_continuar_recupera);
+
+                jpanel_fundo.remove(jpanel_cadastro);
+
+                jpanel_cabecalho.remove(bt_login);
+                jpanel_cabecalho.remove(bt_juntese);
+                jpanel_cabecalho.remove(bt_projeto);
+
+                remove(jpanel_cabecalho);
+                remove(jpanel_fundo);
+
+                setVisible(false);
+
+                /* Manda pro login */
+                this.vMain = new VisaoMain();
+                vMain.usuarioLogin();
+                dispose();
+            }
+        }
+
+            
+    }   
 
     /* Funcao que remove tudo do painel e vai para o cdastro */    
     public void vaiPLogin(ActionEvent actionEvent){
+        /* Deixa a caixa de texto de algumas das caixas de texto */
+        tArea_email.setText("");
+        tArea_email.requestFocus();
+        cbox_dia.setSelectedItem("");
+        cbox_mes.setSelectedItem("");
+        cbox_ano.setSelectedItem("");
+        cbox_papel.setSelectedItem("");
+        tArea_senha.setText("");
+        tArea_senha.requestFocus();
+        tArea_cSenha.setText("");
+        tArea_cSenha.requestFocus();
+
         /* remove tudo do painel */
         jpanel_cadastro.remove(label_cadatro);
         jpanel_cadastro.remove(label_nome);
@@ -520,20 +746,33 @@ public class VisaoUsuario extends JFrame {
         jpanel_cadastro.remove(label_cSenha);
         jpanel_cadastro.remove(tArea_cSenha);
         jpanel_cadastro.remove(bt_continuar_cadastro);
+        jpanel_login.remove(label_recuperar);
+        jpanel_login.remove(label_email);
+        jpanel_login.remove(label_dataNasc);
+        jpanel_login.remove(label_papel);
+        jpanel_login.remove(tArea_email);
+        jpanel_login.remove(cbox_papel);
+        jpanel_login.remove(cbox_dia);
+        jpanel_login.remove(cbox_mes);
+        jpanel_login.remove(cbox_ano);
+        jpanel_login.remove(bt_continuar_recupera);
 
         jpanel_fundo.remove(jpanel_cadastro);
 
-        jpanel_cabecario.remove(bt_login);
-        jpanel_cabecario.remove(bt_juntese);
-        jpanel_cabecario.remove(projeto);
+        jpanel_cabecalho.remove(bt_login);
+        jpanel_cabecalho.remove(bt_juntese);
+        jpanel_cabecalho.remove(bt_projeto);
 
-        remove(jpanel_cabecario);
+        
+        remove(jpanel_cabecalho);
         remove(jpanel_fundo);
 
         setVisible(false);
 
         /* Manda pro login */
-        login(cUsuario);
+        this.vMain = new VisaoMain();
+        vMain.usuarioLogin();
+        dispose();
     }
 
     /* Funcao que remove tudo do painel e vai para o cdastro */
@@ -547,6 +786,7 @@ public class VisaoUsuario extends JFrame {
 
         /* Apaga tudo do painel */
 		jpanel_login.remove(bt_continuar_login);
+		jpanel_login.remove(bt_perdi);
         jpanel_login.remove(label_login);
         jpanel_login.remove(label_id);
         jpanel_login.remove(tArea_id);
@@ -555,19 +795,95 @@ public class VisaoUsuario extends JFrame {
         jpanel_login.remove(label_papel);
         jpanel_login.remove(cbox_papel);
 
-        jpanel_fundo.remove(jpanel_login);
+        jpanel_imagem.remove(label_imagem_login);
 
-        jpanel_cabecario.remove(bt_login);
-        jpanel_cabecario.remove(bt_juntese);
-        jpanel_cabecario.remove(projeto);
+        jpanel_fundo.remove(jpanel_login);        
+        jpanel_fundo.remove(jpanel_imagem);
 
-        remove(jpanel_cabecario);
+        jpanel_cabecalho.remove(bt_login);
+        jpanel_cabecalho.remove(bt_juntese);
+        jpanel_cabecalho.remove(bt_projeto);
+
+        remove(jpanel_cabecalho);
         remove(jpanel_fundo);
 
         setVisible(false);
 
         /* Manda pro cadastro */
-        cadastro(cUsuario);
+
+        this.vMain = new VisaoMain();
+        vMain.usuarioCadastro();
+        dispose();
+    }
+
+    public void projeto(ActionEvent actionEvent){
+        /* Deixa a caixa de texto de algumas das caixas de texto */
+        tArea_email.setText("");
+        tArea_email.requestFocus();
+        cbox_dia.setSelectedItem("");
+        cbox_mes.setSelectedItem("");
+        cbox_ano.setSelectedItem("");
+        cbox_papel.setSelectedItem("");
+        tArea_senha.setText("");
+        tArea_senha.requestFocus();
+        tArea_cSenha.setText("");
+        tArea_cSenha.requestFocus();
+        tArea_id.setText("");
+        tArea_id.requestFocus();
+
+        /* remove tudo do painel */
+        jpanel_cadastro.remove(label_cadatro);
+        jpanel_cadastro.remove(label_nome);
+        jpanel_cadastro.remove(tArea_nome);
+        jpanel_cadastro.remove(label_sobrenome);
+        jpanel_cadastro.remove(tArea_sobrenome);
+        jpanel_cadastro.remove(label_email);
+        jpanel_cadastro.remove(tArea_email);
+        jpanel_cadastro.remove(label_dataNasc);
+        jpanel_cadastro.remove(cbox_dia);
+        jpanel_cadastro.remove(cbox_mes);
+        jpanel_cadastro.remove(cbox_ano);
+        jpanel_cadastro.remove(label_papel);
+        jpanel_cadastro.remove(cbox_papel);
+        jpanel_cadastro.remove(label_senha);
+        jpanel_cadastro.remove(tArea_senha);
+        jpanel_cadastro.remove(label_cSenha);
+        jpanel_cadastro.remove(tArea_cSenha);
+        jpanel_cadastro.remove(bt_continuar_cadastro);
+        jpanel_login.remove(label_recuperar);
+        jpanel_login.remove(label_email);
+        jpanel_login.remove(label_dataNasc);
+        jpanel_login.remove(label_papel);
+        jpanel_login.remove(tArea_email);
+        jpanel_login.remove(cbox_papel);
+        jpanel_login.remove(cbox_dia);
+        jpanel_login.remove(cbox_mes);
+        jpanel_login.remove(cbox_ano);
+        jpanel_login.remove(bt_continuar_recupera);
+		jpanel_login.remove(bt_continuar_login);
+		jpanel_login.remove(bt_perdi);
+        jpanel_login.remove(label_login);
+        jpanel_login.remove(label_id);
+        jpanel_login.remove(tArea_id);
+
+        jpanel_imagem.remove(label_imagem_login);
+
+        jpanel_fundo.remove(jpanel_cadastro);
+        jpanel_fundo.remove(jpanel_login);        
+        jpanel_fundo.remove(jpanel_imagem);
+        jpanel_fundo.remove(jpanel_cadastro);
+
+        jpanel_cabecalho.remove(bt_login);
+        jpanel_cabecalho.remove(bt_juntese);
+        jpanel_cabecalho.remove(bt_projeto);
+
+        remove(jpanel_cabecalho);
+        remove(jpanel_fundo);
+
+        this.vMain = new VisaoMain();
+        vMain.menu();
+
+        setVisible(false);
     }
 
 
