@@ -3,17 +3,23 @@ package visao;
 /* Bibliotecas que serão necessárias*/
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.swing.*;
 
 import controle.Controle;
+import controle.ControleAluno;
 import controle.ControleAula;
+import controle.ControleMensagem;
 import controle.ControleProfessor;
 import modelo.Entidade;
+import modelo.Mensagem;
 import modelo.Aluno;
 import modelo.Aula;
 import modelo.Professor;
+import modelo.Usuario;
 
 public class VisaoProfessor extends JFrame {
     /* Atributo que vai guardar a única instância da interface */
@@ -24,6 +30,8 @@ public class VisaoProfessor extends JFrame {
     private ControleAula cAula;
     private Professor professor = new Professor();
     private ControleProfessor cProfessor;
+    private ControleAluno cAluno;
+    private ControleMensagem cMensagem;
     private VisaoMain vMain;
 
     /* Variaveis auxiliares */
@@ -44,6 +52,7 @@ public class VisaoProfessor extends JFrame {
     JButton bt_projeto = new JButton("PROJETO");
     JButton bt_aulas = new JButton("AULAS");
     JButton bt_mensagens = new JButton("MENSAGENS");
+    JButton bt_enviar_mensagem = new JButton("ESCREVER MENSAGEM");
     JButton bt_professor = new JButton("");
     JButton bt_sair = new JButton("SAIR");
     JButton bt_alterar = new JButton("ALTERAR DADOS");
@@ -561,6 +570,145 @@ public class VisaoProfessor extends JFrame {
         dispose();
     }
 
+    private void mensagens(ActionEvent actionEvent){
+
+        JFrame frame = new JFrame("Mensagens recebidas");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(400, 400);
+
+        ArrayList<Mensagem> mensagens = cMensagem.buscaMensagens(this.getName());
+
+        frame.add(bt_enviar_mensagem);
+        bt_enviar_mensagem.addActionListener(this::novaMensagem);
+        JPanel messagePanel = new JPanel();
+        messagePanel.setLayout(new BoxLayout(messagePanel, BoxLayout.Y_AXIS));
+
+       
+
+        for (Mensagem message : mensagens) {
+            JLabel titleLabel = new JLabel("Titulo: " + message.getTitulo());
+            JLabel dateLabel = new JLabel("Data : " + message.getData());
+            JLabel remetLabel = new JLabel("De : " + message.getRemetente().toString());
+            JLabel destLabel = new JLabel("para : " + message.getDestnatario().toString());
+            JTextArea textArea = new JTextArea(message.getTexto());
+            textArea.setEditable(false);
+
+            messagePanel.add(titleLabel);
+            messagePanel.add(dateLabel);
+            messagePanel.add(remetLabel);
+            messagePanel.add(new JScrollPane(textArea));
+            messagePanel.add(destLabel);
+        }
+
+        JScrollPane scrollPane = new JScrollPane(messagePanel);
+        frame.add(scrollPane);
+
+        frame.setVisible(true);
+        
+    }
+
+
+    private void novaMensagem(ActionEvent actionEvent) {
+
+        JFrame frame = new JFrame("Escrever");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(400, 300);
+
+        JPanel messagePanel = new JPanel();
+        messagePanel.setLayout(new GridBagLayout());
+
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+
+        JLabel titleLabel = new JLabel("Titulo:");
+        JTextField titleField = new JTextField(20);
+
+        JLabel dateLabel = new JLabel("Data:");
+        JTextField dateField = new JTextField(20);
+
+        JLabel fromLabel = new JLabel("De:");
+        JTextField fromField = new JTextField(20);
+
+        JLabel toLabel = new JLabel("Para:");
+        JTextField toField = new JTextField(20);
+
+        String[] papelVetor = {"","Aluno","Professor"};
+        JComboBox <String> cbox_papel = new JComboBox <String> (papelVetor);
+        messagePanel.add(cbox_papel);
+
+
+        JLabel textLabel = new JLabel("Text:");
+        JTextArea textArea = new JTextArea(10, 20);
+        JScrollPane textScrollPane = new JScrollPane(textArea);
+
+        JButton sendButton = new JButton("Send");
+
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        messagePanel.add(titleLabel, constraints);
+
+        constraints.gridx = 1;
+        messagePanel.add(titleField, constraints);
+
+        constraints.gridx = 0;
+        constraints.gridy = 1;
+        messagePanel.add(dateLabel, constraints);
+
+        constraints.gridx = 1;
+        messagePanel.add(dateField, constraints);
+
+        constraints.gridx = 0;
+        constraints.gridy = 2;
+        messagePanel.add(fromLabel, constraints);
+
+        constraints.gridx = 1;
+        messagePanel.add(fromField, constraints);
+
+        constraints.gridx = 0;
+        constraints.gridy = 3;
+        messagePanel.add(toLabel, constraints);
+
+        constraints.gridx = 1;
+        messagePanel.add(toField, constraints);
+
+        constraints.gridx = 0;
+        constraints.gridy = 4;
+        messagePanel.add(textLabel, constraints);
+
+        constraints.gridx = 1;
+        messagePanel.add(textScrollPane, constraints);
+
+        constraints.gridx = 0;
+        constraints.gridy = 5;
+        constraints.gridwidth = 2;
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.anchor = GridBagConstraints.CENTER;
+        messagePanel.add(sendButton, constraints);
+
+        sendButton.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Add code here to handle sending the message
+                String title = titleField.getText();
+                String date = dateField.getText();
+                String to = toField.getText();
+                String text = textArea.getText();
+                String papel = cbox_papel.getSelectedItem()+"";
+                Usuario user;
+
+                if(papel.equals("professor")){
+                    user = cProfessor.procuraUsuario(to);
+                }else {
+                    user = cAluno.procuraUsuario(to);
+                }
+                Mensagem novaMensagem = new Mensagem(title, date, text, professor, user);
+                cMensagem.insere(novaMensagem);
+            }
+        });
+
+        frame.add(messagePanel);
+        frame.setVisible(true);
+    }
 
     /* Acoes do botao criar aula */
     private void criarAula(ActionEvent actionEvent){
