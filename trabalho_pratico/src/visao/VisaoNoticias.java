@@ -19,7 +19,7 @@ public class VisaoNoticias extends JFrame{
     private VisaoMain vMain;
 
     protected int funcao, tamanho_titulo;
-    protected String data;
+    protected String data, dia, mes, ano, titulo, descricao;
     protected String[] colunas_noticias = {"Id", "Titulo", "Descricao", "Data"};
 
     /* Paineis */
@@ -40,15 +40,25 @@ public class VisaoNoticias extends JFrame{
     JButton bt_juntese = new JButton("JUNTE-SE");
     JButton bt_usuario = new JButton("");
     JButton bt_alterar = new JButton("ALTERAR");
+    JButton bt_confirmar = new JButton("CONFIRMAR");
+    JButton bt_excluir = new JButton("EXCLUIR");
     
     /* Labels */
     JLabel label_titulo = new JLabel();
-    JLabel label_descricao = new JLabel("Descricao");
+    JLabel label_descricao = new JLabel("Descricao: ");
     JLabel label_professor = new JLabel();
     JLabel label_data = new JLabel();
+    JLabel label_alterar_noticias = new JLabel("Alterar Noticia");
+    JLabel label_dias = new JLabel();
 
     /* TextAreas */
     JTextArea tArea_descricao = new JTextArea();
+    JTextArea tArea_titulo = new JTextArea();
+
+    /* ComboBox */
+    JComboBox <String> cbox_dia = new JComboBox<>(preencheVetor(32, 1, true));
+    JComboBox <String> cbox_mes = new JComboBox<>(preencheVetor(13, 1, true));
+    JComboBox <String> cbox_ano = new JComboBox<>(preencheVetor(151, 1874, false));
 
     /* Tabelas */
     JTable tabela_noticias;
@@ -303,6 +313,7 @@ public class VisaoNoticias extends JFrame{
         label_descricao.setBounds(50, 150,125,40);
 
         /* TextAreas */
+        tArea_descricao.setText(noticias.getDescricao());
         tArea_descricao.setFont(texto_padrao);
         tArea_descricao.setBounds(50,185,450,200);
         tArea_descricao.setBackground(Color.white);
@@ -337,38 +348,47 @@ public class VisaoNoticias extends JFrame{
     }
 
     public void alterar(Controle controle, Entidade entidade, Entidade entidade2){
+        cNoticias = (ControleNoticias)controle;
+        noticias = (Noticias)entidade;
         professor = (Professor)entidade2;               
         bt_usuario.setText(professor.getNome());
         cabecalho();
 
-        setVisible(false);
-        /* Exclui os elementos antigos */
-        jpanel_dados.remove(label_dados);
-        jpanel_dados.remove(label_imagem_login);
-        jpanel_dados.remove(label_nome);
-        jpanel_dados.remove(label_email);
-        jpanel_dados.remove(label_dataNasc);
-        jpanel_dados.remove(bt_alterar);
+        jpanel_noticias.remove(label_titulo);
+        jpanel_noticias.remove(label_descricao);
+        jpanel_noticias.remove(label_professor);
+        jpanel_noticias.remove(label_data);
+        jpanel_noticias.remove(tArea_descricao);
+        jpanel_noticias.remove(jpanel_titulo);
+        jpanel_noticias.remove(bt_alterar);
 
-        jpanel_fundo.remove(jpanel_dados);
-        jpanel_fundo.remove(jScroll_aulas);
-        jpanel_fundo.remove(bt_criar_aula);
-        jpanel_fundo.remove(bt_criar_noticias);
+        jpanel_fundo.remove(jpanel_noticias);
+
+        setVisible(false);
 
         /* Botões */
-        bt_continuar_noticias.setFont(texto_padrao);
-        bt_continuar_noticias.setBounds(180, 385, 150,40);
-        bt_continuar_noticias.setBackground(Color.white);
-		bt_continuar_noticias.setForeground(Color.black);
-        bt_continuar_noticias.addActionListener(this::continuarNoticias);
+        bt_confirmar.setFont(texto_padrao);
+        bt_confirmar.setBounds(300, 385, 150,40);
+        bt_confirmar.setBackground(Color.white);
+		bt_confirmar.setForeground(Color.black);
+        bt_confirmar.addActionListener(this::confirmaNoticia);
+
+        bt_excluir.setFont(texto_padrao);
+        bt_excluir.setBounds(100, 385, 150,40);
+        bt_excluir.setBackground(Color.white);
+		bt_excluir.setForeground(Color.black);
+        bt_excluir.addActionListener(this::excluir);
 
         /* Labels */
-        label_criar_noticias.setFont(texto_sub_titulo);
-        label_criar_noticias.setBounds(125, 25, 250,50);
+        label_alterar_noticias.setFont(texto_sub_titulo);
+        label_alterar_noticias.setBounds(175, 25, 200,50);
 
+        label_titulo.setText("Titulo: ");
         label_titulo.setFont(texto_padrao);
+        label_titulo.setForeground(Color.black);
         label_titulo.setBounds(60, 100, 125,50);
 
+        label_dias.setText("Data: ");
         label_dias.setFont(texto_padrao);
         label_dias.setBounds(60, 135,125,50);
 
@@ -400,8 +420,7 @@ public class VisaoNoticias extends JFrame{
         jpanel_noticias.setVisible(true);
 
         /* Adiciona elementos no painel */
-        jpanel_noticias.add(label_criar_aula);
-        jpanel_noticias.add(label_criar_noticias);
+        jpanel_noticias.add(label_alterar_noticias);
         jpanel_noticias.add(label_titulo);
         jpanel_noticias.add(label_descricao);
         jpanel_noticias.add(label_dias);
@@ -410,7 +429,8 @@ public class VisaoNoticias extends JFrame{
         jpanel_noticias.add(cbox_dia);
         jpanel_noticias.add(cbox_mes);
         jpanel_noticias.add(cbox_ano);
-        jpanel_noticias.add(bt_continuar_noticias);
+        jpanel_noticias.add(bt_confirmar);
+        jpanel_noticias.add(bt_excluir);
 
         jpanel_fundo.add(jpanel_noticias);
 
@@ -418,6 +438,45 @@ public class VisaoNoticias extends JFrame{
     }
 
     private void alterar(ActionEvent actionEvent){
+        vMain = new VisaoMain();              
+        vMain.noticiasAlterar(noticias, professor);
+        dispose();
+    }
+
+    private void confirmaNoticia(ActionEvent actionEvent){
+        titulo = tArea_titulo.getText();
+        descricao = tArea_descricao.getText();
+        dia = cbox_dia.getSelectedItem()+"";
+        mes = cbox_mes.getSelectedItem()+"";
+        ano = cbox_ano.getSelectedItem()+"";
+
+        if(!(titulo.equals("") && descricao.equals("") && dia.equals("") && mes.equals("") && ano.equals(""))){
+            if(!(titulo.equals("")))
+                noticias.setTitulo(titulo);
+            if(!(descricao.equals("")))
+                noticias.setDescricao(descricao);
+            if(!(dia.equals("")))
+                noticias.setDia(Integer.parseInt(dia));
+            if(!(mes.equals("")))
+                noticias.setMes(Integer.parseInt(mes));
+            if(!(ano.equals("")))
+                noticias.setAno(Integer.parseInt(ano));
+
+            cNoticias.remove(noticias, false);
+            cNoticias.insere(noticias);
+
+            JOptionPane.showMessageDialog(null,"Sua noticia foi alterado", "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
+        }
+
+        vMain = new VisaoMain();              
+        vMain.noticiasMenu(cNoticias, professor, 2);
+        dispose();
+    }
+
+    private void excluir(ActionEvent actionEvent){
+        cNoticias.remove(noticias, true);
+        JOptionPane.showMessageDialog(null,"Sua noticia foi excluida", "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
+
         vMain = new VisaoMain();              
         vMain.noticiasMenu(cNoticias, professor, 2);
         dispose();
@@ -494,6 +553,31 @@ public class VisaoNoticias extends JFrame{
         else
             vMain.aulaAP(professor,2);
         dispose();
+    }
+
+    /* Tamanho dos vetores para o dia, mês e ano */
+    public String[] preencheVetor(int tamanho, int comeco, boolean orientacao) {
+
+        /* Cria um vetor que vai armazenar os tempo correspondente e coloca o primeiro elemento*/
+        String[] vetor = new String[tamanho];
+
+        /* Deixa a primeira posição como null */
+        vetor[0]= "";
+
+        /* Preeche os elemetos seguintes até o fim do tamanho se acordo com a orientacao dada
+         * se for TRUE é crescente, se for FALSE é descrescente*/
+        if(orientacao){
+            for(int i = 1; i<tamanho ;i++){
+                vetor[i] = Integer.toString(comeco + i - 1);
+            }
+        }
+        else{
+            for(int i = 1; i<tamanho ;i++){
+                vetor[i] = Integer.toString(comeco + tamanho - i - 1);
+            }
+        }
+        /* Retorna o vetor */
+        return vetor;
     }
 
 }

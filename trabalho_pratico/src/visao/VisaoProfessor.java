@@ -552,7 +552,6 @@ public class VisaoProfessor extends JFrame {
             cProfessor.insere(professor);
 
             JOptionPane.showMessageDialog(null,"Seu cadastrato foi alterado", "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
-            
         }
 
         /* Remove tudo do cabecalho */

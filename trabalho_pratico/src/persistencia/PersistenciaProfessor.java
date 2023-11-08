@@ -133,10 +133,8 @@ public class PersistenciaProfessor implements Persistencia{
                     if(vetorJSONAux != null && condicao){
                         for(int j = 0;j < vetorJSONAux.size(); j++){
                             aulaIndiv = Integer.valueOf(vetorJSONAux.get(j).toString());
-                            if(aulaIndiv != 0 ){
-                                aula = pAula.buscaID(aulaIndiv);
-                                pAula.remove(aula, true);
-                            }
+                            aula = pAula.buscaID(aulaIndiv);
+                            pAula.remove(aula, true);
                         }
                     }
                     vetorJson.remove(elemento);

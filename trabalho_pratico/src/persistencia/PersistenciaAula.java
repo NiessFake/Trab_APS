@@ -143,7 +143,7 @@ public class PersistenciaAula implements Persistencia{
                 aux = elemento.get("id").toString();
 
                 /* Se achar o id que deseja excluir, exclui e depois  */
-                if(Integer.parseInt(aux)== ((Aula)entidade).getId()){
+                if(Integer.parseInt(aux) == ((Aula)entidade).getId()){
                     vetorJSONAluno = (JSONArray) elemento.get("alunos");
 
                     /* Procura entre os alunos, aqueles que estao incritos. Quando acha, exclui a 
@@ -152,21 +152,19 @@ public class PersistenciaAula implements Persistencia{
                         for(int j = 0; j < vetorJSONAluno.size(); j++){
                             aula_individual = Integer.valueOf(vetorJSONAluno.get(j).toString());
                             
-                            if(aula_individual != 0 ){
-                                aluno = pAluno.buscaID(aula_individual);
+                            aluno = pAluno.buscaIDParcial(aula_individual);
 
-                                vetor_aluno = aluno.getAulaInscritas();
+                            vetor_aluno = aluno.getAulaInscritas();
 
-                                for(int k =0; k < vetor_aluno.length;k++){
-                                    if(vetor_aluno[k].getId() == ((Aula)entidade).getId())
-                                        vetor_aluno[k] = null;
-                                }
-
-                                aluno.setAulaInscritas(vetor_aluno);
-
-                                pAluno.remove(aluno, false);
-                                pAluno.insere(aluno);
+                            for(int k = 0; k < vetor_aluno.length;k++){
+                                if(vetor_aluno[k].getId() == ((Aula)entidade).getId())
+                                    vetor_aluno[k] = null;
                             }
+
+                            aluno.setAulaInscritas(vetor_aluno);
+
+                            pAluno.remove(aluno, false);
+                            pAluno.insere(aluno);
                         }
                     }
 
