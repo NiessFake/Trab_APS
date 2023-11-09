@@ -48,7 +48,7 @@ public class Mensagem extends Entidade{
     public Usuario getRemetente(){
         return this.remetente;
     }
-    public Usuario getDestnatario(){
+    public Usuario getDestinatario(){
         return this.destinatario;
     }
     public int getId(){

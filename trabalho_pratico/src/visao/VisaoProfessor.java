@@ -25,7 +25,6 @@ public class VisaoProfessor extends JFrame {
     //private static VisaoProfessor uniqueInstance;
 
     /* Classes usadas */
-    private Aluno aluno;
     private ControleAluno cAluno;
     private Aula aula;
     private ControleAula cAula;
@@ -39,7 +38,7 @@ public class VisaoProfessor extends JFrame {
 
     /* Variaveis auxiliares */
     protected int tamanho_vetor_aula;
-    protected String nome, sobrenome, email, dia, mes, ano , senha, cSenha, materia, capacidade, duracao, descricao, titulo, data, texto, destinatario, papel;
+    protected String nome, sobrenome, email, dia, mes, ano , senha, cSenha, materia, capacidade, duracao, descricao, titulo, data, texto, destinatario, papel, buscar;
     protected boolean condicao_alteracao, condicao_cadastro, frequencia;
     protected String[] dias = new String[7];
     protected String[] colunas = {"ID", "Materia", "Capacidade"};
@@ -70,6 +69,7 @@ public class VisaoProfessor extends JFrame {
     JButton bt_mensagem = new JButton("NOVA MENSAGEM");
     JButton bt_mensagem_menu = new JButton("MENSAGENS");
     JButton bt_continuar_mensagem = new JButton("CONTINUAR");
+    JButton bt_buscar = new JButton("BUSCAR");
 
     /* Labels */
     JLabel label_alterar = new JLabel("ALTERAR DADOS");
@@ -109,6 +109,7 @@ public class VisaoProfessor extends JFrame {
     JTextArea tArea_titulo = new JTextArea();
     JTextArea tArea_texto = new JTextArea();
     JTextArea tArea_destinatario = new JTextArea();
+    JTextArea tArea_buscar = new JTextArea();
 
     /*ComboBoxes */
     JComboBox <String> cbox_dia = new JComboBox<>(preencheVetor(32, 1, true));
@@ -946,6 +947,12 @@ public class VisaoProfessor extends JFrame {
 		bt_continuar_mensagem.setForeground(Color.black);
         bt_continuar_mensagem.addActionListener(this::continuarMensagem);
 
+        bt_buscar.setFont(texto_padrao);
+        bt_buscar.setBounds(150, 400, 100,40);
+        bt_buscar.setBackground(Color.white);
+		bt_buscar.setForeground(Color.black);
+        bt_buscar.addActionListener(this::buscar);
+
         /* Labels */
         label_criar_mensagem.setFont(texto_sub_titulo);
         label_criar_mensagem.setBounds(137, 25, 225,50);
@@ -953,7 +960,7 @@ public class VisaoProfessor extends JFrame {
         label_titulo.setFont(texto_padrao);
         label_titulo.setBounds(60, 100, 125,50);
 
-        label_dataNasc.setText("Data Nasc.:");
+        label_dataNasc.setText("Data:");
         label_dataNasc.setFont(texto_padrao);
         label_dataNasc.setBounds(60, 135, 125,50);
 
@@ -980,6 +987,10 @@ public class VisaoProfessor extends JFrame {
         tArea_texto.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
         tArea_texto.setLineWrap(true);
         tArea_texto.setWrapStyleWord(true);
+
+        tArea_buscar.setFont(texto_padrao);
+        tArea_buscar.setBounds(60, 410,75,20);
+        tArea_buscar.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
 
         /* CheckBOXes */
         cbox_dia.setBounds(190, 145, 80, 25);
@@ -1013,6 +1024,8 @@ public class VisaoProfessor extends JFrame {
         jpanel_mensagem.add(cbox_mes);
         jpanel_mensagem.add(cbox_papel);
         jpanel_mensagem.add(bt_continuar_mensagem);
+        jpanel_mensagem.add(bt_buscar);
+        jpanel_mensagem.add(tArea_buscar);
 
         jpanel_fundo.add(jpanel_mensagem);
 
@@ -1067,6 +1080,39 @@ public class VisaoProfessor extends JFrame {
         this.vMain = new VisaoMain();
         vMain.professorPagina(cProfessor,professor);
         dispose();
+    }
+
+    private void buscar(ActionEvent actionEvent){
+        buscar = tArea_buscar.getText();
+        papel = cbox_papel.getSelectedItem()+"";
+
+        cAluno = new ControleAluno();
+
+        if(papel.equals("")){
+            JOptionPane.showMessageDialog(null,"Informe a funcao delu.", "ERRO",JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if(papel.equals("Aluno")){
+            if(cAluno.buscaID(Integer.parseInt(buscar))==null){
+                JOptionPane.showMessageDialog(null,"Usuario nao existe.", "ERRO",JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            else{
+                JOptionPane.showMessageDialog(null,"O nome deste usuario eh: " + (cAluno.buscaID(Integer.parseInt(buscar))).getNome(), "Sucesso",JOptionPane.INFORMATION_MESSAGE);
+                return;  
+            }
+        }
+        else{
+            if(cProfessor.buscaID(Integer.parseInt(buscar))==null){
+                JOptionPane.showMessageDialog(null,"Usuario nao existe.", "ERRO",JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+            else{
+                JOptionPane.showMessageDialog(null,"O nome deste usuario eh: " + (cProfessor.buscaID(Integer.parseInt(buscar))).getNome(), "Sucesso",JOptionPane.INFORMATION_MESSAGE);
+                return;  
+            }
+        }
     }
 
     private void vaiPMensagem(ActionEvent actionEvent){

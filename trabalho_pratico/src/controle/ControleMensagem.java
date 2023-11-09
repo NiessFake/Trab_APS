@@ -1,5 +1,6 @@
 package controle;
 
+import modelo.Entidade;
 import modelo.Mensagem;
 import persistencia.PersistenciaMensagem;
 
@@ -12,8 +13,8 @@ public class ControleMensagem extends Controle {
         return ((PersistenciaMensagem)persistencia).buscaID(id);
     }
 
-    public Object[][] textoMensagem(){
-        return ((PersistenciaMensagem)persistencia).textoMensagem();
+    public Object[][] textoMensagem(Entidade entidade, int tipo){
+        return ((PersistenciaMensagem)persistencia).textoMensagem(entidade, tipo);
     }
 
     public int devolveMaiorID(){

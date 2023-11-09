@@ -253,7 +253,7 @@ public class VisaoNoticias extends JFrame{
         cNoticias = (ControleNoticias)controle;
         this.noticias = (Noticias)entidade;
 
-        tamanho_titulo = noticias.getTitulo().length()*15;
+        tamanho_titulo = noticias.getTitulo().length()*18;
 
         funcao = tipo;
         cabecalho();
@@ -280,7 +280,7 @@ public class VisaoNoticias extends JFrame{
                 bt_alterar.setBounds(225,400,100,40);
                 bt_alterar.setBackground(Color.white);
                 bt_alterar.setForeground(Color.black);
-                bt_alterar.setBorderPainted(false);
+                bt_alterar.setBorderPainted(true);
                 bt_alterar.addActionListener(this::alterar);
                 jpanel_noticias.add(bt_alterar);
             }

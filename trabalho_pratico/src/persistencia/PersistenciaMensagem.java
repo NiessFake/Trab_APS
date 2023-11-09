@@ -36,7 +36,7 @@ public class PersistenciaMensagem implements Persistencia, Serializable{
             hashJSON.put("texto", ((Mensagem)entidade).getTexto());
             hashJSON.put("data", ((Mensagem)entidade).getData());
             hashJSON.put("dest", (((Mensagem)entidade).getRemetente()).getId());
-            hashJSON.put("remet", (((Mensagem)entidade).getDestnatario()).getId());
+            hashJSON.put("remet", (((Mensagem)entidade).getDestinatario()).getId());
             hashJSON.put("TR", ((Mensagem)entidade).getTR());
             hashJSON.put("TD", ((Mensagem)entidade).getTD());
 
@@ -170,10 +170,10 @@ public class PersistenciaMensagem implements Persistencia, Serializable{
         try {
             caminhoExiste();
             /* Converte os elementos no arquivo para um objeto JSON*/
-            JSONObject noticias = (JSONObject) conversorJson.parse(new FileReader(file));
+            JSONObject mensagem = (JSONObject) conversorJson.parse(new FileReader(file));
             
             /* Pega o vetor dentro do objeto JSON e o guarda em um vetor JSON */
-            JSONArray vetorJson = (JSONArray) noticias.get("noticias");
+            JSONArray vetorJson = (JSONArray) mensagem.get("mensagem");
             
             /* Loop for que percorre os elementos do vetor até o seu fim */
             for (int i = 0; i < vetorJson.size() ; i++){
@@ -185,11 +185,11 @@ public class PersistenciaMensagem implements Persistencia, Serializable{
 
                 /* Se achar o id no banco de dados, retorna-o */
                 if(id == Integer.parseInt(aux)){
-                    mMensagem.setTitulo(elemento.get("descricao").toString());
-                    mMensagem.setData(elemento.get("titulo").toString());
+                    mMensagem.setTitulo(elemento.get("titulo").toString());
+                    mMensagem.setData(elemento.get("data").toString());
                     mMensagem.setTexto(elemento.get("texto").toString());
 
-                    if(Integer.parseInt(elemento.get("TR").toString()) == 0){
+                    if(Integer.parseInt(elemento.get("TR").toString()) == 1){
                         aluno = pAluno.buscaIDParcial(Integer.parseInt(elemento.get("remet").toString()));
                         mMensagem.setRemet(aluno);
                     }
@@ -198,13 +198,13 @@ public class PersistenciaMensagem implements Persistencia, Serializable{
                         mMensagem.setRemet(professor);
                     }
 
-                    if(Integer.parseInt(elemento.get("TD").toString())  == 0){
+                    if(Integer.parseInt(elemento.get("TD").toString())  == 1){
                         aluno = pAluno.buscaIDParcial(Integer.parseInt(elemento.get("dest").toString()));
-                        mMensagem.setRemet(aluno);
+                        mMensagem.setDest(aluno);
                     }
                     else{
                         professor = pProfessor.buscaIDParcial(Integer.parseInt(elemento.get("dest").toString()));
-                        mMensagem.setRemet(professor);
+                        mMensagem.setDest(professor);
                     }
 
                     mMensagem.setId(Integer.parseInt(elemento.get("id").toString()));
@@ -227,7 +227,11 @@ public class PersistenciaMensagem implements Persistencia, Serializable{
     }
     
     /* Texto de mensagem para tabelas */
-    public Object[][] textoMensagem(){
+    public Object[][] textoMensagem(Entidade entidade, int tipo){
+        Aluno aluno = new Aluno();
+        Professor professor = new Professor();
+
+        int dest, remet, TD, TR;
 
         /* Cria um conversor de JSON para texto para que seja possível percorrer o arquivo */
         JSONParser conversorJson = new JSONParser();
@@ -241,15 +245,40 @@ public class PersistenciaMensagem implements Persistencia, Serializable{
             JSONArray vetorJson = (JSONArray) mensagem.get("mensagem");
 
             /* Cria um objeto que vai guardar os dados dos elementos no JSON */
-            Object[][] objeto = new Object[vetorJson.size()][2];
+            Object[][] objeto = new Object[vetorJson.size()][3];
 
             /* Loop for que percorre os elementos do vetor até o seu fim */
             for (int i = 0; i < vetorJson.size() ; i++){
                 /* Cria um objeto para aquele elemento que será analisado */
                 JSONObject elemento = (JSONObject) vetorJson.get(i);
 
-                objeto[i][0] = elemento.get("dest").toString();
-                objeto[i][1] = elemento.get("remet").toString();
+                if(tipo == 1){
+                    aluno = (Aluno)entidade;
+                    dest = Integer.parseInt(elemento.get("dest").toString());
+                    remet = Integer.parseInt(elemento.get("remet").toString());
+                    TD = Integer.parseInt(elemento.get("TR").toString());
+                    TR = Integer.parseInt(elemento.get("TD").toString());
+
+                    if((dest == aluno.getId() && TD == 1)|| (remet == aluno.getId() && TR == 1)){
+                        objeto[i][0] = elemento.get("id").toString();
+                        objeto[i][1] = elemento.get("dest").toString();
+                        objeto[i][2] = elemento.get("remet").toString();
+                    }
+                }
+                else{
+                    professor = (Professor)entidade;
+                    dest = Integer.parseInt(elemento.get("dest").toString());
+                    remet = Integer.parseInt(elemento.get("remet").toString());
+                    TD = Integer.parseInt(elemento.get("TR").toString());
+                    TR = Integer.parseInt(elemento.get("TD").toString());
+
+                    if((dest == professor.getId() && TD == 2)|| (remet == professor.getId() && TR == 2)){
+                        objeto[i][0] = elemento.get("id").toString();
+                        objeto[i][1] = elemento.get("dest").toString();
+                        objeto[i][2] = elemento.get("remet").toString();
+                    }
+                }
+
             }
             
             return objeto;

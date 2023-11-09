@@ -504,12 +504,12 @@ public class VisaoMain extends JFrame {
 
         switch (tipo) {
             case 1:
-                this.aluno = (Aluno)entidade;
+                this.aluno = (Aluno)entidade2;
                 vMensagem.paginaIndividual(cMensagem, mensagem, aluno,tipo);
                 break;
 
             case 2:
-                this.professor = (Professor)entidade;
+                this.professor = (Professor)entidade2;
                 vMensagem.paginaIndividual(cMensagem, mensagem, professor,tipo);
                 break;
         

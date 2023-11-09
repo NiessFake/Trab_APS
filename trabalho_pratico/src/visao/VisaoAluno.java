@@ -27,7 +27,7 @@ public class VisaoAluno extends JFrame{
     private ControleAula cAula;
     private VisaoMain vMain;
 
-    protected String nome, sobrenome, email, dia, mes, ano , senha, cSenha, titulo, texto, papel, destinatario, data;
+    protected String nome, sobrenome, email, dia, mes, ano , senha, cSenha, titulo, texto, papel, destinatario, data, busca;
     protected boolean condicao;
     protected String[] coluna_aula = {"ID", "Materia", "Capacidade"};
     protected String[] botoes = { "Sim", "Nao" };
@@ -50,7 +50,7 @@ public class VisaoAluno extends JFrame{
     JButton bt_aulas = new JButton("AULAS");
     JButton bt_noticias = new JButton("NOTICIAS");
     JButton bt_sair = new JButton("SAIR");
-    JButton bt_aluno = new JButton("");
+    JButton bt_aluno = new JButton("SAIR");
     JButton bt_mensagem = new JButton("NOVA MENSAGEM");
     JButton bt_alterar = new JButton("ALTERAR DADOS");
     JButton bt_excluir = new JButton("EXCLUIR");
@@ -59,6 +59,7 @@ public class VisaoAluno extends JFrame{
     JButton bt_projeto = new JButton("PROJETO");
     JButton bt_continuar_mensagem = new JButton("CONTINUAR");
     JButton bt_mensagem_menu = new JButton("MENSAGENS");
+    JButton bt_busca = new JButton("BUSCAR");
 
     
     /* Labels */
@@ -86,6 +87,7 @@ public class VisaoAluno extends JFrame{
     JTextArea tArea_titulo = new JTextArea();
     JTextArea tArea_texto = new JTextArea();
     JTextArea tArea_destinatario = new JTextArea();
+    JTextArea tArea_busca = new JTextArea();
 
     /*ComboBox */
     JComboBox <String> cbox_dia = new JComboBox<>(preencheVetor(32, 1, true));
@@ -214,9 +216,6 @@ public class VisaoAluno extends JFrame{
 
         cabecalho();
         tabelaAulas();
-
-        /* Nomeia o botao como o nome do aluno cadastrado */
-        bt_aluno.setText(aluno.getNome());
 
         /* Botões */
         bt_alterar.setFont(new Font("ARIAL",Font.BOLD,11));
@@ -558,16 +557,19 @@ public class VisaoAluno extends JFrame{
         cAluno = (ControleAluno)controle;
         aluno = (Aluno)entidade;
 
-        /* Nomeia o botao como o nome do aluno cadastrado */
-        bt_aluno.setText(aluno.getNome());
-
         cabecalho();
         /* Botões */
         bt_continuar_mensagem.setFont(texto_padrao);
-        bt_continuar_mensagem.setBounds(187, 400, 125,40);
+        bt_continuar_mensagem.setBounds(350, 400, 125,40);
         bt_continuar_mensagem.setBackground(Color.white);
 		bt_continuar_mensagem.setForeground(Color.black);
         bt_continuar_mensagem.addActionListener(this::continuarMensagem);
+
+        bt_busca.setFont(texto_padrao);
+        bt_busca.setBounds(150, 400, 100,40);
+        bt_busca.setBackground(Color.white);
+		bt_busca.setForeground(Color.black);
+        bt_busca.addActionListener(this::buscar);
 
         /* Labels */
         label_criar_mensagem.setFont(texto_sub_titulo);
@@ -576,7 +578,7 @@ public class VisaoAluno extends JFrame{
         label_titulo.setFont(texto_padrao);
         label_titulo.setBounds(60, 100, 125,50);
 
-        label_dataNasc.setText("Data Nasc.:");
+        label_dataNasc.setText("Data:");
         label_dataNasc.setFont(texto_padrao);
         label_dataNasc.setBounds(60, 135, 125,50);
 
@@ -603,6 +605,10 @@ public class VisaoAluno extends JFrame{
         tArea_texto.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
         tArea_texto.setLineWrap(true);
         tArea_texto.setWrapStyleWord(true);
+
+        tArea_busca.setFont(texto_padrao);
+        tArea_busca.setBounds(60, 410,75,20);
+        tArea_busca.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
 
         /* CheckBOXes */
         cbox_dia.setBounds(190, 145, 80, 25);
@@ -636,6 +642,8 @@ public class VisaoAluno extends JFrame{
         jpanel_mensagem.add(cbox_mes);
         jpanel_mensagem.add(cbox_papel);
         jpanel_mensagem.add(bt_continuar_mensagem);
+        jpanel_mensagem.add(bt_busca);
+        jpanel_mensagem.add(tArea_busca);
 
         jpanel_fundo.add(jpanel_mensagem);
 
@@ -690,6 +698,39 @@ public class VisaoAluno extends JFrame{
         this.vMain = new VisaoMain();
         vMain.alunoPagina(cAluno,aluno);
         dispose();
+    }
+
+    private void buscar(ActionEvent actionEvent){
+        busca = tArea_busca.getText();
+        papel = cbox_papel.getSelectedItem()+"";
+
+        cProfessor = new ControleProfessor();
+
+        if(papel.equals("")){
+            JOptionPane.showMessageDialog(null,"Informe a funcao delu.", "ERRO",JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if(papel.equals("Aluno")){
+            if(cAluno.buscaID(Integer.parseInt(busca))==null){
+                JOptionPane.showMessageDialog(null,"Usuario nao existe.", "ERRO",JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            else{
+                JOptionPane.showMessageDialog(null,"O nome deste usuario eh: " + (cAluno.buscaID(Integer.parseInt(busca))).getNome(), "Sucesso",JOptionPane.INFORMATION_MESSAGE);
+                return;  
+            }
+        }
+        else{
+            if(cProfessor.buscaID(Integer.parseInt(busca))==null){
+                JOptionPane.showMessageDialog(null,"Usuario nao existe.", "ERRO",JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+            else{
+                JOptionPane.showMessageDialog(null,"O nome deste usuario eh: " + (cProfessor.buscaID(Integer.parseInt(busca))).getNome(), "Sucesso",JOptionPane.INFORMATION_MESSAGE);
+                return;  
+            }
+        }
     }
 
     private void vaiPMensagem(ActionEvent actionEvent){

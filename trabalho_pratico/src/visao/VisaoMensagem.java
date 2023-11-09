@@ -14,21 +14,19 @@ import modelo.*;
 public class VisaoMensagem extends JFrame{
     private Aluno aluno;
     private Professor professor;
-    private Noticias noticias;
     private Mensagem mensagem;
-    private ControleAula cAula;
-    private ControleNoticias cNoticias;
     private ControleMensagem cMensagem;
     private VisaoMain vMain;
 
     protected int funcao, tamanho_titulo;
     protected String data, dia, mes, ano, titulo, descricao;
-    protected String[] colunas_mensagem = {"Id Remet", "Id Dest"};
+    protected String[] colunas_mensagem = {"ID", "Id Remet", "Id Dest"};
+    protected Object[][] objeto_tabela_mensagem;
 
     /* Paineis */
     JPanel jpanel_cabecalho = new JPanel();
     JPanel jpanel_fundo = new JPanel();
-    JPanel jpanel_noticias = new JPanel();
+    JPanel jpanel_mensagem = new JPanel();
     JPanel jpanel_titulo = new JPanel();
 
     /* Scroll Panels */
@@ -38,10 +36,17 @@ public class VisaoMensagem extends JFrame{
     /* Botões */
     JButton bt_projeto = new JButton("PROJETO");
     JButton bt_usuario = new JButton("");
+    JButton bt_voltar = new JButton("VOLTAR");
     
     /* Labels */
+    JLabel label_remetente = new JLabel();
+    JLabel label_destinatario = new JLabel();
+    JLabel label_titulo = new JLabel();
+    JLabel label_mensagem = new JLabel();
+    JLabel label_data = new JLabel();
 
     /* TextAreas */
+    JTextArea tArea_texto = new JTextArea();
 
     /* Tabelas */
     JTable tabela_mensagem;
@@ -116,11 +121,14 @@ public class VisaoMensagem extends JFrame{
             case 1:                
                 aluno = (Aluno)entidade;
                 bt_usuario.setText(aluno.getNome());
+
+                objeto_tabela_mensagem = cMensagem.textoMensagem(aluno,1);
                 break;
             
             case 2:                
                 professor = (Professor)entidade;
                 bt_usuario.setText(professor.getNome());
+                objeto_tabela_mensagem = cMensagem.textoMensagem(professor,2);
                 break;
             
             default:
@@ -128,10 +136,6 @@ public class VisaoMensagem extends JFrame{
         }
 
         cabecalho();
-
-        /* Chama a funcao que devolve um objeto contendo os dados do json */
-        Object[][] objeto_tabela_mensagem = cMensagem.textoMensagem();
-
         
         /* Cria uma tabela de selecao unica e nao editavel */
         tabela_mensagem = new JTable(objeto_tabela_mensagem, colunas_mensagem){   
@@ -149,34 +153,35 @@ public class VisaoMensagem extends JFrame{
                     /* Confere se um item foi selecionado, em caso positivo, pega seu index */
                     if(!selecao.isSelectionEmpty()){
                         int selecionado = selecao.getMinSelectionIndex();
+                        if(tabela_mensagem.getValueAt(selecionado, 0) != null){
+                            String aux = tabela_mensagem.getValueAt(selecionado, 0).toString();
 
-                        String aux = tabela_mensagem.getValueAt(selecionado, 0).toString();
+                            mensagem.setId(Integer.parseInt(aux));
 
-                        mensagem.setId(Integer.parseInt(aux));
+                            /* Apaga tabela antiga */
+                            jpanel_fundo.remove(jScroll_mensagem);
 
-                        /* Apaga tabela antiga */
-                        jpanel_fundo.remove(jScroll_mensagem);
+                            mensagem = cMensagem.buscaID(mensagem.getId());
 
-                        mensagem = cMensagem.buscaID(mensagem.getId());
+                            setVisible(false);
+                            vMain = new VisaoMain();
+                            switch (funcao) {
+                                case 1:
+                                    vMain.mensagemPI(mensagem, aluno,funcao);
+                                    break;
 
-                        setVisible(false);
-                        vMain = new VisaoMain();
-                        switch (funcao) {
-                            case 1:
-                                vMain.mensagemPI(mensagem, aluno,funcao);
-                                break;
-
-                            case 2:
-                                vMain.mensagemPI(mensagem, professor,funcao);
-                                break;
-                        
-                            default:
-                                vMain.mensagemPI(mensagem, null,funcao);
-                                break;
+                                case 2:
+                                    vMain.mensagemPI(mensagem, professor,funcao);
+                                    break;
+                            
+                                default:
+                                    vMain.mensagemPI(mensagem, null,funcao);
+                                    break;
+                            }
+                            dispose();
                         }
-                        dispose();
+                    }
                 }
-            }
         });
 
         
@@ -198,12 +203,120 @@ public class VisaoMensagem extends JFrame{
     }
 
     public void paginaIndividual(Controle controle, Entidade entidade, Entidade entidade2, int tipo){
+        setVisible(true);
 
+        cMensagem = (ControleMensagem)controle;
+        this.mensagem = (Mensagem)entidade;
+
+        tamanho_titulo = mensagem.getTitulo().length()*17;
+
+        funcao = tipo;
+        cabecalho();
+
+        switch (tipo) {
+            case 1:        
+                aluno = (Aluno)entidade2;        
+                bt_usuario.setText(aluno.getNome());
+                break;
+            
+            case 2: 
+                professor = (Professor)entidade2;               
+                bt_usuario.setText(professor.getNome());
+                break;
+            
+            default:
+                break;
+        }
+
+        /* Botoes */
+        bt_voltar.setFont(texto_pequeno);
+        bt_voltar.setBounds(100,400,100,40);
+        bt_voltar.setBackground(Color.white);
+        bt_voltar.setForeground(Color.black);
+        bt_voltar.setBorderPainted(true);
+        bt_voltar.addActionListener(this::voltar);
+        jpanel_mensagem.add(bt_voltar);
+
+        /* JLabels */
+        label_mensagem.setText(mensagem.getTitulo());
+        label_mensagem.setFont(texto_sub_titulo);
+        label_mensagem.setBounds((550-tamanho_titulo)/2, 50,tamanho_titulo,40);
+		label_mensagem.setForeground(Color.white);
+
+        label_remetente.setText("DE: " + (mensagem.getRemetente()).getNome() + " " + (mensagem.getRemetente()).getSobrenome());
+        label_remetente.setFont(texto_padrao);
+        label_remetente.setBounds(50, 110,225,40);
+        
+        label_destinatario.setText("PARA: " + (mensagem.getDestinatario()).getNome() + " " + (mensagem.getDestinatario()).getSobrenome());
+        label_destinatario.setFont(texto_padrao);
+        label_destinatario.setBounds(50, 150,225,40);
+
+        label_titulo.setText("Assunto: " + mensagem.getTitulo());
+        label_titulo.setFont(texto_padrao);
+        label_titulo.setBounds(50, 190,225,40);
+
+        label_data.setText(mensagem.getData());
+        label_data.setFont(texto_padrao);
+        label_data.setBounds(400, 400,225,40);
+
+        /* TextAreas */
+        tArea_texto.setText(mensagem.getTexto());
+        tArea_texto.setFont(texto_padrao);
+        tArea_texto.setBounds(50,230,450,155);
+        tArea_texto.setBackground(Color.white);
+        tArea_texto.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
+        tArea_texto.setLineWrap(true);
+        tArea_texto.setWrapStyleWord(true);
+        tArea_texto.setEditable(false);
+
+        /* Paineis */
+        jpanel_mensagem.setLayout(null);
+        jpanel_mensagem.setBackground(Color.WHITE);
+        jpanel_mensagem.setVisible(true);
+        jpanel_mensagem.setSize(550, 500);
+        jpanel_mensagem.setLocation(100, 100);
+
+        jpanel_titulo.setLayout(null);
+        jpanel_titulo.setBackground(cor_cabecalho);
+        jpanel_titulo.setVisible(true);
+        jpanel_titulo.setSize(550, 60);
+        jpanel_titulo.setLocation(0, 30);
+
+        jpanel_mensagem.add(label_titulo);
+        jpanel_mensagem.add(label_remetente);
+        jpanel_mensagem.add(label_destinatario);
+        jpanel_mensagem.add(label_data);
+        jpanel_mensagem.add(label_mensagem);
+        jpanel_mensagem.add(label_titulo);
+        jpanel_mensagem.add(tArea_texto);
+        jpanel_mensagem.add(jpanel_titulo);
+        jpanel_mensagem.add(bt_voltar);
+
+        jpanel_fundo.add(jpanel_mensagem);
     }
 
 
-
-
+    /* Funcao que volta pro menu da Visao main */
+    private void voltar(ActionEvent actionEvent){
+        vMain = new VisaoMain();
+        
+        switch (funcao) {
+            case 1:                               
+                vMain.mensagemMenu(cMensagem, aluno, 1);
+                dispose();
+                break;
+            
+            case 2:                       
+                vMain.mensagemMenu(cMensagem, professor, 2);
+                dispose();
+                break;
+            
+            default:       
+                vMain.mensagemMenu(cMensagem, null, 0);
+                dispose();
+                break;
+        }
+    }
 
     /* Funcao que volta pro menu da Visao main */
     private void projeto(ActionEvent actionEvent){

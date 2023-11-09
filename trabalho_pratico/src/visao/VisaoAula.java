@@ -325,7 +325,7 @@ public class VisaoAula extends JFrame{
         bt_aulas.addActionListener(this::menu);
 
         String vetor_dias[] = aula.getDias();
-        tamanho_voltar = aula.getMateria().length()*15;
+        tamanho_voltar = aula.getMateria().length()*18;
 
         for(int i =0; i<aula.getDias().length;i++){
             if(vetor_dias[i].equals("SEGUNDA"))
