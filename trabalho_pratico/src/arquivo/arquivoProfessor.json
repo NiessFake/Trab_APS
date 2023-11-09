@@ -1,1 +1,18 @@
-{"professor":[{"senha":"9","mesNasc":4,"anoNasc":2003,"aulas":[0,0],"diaNasc":9,"nome":"Adelson","id":1,"sobrenome":"Junior","email":"adelson@email.com"}]}
+{
+    "professor": [
+        {
+            "senha": "9",
+            "mesNasc": 1,
+            "anoNasc": 1874,
+            "aulas": [
+                1,
+                2
+            ],
+            "diaNasc": 23,
+            "nome": "RENAN",
+            "id": 1,
+            "sobrenome": "RODRIGUES",
+            "email": "NANSOUZA@EMAIL.COM"
+        }
+    ]
+}

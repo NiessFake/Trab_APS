@@ -215,6 +215,7 @@ public class PersistenciaAluno implements Persistencia{
         /* Cria um conversor de JSON para texto para que seja possível percorrer o arquivo */
         JSONParser conversorJson = new JSONParser();
         try {
+            caminhoExiste();
             /* Converte os elementos no arquivo para um objeto JSON*/
             JSONObject aluno = (JSONObject) conversorJson.parse(new FileReader(file));
             
@@ -259,6 +260,7 @@ public class PersistenciaAluno implements Persistencia{
         /* Cria um conversor de JSON para texto para que seja possível percorrer o arquivo */
         JSONParser conversorJson = new JSONParser();
         try {
+            caminhoExiste();
             /* Converte os elementos no arquivo para um objeto JSON*/
             JSONObject aluno = (JSONObject) conversorJson.parse(new FileReader(file));
             
@@ -324,6 +326,7 @@ public class PersistenciaAluno implements Persistencia{
         /* Cria um conversor de JSON para texto para que seja possível percorrer o arquivo */
         JSONParser conversorJson = new JSONParser();
         try {
+            caminhoExiste();
             /* Converte os elementos no arquivo para um objeto JSON*/
             JSONObject aluno = (JSONObject) conversorJson.parse(new FileReader(file));
             

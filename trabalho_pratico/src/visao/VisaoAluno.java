@@ -8,9 +8,10 @@ import javax.swing.*;
 import controle.Controle;
 import controle.ControleAluno;
 import controle.ControleAula;
+import controle.ControleMensagem;
 import controle.ControleNoticias;
-import modelo.Entidade;
-import modelo.Aluno;
+import controle.ControleProfessor;
+import modelo.*;
 
 public class VisaoAluno extends JFrame{
     /* Atributo que vai guardar a única instância da interface */
@@ -19,19 +20,24 @@ public class VisaoAluno extends JFrame{
     /* Classes usadas */
     private Aluno aluno;
     private ControleAluno cAluno;
+    private ControleProfessor cProfessor;
+    private Mensagem mensagem;
+    private ControleMensagem cMensagem;
     private ControleNoticias cNoticias;
     private ControleAula cAula;
     private VisaoMain vMain;
 
-    protected String nome, sobrenome, email, dia, mes, ano , senha, cSenha;
+    protected String nome, sobrenome, email, dia, mes, ano , senha, cSenha, titulo, texto, papel, destinatario, data;
     protected boolean condicao;
     protected String[] coluna_aula = {"ID", "Materia", "Capacidade"};
     protected String[] botoes = { "Sim", "Nao" };
+    protected String[] papelVetor = {"","Aluno","Professor"};
 
     /* Paineis */
     JPanel jpanel_cabecalho = new JPanel();
     JPanel jpanel_fundo = new JPanel();
     JPanel jpanel_aulas = new JPanel();
+    JPanel jpanel_mensagem = new JPanel();
     JPanel jpanel_dados = new JPanel();
 
     /* Scroll Panels */
@@ -45,11 +51,15 @@ public class VisaoAluno extends JFrame{
     JButton bt_noticias = new JButton("NOTICIAS");
     JButton bt_sair = new JButton("SAIR");
     JButton bt_aluno = new JButton("");
+    JButton bt_mensagem = new JButton("NOVA MENSAGEM");
     JButton bt_alterar = new JButton("ALTERAR DADOS");
     JButton bt_excluir = new JButton("EXCLUIR");
     JButton bt_confirmar = new JButton("CONFIRMAR");
     JButton bt_entrar_aula = new JButton("ENTRAR AULA");
     JButton bt_projeto = new JButton("PROJETO");
+    JButton bt_continuar_mensagem = new JButton("CONTINUAR");
+    JButton bt_mensagem_menu = new JButton("MENSAGENS");
+
     
     /* Labels */
     JLabel label_imagem_login = new JLabel("");
@@ -61,6 +71,11 @@ public class VisaoAluno extends JFrame{
     JLabel label_dataNasc = new JLabel();
     JLabel label_senha = new JLabel("SENHA:");
     JLabel label_cSenha = new JLabel("CONFIRMAR SENHA: ");
+    JLabel label_titulo = new JLabel("TITULO: ");
+    JLabel label_texto = new JLabel("TEXTO: ");
+    JLabel label_destinatario = new JLabel("DEST.: ");
+    JLabel label_criar_mensagem = new JLabel("NOVA MENSAGEM");
+    JLabel label_papel = new JLabel("FUNCAO: ");
 
     /* TextAreas */
     JTextArea tArea_nome = new JTextArea();
@@ -68,11 +83,15 @@ public class VisaoAluno extends JFrame{
     JTextArea tArea_email = new JTextArea();
     JTextArea tArea_senha = new JTextArea();
     JTextArea tArea_cSenha = new JTextArea();
+    JTextArea tArea_titulo = new JTextArea();
+    JTextArea tArea_texto = new JTextArea();
+    JTextArea tArea_destinatario = new JTextArea();
 
     /*ComboBox */
     JComboBox <String> cbox_dia = new JComboBox<>(preencheVetor(32, 1, true));
     JComboBox <String> cbox_mes = new JComboBox<>(preencheVetor(13, 1, true));
     JComboBox <String> cbox_ano = new JComboBox<>(preencheVetor(151, 1874, false));
+    JComboBox <String> cbox_papel = new JComboBox <String> (papelVetor);
 
     /* Fonte e Cores */
     Font texto_padrao = new Font("ARIAL",Font.BOLD,12);
@@ -206,6 +225,18 @@ public class VisaoAluno extends JFrame{
 		bt_alterar.setForeground(Color.black);
         bt_alterar.addActionListener(this::alterar);
 
+        bt_mensagem.setFont(texto_padrao);
+        bt_mensagem.setBounds(442, 350,200,40);
+        bt_mensagem.setBackground(Color.white);
+        bt_mensagem.setForeground(Color.black);
+        bt_mensagem.addActionListener(this::criarMensagem);
+
+        bt_mensagem_menu.setFont(texto_padrao);
+        bt_mensagem_menu.setBounds(442, 420,200,40);
+        bt_mensagem_menu.setBackground(Color.white);
+        bt_mensagem_menu.setForeground(Color.black);
+        bt_mensagem_menu.addActionListener(this::vaiPMensagem);
+
         /* Labels */
         label_dados.setFont(texto_padrao);
         label_dados.setBounds(15, 160,300,40);
@@ -241,6 +272,8 @@ public class VisaoAluno extends JFrame{
         jpanel_dados.add(label_imagem_login);
         jpanel_dados.add(bt_alterar);
 
+        jpanel_fundo.add(bt_mensagem);
+        jpanel_fundo.add(bt_mensagem_menu);
         jpanel_fundo.add(jpanel_dados);
     }
 
@@ -338,7 +371,7 @@ public class VisaoAluno extends JFrame{
         jpanel_dados.add(bt_excluir);
         jpanel_dados.add(bt_confirmar);
 
-        
+        jpanel_fundo.remove(bt_mensagem);
         jpanel_fundo.remove(jScroll_aulas);
 
         setVisible(true);
@@ -512,6 +545,158 @@ public class VisaoAluno extends JFrame{
 
         this.vMain = new VisaoMain();
         vMain.alunoPagina(cAluno,aluno);
+        dispose();
+    }
+
+    private void criarMensagem(ActionEvent actionEvent){
+        this.vMain = new VisaoMain();
+        vMain.alunoMensagem(cAluno,aluno);
+        dispose();
+    }
+
+    public void mensagemCadastro(Controle controle, Entidade entidade){
+        cAluno = (ControleAluno)controle;
+        aluno = (Aluno)entidade;
+
+        /* Nomeia o botao como o nome do aluno cadastrado */
+        bt_aluno.setText(aluno.getNome());
+
+        cabecalho();
+        /* Botões */
+        bt_continuar_mensagem.setFont(texto_padrao);
+        bt_continuar_mensagem.setBounds(187, 400, 125,40);
+        bt_continuar_mensagem.setBackground(Color.white);
+		bt_continuar_mensagem.setForeground(Color.black);
+        bt_continuar_mensagem.addActionListener(this::continuarMensagem);
+
+        /* Labels */
+        label_criar_mensagem.setFont(texto_sub_titulo);
+        label_criar_mensagem.setBounds(137, 25, 225,50);
+
+        label_titulo.setFont(texto_padrao);
+        label_titulo.setBounds(60, 100, 125,50);
+
+        label_dataNasc.setText("Data Nasc.:");
+        label_dataNasc.setFont(texto_padrao);
+        label_dataNasc.setBounds(60, 135, 125,50);
+
+        label_destinatario.setFont(texto_padrao);
+        label_destinatario.setBounds(60, 170,125,50);
+
+        label_papel.setFont(texto_padrao);
+        label_papel.setBounds(60, 205,125,50);
+
+        label_texto.setFont(texto_padrao);
+        label_texto.setBounds(60, 240,125,50);
+
+        /* Caixas de texto */
+        tArea_titulo.setFont(texto_padrao);
+        tArea_titulo.setBounds(190, 110,250,25);
+        tArea_titulo.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
+
+        tArea_destinatario.setFont(texto_padrao);
+        tArea_destinatario.setBounds(190, 180,250,25);
+        tArea_destinatario.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
+
+        tArea_texto.setFont(texto_padrao);
+        tArea_texto.setBounds(190, 250,250,135);
+        tArea_texto.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
+        tArea_texto.setLineWrap(true);
+        tArea_texto.setWrapStyleWord(true);
+
+        /* CheckBOXes */
+        cbox_dia.setBounds(190, 145, 80, 25);
+
+        cbox_mes.setBounds(275, 145, 80, 25);
+
+        cbox_ano.setBounds(360, 145, 80, 25);
+
+        cbox_papel.setBounds(190, 215, 250, 25);
+
+
+        /* Painel */   
+        jpanel_mensagem.setLayout(null);
+        jpanel_mensagem.setBackground(Color.WHITE);
+        jpanel_mensagem.setSize(500, 500);
+        jpanel_mensagem.setLocation(125, 100);
+        jpanel_mensagem.setVisible(true);
+
+        /* Adiciona elementos no painel */
+        jpanel_mensagem.add(label_criar_mensagem);
+        jpanel_mensagem.add(label_titulo);
+        jpanel_mensagem.add(label_texto);
+        jpanel_mensagem.add(label_dataNasc);
+        jpanel_mensagem.add(label_destinatario);
+        jpanel_mensagem.add(label_papel);
+        jpanel_mensagem.add(tArea_texto);
+        jpanel_mensagem.add(tArea_titulo);
+        jpanel_mensagem.add(tArea_destinatario);
+        jpanel_mensagem.add(cbox_ano);
+        jpanel_mensagem.add(cbox_dia);
+        jpanel_mensagem.add(cbox_mes);
+        jpanel_mensagem.add(cbox_papel);
+        jpanel_mensagem.add(bt_continuar_mensagem);
+
+        jpanel_fundo.add(jpanel_mensagem);
+
+        setVisible(true);
+    }
+    
+    private void continuarMensagem(ActionEvent actionEvent){
+        Aluno aluno_aux = new Aluno();
+        Professor professor_aux = new Professor();
+        cProfessor = new ControleProfessor();
+        cMensagem = new ControleMensagem();
+
+        data = "";
+
+        texto = tArea_texto.getText();
+        titulo = tArea_titulo.getText();
+        destinatario = tArea_destinatario.getText();
+        dia = cbox_dia.getSelectedItem()+"";
+        mes = cbox_mes.getSelectedItem()+"";
+        ano = cbox_ano.getSelectedItem()+"";
+        papel = cbox_papel.getSelectedItem()+"";
+
+        if(texto.equals("") || titulo.equals("") || dia.equals("") || mes.equals("") || ano.equals("") || destinatario.equals("") || papel.equals("")){
+            JOptionPane.showMessageDialog(null,"Informação faltando", "ERRO",JOptionPane.ERROR_MESSAGE);
+            return;
+        }       
+        
+        if(Integer.parseInt(dia) < 10)
+			data = "0";
+		data = data + Integer.parseInt(dia) + ".";
+
+		if(Integer.parseInt(mes) < 10)
+			data = data + "0";
+		data = data + Integer.parseInt(mes) + "." + Integer.parseInt(ano);
+
+        if(papel.equals("Aluno")){
+            aluno_aux = cAluno.buscaID(Integer.parseInt(destinatario));
+            if(aluno_aux == null)
+                return;
+            mensagem = new Mensagem(titulo, data, texto, aluno, aluno_aux, cMensagem.devolveMaiorID()+1,1,1);
+        }
+        else{
+            professor_aux = cProfessor.buscaID(Integer.parseInt(destinatario));
+            if(professor_aux == null)
+                return;
+            mensagem = new Mensagem(titulo, data, texto, aluno, professor_aux, cMensagem.devolveMaiorID()+1,1,2);
+        }
+
+        cMensagem.insere(mensagem);
+        JOptionPane.showMessageDialog(null,"Parabéns!! Sua mensagem foi enviada com sucesso.", "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
+
+        this.vMain = new VisaoMain();
+        vMain.alunoPagina(cAluno,aluno);
+        dispose();
+    }
+
+    private void vaiPMensagem(ActionEvent actionEvent){
+        cMensagem = new ControleMensagem();
+
+        this.vMain = new VisaoMain();
+        vMain.mensagemMenu(cMensagem,aluno,1);
         dispose();
     }
 

@@ -8,10 +8,13 @@ import java.util.Arrays;
 import javax.swing.*;
 
 import controle.Controle;
+import controle.ControleAluno;
 import controle.ControleAula;
+import controle.ControleMensagem;
 import controle.ControleNoticias;
 import controle.ControleProfessor;
 import modelo.Entidade;
+import modelo.Mensagem;
 import modelo.Noticias;
 import modelo.Aluno;
 import modelo.Aula;
@@ -22,21 +25,26 @@ public class VisaoProfessor extends JFrame {
     //private static VisaoProfessor uniqueInstance;
 
     /* Classes usadas */
+    private Aluno aluno;
+    private ControleAluno cAluno;
     private Aula aula;
     private ControleAula cAula;
     private Professor professor = new Professor();
     private ControleProfessor cProfessor;
     private Noticias noticias;
     private ControleNoticias cNoticias;
+    private Mensagem mensagem;
+    private ControleMensagem cMensagem;
     private VisaoMain vMain;
 
     /* Variaveis auxiliares */
     protected int tamanho_vetor_aula;
-    protected String nome, sobrenome, email, dia, mes, ano , senha, cSenha, materia, capacidade, duracao, descricao, titulo;
+    protected String nome, sobrenome, email, dia, mes, ano , senha, cSenha, materia, capacidade, duracao, descricao, titulo, data, texto, destinatario, papel;
     protected boolean condicao_alteracao, condicao_cadastro, frequencia;
     protected String[] dias = new String[7];
     protected String[] colunas = {"ID", "Materia", "Capacidade"};
     protected String[] botoes = { "Sim", "Nao" };
+    protected String[] papelVetor = {"","Aluno","Professor"};
 
     /* Paineis */
     JPanel jpanel_cabecalho = new JPanel();
@@ -44,6 +52,7 @@ public class VisaoProfessor extends JFrame {
     JPanel jpanel_dados = new JPanel();
     JPanel jpanel_aulas = new JPanel();
     JPanel jpanel_noticias = new JPanel();
+    JPanel jpanel_mensagem = new JPanel();
 
     /* Botões */
     JButton bt_projeto = new JButton("PROJETO");
@@ -58,6 +67,9 @@ public class VisaoProfessor extends JFrame {
     JButton bt_criar_noticias = new JButton("CRIAR NOTICIAS");
     JButton bt_continuar_cadastro = new JButton("CRIAR AULA");
     JButton bt_continuar_noticias = new JButton("CRIAR NOTICIAS");
+    JButton bt_mensagem = new JButton("NOVA MENSAGEM");
+    JButton bt_mensagem_menu = new JButton("MENSAGENS");
+    JButton bt_continuar_mensagem = new JButton("CONTINUAR");
 
     /* Labels */
     JLabel label_alterar = new JLabel("ALTERAR DADOS");
@@ -79,6 +91,10 @@ public class VisaoProfessor extends JFrame {
     JLabel label_minutos = new JLabel("minutos");
     JLabel label_descricao = new JLabel("DESCRICAO: ");
     JLabel label_titulo = new JLabel("TITULO: ");
+    JLabel label_texto = new JLabel("TEXTO: ");
+    JLabel label_destinatario = new JLabel("DEST.: ");
+    JLabel label_criar_mensagem = new JLabel("NOVA MENSAGEM");
+    JLabel label_papel = new JLabel("FUNCAO: ");
 
     /* TextAreas */
     JTextArea tArea_nome = new JTextArea();
@@ -91,11 +107,14 @@ public class VisaoProfessor extends JFrame {
     JTextArea tArea_duracao = new JTextArea();
     JTextArea tArea_descricao = new JTextArea();
     JTextArea tArea_titulo = new JTextArea();
+    JTextArea tArea_texto = new JTextArea();
+    JTextArea tArea_destinatario = new JTextArea();
 
     /*ComboBoxes */
     JComboBox <String> cbox_dia = new JComboBox<>(preencheVetor(32, 1, true));
     JComboBox <String> cbox_mes = new JComboBox<>(preencheVetor(13, 1, true));
     JComboBox <String> cbox_ano = new JComboBox<>(preencheVetor(151, 1874, false));
+    JComboBox <String> cbox_papel = new JComboBox <String> (papelVetor);
     
     /* CheckBoxes */
     JCheckBox check_frequencia = new JCheckBox("SIM");
@@ -254,6 +273,18 @@ public class VisaoProfessor extends JFrame {
         bt_criar_noticias.setForeground(Color.black);
         bt_criar_noticias.addActionListener(this::criarNoticias);
 
+        bt_mensagem.setFont(texto_padrao);
+        bt_mensagem.setBounds(442, 430,200,40);
+        bt_mensagem.setBackground(Color.white);
+        bt_mensagem.setForeground(Color.black);
+        bt_mensagem.addActionListener(this::criarMensagem);
+
+        bt_mensagem_menu.setFont(texto_padrao);
+        bt_mensagem_menu.setBounds(442, 480,200,40);
+        bt_mensagem_menu.setBackground(Color.white);
+        bt_mensagem_menu.setForeground(Color.black);
+        bt_mensagem_menu.addActionListener(this::vaiPMensagem);
+
         /* Labels */
         label_dados.setFont(texto_padrao);
         label_dados.setBounds(15, 150,300,40);
@@ -291,6 +322,8 @@ public class VisaoProfessor extends JFrame {
 
         jpanel_fundo.add(bt_criar_aula);
         jpanel_fundo.add(bt_criar_noticias);
+        jpanel_fundo.add(bt_mensagem);
+        jpanel_fundo.add(bt_mensagem_menu);
         jpanel_fundo.add(jpanel_dados);
     }
 
@@ -380,6 +413,8 @@ public class VisaoProfessor extends JFrame {
         /* Remove e adiciona elementos no painel */
         jpanel_fundo.remove(bt_criar_aula);
         jpanel_fundo.remove(bt_criar_noticias);
+        jpanel_fundo.remove(bt_mensagem);
+        jpanel_fundo.remove(bt_mensagem_menu);
         jpanel_fundo.remove(jScroll_aulas);
 
         jpanel_dados.remove(bt_alterar);
@@ -454,6 +489,8 @@ public class VisaoProfessor extends JFrame {
 
                 jpanel_fundo.remove(bt_criar_aula);
                 jpanel_fundo.remove(bt_criar_noticias);
+                jpanel_fundo.remove(bt_mensagem);
+                jpanel_fundo.remove(bt_mensagem_menu);
                 jpanel_fundo.remove(jScroll_aulas);
                 jpanel_fundo.remove(jpanel_dados);
 
@@ -572,6 +609,8 @@ public class VisaoProfessor extends JFrame {
 
         jpanel_fundo.remove(bt_criar_aula);
         jpanel_fundo.remove(bt_criar_noticias);
+        jpanel_fundo.remove(bt_mensagem);
+        jpanel_fundo.remove(bt_mensagem_menu);
         jpanel_fundo.remove(jpanel_dados);
 
         jpanel_cabecalho.remove(bt_professor);
@@ -600,6 +639,8 @@ public class VisaoProfessor extends JFrame {
         jpanel_fundo.remove(jScroll_aulas);
         jpanel_fundo.remove(bt_criar_aula);
         jpanel_fundo.remove(bt_criar_noticias);
+        jpanel_fundo.remove(bt_mensagem);
+        jpanel_fundo.remove(bt_mensagem_menu);
 
         /* Botões */
         bt_continuar_cadastro.setFont(texto_padrao);
@@ -749,7 +790,7 @@ public class VisaoProfessor extends JFrame {
                 else
                     dias[6]= "";
 
-                aula = new Aula(cAula.devolveMaiorID(), materia, null,Integer.parseInt(capacidade), new Aluno[0], professor, Integer.parseInt(duracao), frequencia, dias);
+                aula = new Aula(cAula.devolveMaiorID()+1, materia, null,Integer.parseInt(capacidade), new Aluno[0], professor, Integer.parseInt(duracao), frequencia, dias);
                 
                 Aula[] aulas_ministradas;
 
@@ -795,6 +836,8 @@ public class VisaoProfessor extends JFrame {
         jpanel_fundo.remove(jScroll_aulas);
         jpanel_fundo.remove(bt_criar_aula);
         jpanel_fundo.remove(bt_criar_noticias);
+        jpanel_fundo.remove(bt_mensagem);
+        jpanel_fundo.remove(bt_mensagem_menu);
 
         /* Botões */
         bt_continuar_noticias.setFont(texto_padrao);
@@ -825,6 +868,8 @@ public class VisaoProfessor extends JFrame {
         tArea_descricao.setFont(texto_padrao);
         tArea_descricao.setBounds(190, 180,250,125);
         tArea_descricao.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
+        tArea_descricao.setLineWrap(true);
+        tArea_descricao.setWrapStyleWord(true);
 
         /* CheckBOXes */
         cbox_dia.setBounds(190, 145, 80, 25);
@@ -880,6 +925,157 @@ public class VisaoProfessor extends JFrame {
         }
     }
 
+    private void criarMensagem(ActionEvent actionEvent){
+        this.vMain = new VisaoMain();
+        vMain.professorMensagem(cProfessor,professor);
+        dispose();
+    }
+
+    public void mensagemCadastro(Controle controle, Entidade entidade){
+        cProfessor = (ControleProfessor)controle;
+        professor = (Professor)entidade;
+
+        /* Nomeia o botao como o nome do aluno cadastrado */
+        bt_professor.setText(professor.getNome());
+
+        cabecalho();
+        /* Botões */
+        bt_continuar_mensagem.setFont(texto_padrao);
+        bt_continuar_mensagem.setBounds(187, 400, 125,40);
+        bt_continuar_mensagem.setBackground(Color.white);
+		bt_continuar_mensagem.setForeground(Color.black);
+        bt_continuar_mensagem.addActionListener(this::continuarMensagem);
+
+        /* Labels */
+        label_criar_mensagem.setFont(texto_sub_titulo);
+        label_criar_mensagem.setBounds(137, 25, 225,50);
+
+        label_titulo.setFont(texto_padrao);
+        label_titulo.setBounds(60, 100, 125,50);
+
+        label_dataNasc.setText("Data Nasc.:");
+        label_dataNasc.setFont(texto_padrao);
+        label_dataNasc.setBounds(60, 135, 125,50);
+
+        label_destinatario.setFont(texto_padrao);
+        label_destinatario.setBounds(60, 170,125,50);
+
+        label_papel.setFont(texto_padrao);
+        label_papel.setBounds(60, 205,125,50);
+
+        label_texto.setFont(texto_padrao);
+        label_texto.setBounds(60, 240,125,50);
+
+        /* Caixas de texto */
+        tArea_titulo.setFont(texto_padrao);
+        tArea_titulo.setBounds(190, 110,250,25);
+        tArea_titulo.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
+
+        tArea_destinatario.setFont(texto_padrao);
+        tArea_destinatario.setBounds(190, 180,250,25);
+        tArea_destinatario.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
+
+        tArea_texto.setFont(texto_padrao);
+        tArea_texto.setBounds(190, 250,250,135);
+        tArea_texto.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
+        tArea_texto.setLineWrap(true);
+        tArea_texto.setWrapStyleWord(true);
+
+        /* CheckBOXes */
+        cbox_dia.setBounds(190, 145, 80, 25);
+
+        cbox_mes.setBounds(275, 145, 80, 25);
+
+        cbox_ano.setBounds(360, 145, 80, 25);
+
+        cbox_papel.setBounds(190, 215, 250, 25);
+
+
+        /* Painel */   
+        jpanel_mensagem.setLayout(null);
+        jpanel_mensagem.setBackground(Color.WHITE);
+        jpanel_mensagem.setSize(500, 500);
+        jpanel_mensagem.setLocation(125, 100);
+        jpanel_mensagem.setVisible(true);
+
+        /* Adiciona elementos no painel */
+        jpanel_mensagem.add(label_criar_mensagem);
+        jpanel_mensagem.add(label_titulo);
+        jpanel_mensagem.add(label_texto);
+        jpanel_mensagem.add(label_dataNasc);
+        jpanel_mensagem.add(label_destinatario);
+        jpanel_mensagem.add(label_papel);
+        jpanel_mensagem.add(tArea_texto);
+        jpanel_mensagem.add(tArea_titulo);
+        jpanel_mensagem.add(tArea_destinatario);
+        jpanel_mensagem.add(cbox_ano);
+        jpanel_mensagem.add(cbox_dia);
+        jpanel_mensagem.add(cbox_mes);
+        jpanel_mensagem.add(cbox_papel);
+        jpanel_mensagem.add(bt_continuar_mensagem);
+
+        jpanel_fundo.add(jpanel_mensagem);
+
+        setVisible(true);
+    }
+    
+    private void continuarMensagem(ActionEvent actionEvent){
+        Aluno aluno_aux = new Aluno();
+        Professor professor_aux = new Professor();
+        cAluno = new ControleAluno();
+        cMensagem = new ControleMensagem();
+
+        data = "";
+
+        texto = tArea_texto.getText();
+        titulo = tArea_titulo.getText();
+        destinatario = tArea_destinatario.getText();
+        dia = cbox_dia.getSelectedItem()+"";
+        mes = cbox_mes.getSelectedItem()+"";
+        ano = cbox_ano.getSelectedItem()+"";
+        papel = cbox_papel.getSelectedItem()+"";
+
+        if(texto.equals("") || titulo.equals("") || dia.equals("") || mes.equals("") || ano.equals("") || destinatario.equals("") || papel.equals("")){
+            JOptionPane.showMessageDialog(null,"Informação faltando", "ERRO",JOptionPane.ERROR_MESSAGE);
+            return;
+        }       
+        
+        if(Integer.parseInt(dia) < 10)
+			data = "0";
+		data = data + Integer.parseInt(dia) + ".";
+
+		if(Integer.parseInt(mes) < 10)
+			data = data + "0";
+		data = data + Integer.parseInt(mes) + "." + Integer.parseInt(ano);
+
+        if(papel.equals("Aluno")){
+            aluno_aux = cAluno.buscaID(Integer.parseInt(destinatario));
+            if(aluno_aux == null)
+                return;
+            mensagem = new Mensagem(titulo, data, texto, professor, aluno_aux, cMensagem.devolveMaiorID()+1,2,1);
+        }
+        else{
+            professor_aux = cProfessor.buscaID(Integer.parseInt(destinatario));
+            if(professor_aux == null)
+                return;
+            mensagem = new Mensagem(titulo, data, texto, professor, professor_aux, cMensagem.devolveMaiorID()+1,2,2);
+        }
+
+        cMensagem.insere(mensagem);
+        JOptionPane.showMessageDialog(null,"Parabéns!! Sua mensagem foi enviada com sucesso.", "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
+
+        this.vMain = new VisaoMain();
+        vMain.professorPagina(cProfessor,professor);
+        dispose();
+    }
+
+    private void vaiPMensagem(ActionEvent actionEvent){
+        cMensagem = new ControleMensagem();
+
+        this.vMain = new VisaoMain();
+        vMain.mensagemMenu(cMensagem,professor,2);
+        dispose();
+    }
 
     /* Botao que leva para o menu da VisaoMain */
     private void projeto(ActionEvent actionEvent){

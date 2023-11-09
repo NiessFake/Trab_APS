@@ -1,1 +1,17 @@
-{"aluno":[{"senha":"9","mesNasc":3,"anoNasc":2019,"aulas":[1,0,2,1],"diaNasc":4,"nome":"Fulano","id":1,"sobrenome":"Beltrano","email":"Ciclano"}]}
+{
+    "aluno": [
+        {
+            "senha": "9",
+            "mesNasc": 4,
+            "anoNasc": 2003,
+            "aulas": [
+                1
+            ],
+            "diaNasc": 9,
+            "nome": "ADELSON",
+            "id": 1,
+            "sobrenome": "JR",
+            "email": "ADELSON@EMAIL.COM"
+        }
+    ]
+}

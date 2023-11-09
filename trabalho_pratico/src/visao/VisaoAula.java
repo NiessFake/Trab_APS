@@ -18,6 +18,7 @@ public class VisaoAula extends JFrame{
     private Usuario usuario = new Usuario();
     private Aluno aluno = new Aluno();
     private Professor professor = new Professor();
+    private Professor professor_aux = new Professor();
     private Aula aula = new Aula();
 
     private ControleAluno cAluno;
@@ -433,8 +434,8 @@ public class VisaoAula extends JFrame{
         label_frequencia.setFont(texto_padrao);
         label_frequencia.setBounds(400, 110,100,40);
 
-        professor = aula.getProfessor();
-        label_professor.setText("PROFESSOR: " + professor.getNome() + " " + professor.getSobrenome());
+        professor_aux = aula.getProfessor();
+        label_professor.setText("PROFESSOR: " + professor_aux.getNome() + " " + professor_aux.getSobrenome());
         label_professor.setFont(texto_padrao);
         label_professor.setBounds(50, 162,225,40);
 

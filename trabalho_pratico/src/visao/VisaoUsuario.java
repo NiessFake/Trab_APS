@@ -68,7 +68,7 @@ public class VisaoUsuario extends JFrame {
 
     /*ComboBox */
     JComboBox <String> cbox_dia = new JComboBox<>(preencheVetor(32, 1, true));
-    JComboBox <String>cbox_mes = new JComboBox<>(preencheVetor(13, 1, true));
+    JComboBox <String> cbox_mes = new JComboBox<>(preencheVetor(13, 1, true));
     JComboBox <String> cbox_ano = new JComboBox<>(preencheVetor(151, 1874, false));
     JComboBox <String> cbox_papel = new JComboBox <String> (papelVetor);
 

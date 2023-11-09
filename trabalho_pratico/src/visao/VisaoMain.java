@@ -13,11 +13,14 @@ public class VisaoMain extends JFrame {
     private Aluno aluno;
     private Professor professor;
     private Noticias noticias;
+    private Mensagem mensagem;
+
     private VisaoUsuario vUsuario;
     private VisaoAula vAula;
     private VisaoAluno vAluno;
     private VisaoProfessor vProfessor;
     private VisaoNoticias vNoticias;
+    private VisaoMensagem vMensagem;
 
     /* Cria um atributo do tipo Controle para acessar as funções */
     private ControleUsuario cUsuario;
@@ -25,6 +28,7 @@ public class VisaoMain extends JFrame {
     private ControleAluno cAluno;
     private ControleProfessor cProfessor;
     private ControleNoticias cNoticias;
+    private ControleMensagem cMensagem;
 
     /* Atributo que vai guardar a única instância da interface */
     //private static VisaoMain uniqueInstance;
@@ -333,6 +337,14 @@ public class VisaoMain extends JFrame {
         dispose();
     }
 
+    public void alunoMensagem(Controle controle, Entidade entidade){
+        this.cAluno = (ControleAluno)controle;
+        this.aluno = (Aluno)entidade;
+        this.vAluno = new VisaoAluno();
+        vAluno.mensagemCadastro(cAluno,aluno);
+        dispose();
+    }
+
     public void professorPagina(Controle controle, Entidade entidade){
         this.cProfessor = (ControleProfessor)controle;
         this.professor = (Professor)entidade;
@@ -341,6 +353,13 @@ public class VisaoMain extends JFrame {
         dispose();
     }
 
+    public void professorMensagem(Controle controle, Entidade entidade){
+        this.cProfessor = (ControleProfessor)controle;
+        this.professor = (Professor)entidade;
+        this.vProfessor = new VisaoProfessor();
+        vProfessor.mensagemCadastro(cProfessor,professor);
+        dispose();
+    }
 
     public void aulaMenu(Controle controle, Entidade entidade, int tipo){
         this.cAula = (ControleAula)controle;
@@ -453,6 +472,51 @@ public class VisaoMain extends JFrame {
         this.vNoticias = new VisaoNoticias();
         this.professor = (Professor)entidade2;
         vNoticias.alterar(cNoticias,noticias, professor);
+        dispose();
+    }
+
+    public void mensagemMenu(Controle controle, Entidade entidade, int tipo){
+        this.cMensagem = (ControleMensagem)controle;
+        this.vMensagem = new VisaoMensagem();
+
+        switch (tipo) {
+            case 1:
+                this.aluno = (Aluno)entidade;
+                vMensagem.menuMensagens(cMensagem,aluno,1);
+                break;
+
+            case 2:
+                this.professor = (Professor)entidade;
+                vMensagem.menuMensagens(cMensagem,professor,2);
+                break;
+        
+            default:
+                vMensagem.menuMensagens(cMensagem,null,0);
+                break;
+        }
+        dispose();
+    }
+
+    public void mensagemPI(Entidade entidade, Entidade entidade2, int tipo){
+        this.mensagem = (Mensagem)entidade; 
+        this.cMensagem = new ControleMensagem();
+        this.vMensagem = new VisaoMensagem();
+
+        switch (tipo) {
+            case 1:
+                this.aluno = (Aluno)entidade;
+                vMensagem.paginaIndividual(cMensagem, mensagem, aluno,tipo);
+                break;
+
+            case 2:
+                this.professor = (Professor)entidade;
+                vMensagem.paginaIndividual(cMensagem, mensagem, professor,tipo);
+                break;
+        
+            default:
+                vMensagem.paginaIndividual(cMensagem, mensagem, null,tipo);
+                break;
+        }
         dispose();
     }
 }
