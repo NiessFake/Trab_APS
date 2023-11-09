@@ -11,8 +11,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 
-import javax.sound.midi.Track;
-
 /* Import dos códigos existente no pacote desse programa */
 import modelo.*;
 
@@ -36,11 +34,11 @@ public class PersistenciaTarefa {
             hashJSON.put("dia", ((Tarefa)entidade).getDia());
             hashJSON.put("mes", ((Tarefa)entidade).getMes());
             hashJSON.put("ano", ((Tarefa)entidade).getAno());
-            hashJSON.put("prazo", ((Tarefa)entidade).getPrazo());
+            hashJSON.put("dataLimite", ((Tarefa)entidade).getPrazo());
             hashJSON.put("descricao", ((Tarefa)entidade).getDescricao());
             hashJSON.put("titulo", ((Tarefa)entidade).getTitulo());
             hashJSON.put("autor", (((Tarefa)entidade).getAutor()).getId());
-            hashJSON.put("aula", ((Tarefa)entidade).getAula());
+            hashJSON.put("aula", ((Tarefa)entidade).getAula().getId());
 
             if(((Tarefa)entidade).getId()==0)
                 hashJSON.put("id", devolveMaiorID()+1);
