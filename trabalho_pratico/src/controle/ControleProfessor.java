@@ -1,28 +1,20 @@
 package controle;
 
 import modelo.Professor;
-import persistencia.PersistenciaProfessor;
+import persistencia.ProfessorDAO;
+import strategies.EstrategiasOpBasicas;
 
 public class ControleProfessor extends Controle{
-
-    public ControleProfessor() {
-        super(new PersistenciaProfessor());
-    }
-
-    public int devolveMaiorID(){
-        return ((PersistenciaProfessor)persistencia).devolveMaiorID();
-    }
-
-    public Professor buscaID(int id){
-        return ((PersistenciaProfessor)persistencia).buscaID(id);
+    public ControleProfessor(EstrategiasOpBasicas estrategia) {
+        super(estrategia, ProfessorDAO.getInstancia());
     }
 
     public Professor buscaIDParcial(int id){
-        return ((PersistenciaProfessor)persistencia).buscaIDParcial(id);
+        return ((ProfessorDAO)persistencia).buscaIDParcial(id);
     }
 
     public int devolveIdPerdido(String email, int dia, int mes, int ano){
-        return ((PersistenciaProfessor)persistencia).devolveIdPerdido(email, dia, mes, ano);
+        return ((ProfessorDAO)persistencia).devolveIdPerdido(email, dia, mes, ano);
     }
 
 }

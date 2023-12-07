@@ -13,12 +13,22 @@ import java.util.HashMap;
 /* Import dos códigos existente no pacote desse programa */
 import modelo.*;
 
-public class PersistenciaAluno implements Persistencia{
+public class PersistenciaAluno implements AlunoDAO{
     /* Caminho para salvar no arquivo */
     private String file = "src/arquivo/arquivoAluno.json";
 
     /* Variaveis a serem usadas */
     protected Aula vetor_aulas[];
+       
+    private static PersistenciaAluno instancia;
+
+    // Método estático para obter a instância única da classe
+    public static PersistenciaAluno getInstancia() {
+        if (instancia == null) {
+            instancia = new PersistenciaAluno();
+        }
+        return instancia;
+    }
 
     /* Função que insere um usuário no arquivo */
     public void insere(Entidade entidade){
@@ -101,7 +111,7 @@ public class PersistenciaAluno implements Persistencia{
 
         /* Classes usadas */
         Aula aula = new Aula();
-        PersistenciaAula pAula = new PersistenciaAula();
+        PersistenciaAula pAula = PersistenciaAula.getInstancia();
 
         /* Cria um conversor de JSON para texto para que seja possível escrever o arquivo */
         JSONParser conversorJson = new JSONParser();
@@ -251,7 +261,7 @@ public class PersistenciaAluno implements Persistencia{
     /* Funcao que busca um id no banco de dados e retorna o usuario*/
     public Aluno buscaID(int id){
         Aluno mAluno = new Aluno();
-        PersistenciaAula pAula = new PersistenciaAula();
+        PersistenciaAula pAula = PersistenciaAula.getInstancia();
 
         /* Variavel auxiliar */
         String aux;
@@ -426,7 +436,7 @@ public class PersistenciaAluno implements Persistencia{
 
         /* Classes usadas */
         Aula aula = new Aula();
-        PersistenciaAula pAula = new PersistenciaAula();
+        PersistenciaAula pAula = PersistenciaAula.getInstancia();
 
         /* Cria um conversor de JSON para texto para que seja possível percorrer o arquivo */
         JSONParser conversorJson = new JSONParser();

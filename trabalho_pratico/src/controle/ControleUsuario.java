@@ -1,12 +1,11 @@
 package controle;
 
 import persistencia.PersistenciaUsuario;
+import strategies.EstrategiasOpBasicas;
 
 public class ControleUsuario extends Controle {
-    protected PersistenciaUsuario pUsuario;
 
-    public ControleUsuario() {
-        super(new PersistenciaUsuario());
+    public ControleUsuario(EstrategiasOpBasicas estrategia) {
+        super(estrategia, PersistenciaUsuario.getInstancia());
     }
-  
 }

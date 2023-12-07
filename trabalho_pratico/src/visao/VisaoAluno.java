@@ -12,10 +12,21 @@ import controle.ControleMensagem;
 import controle.ControleNoticias;
 import controle.ControleProfessor;
 import modelo.*;
+import persistencia.AulaDAO;
+import persistencia.MensagemDAO;
+import persistencia.NoticiasDAO;
+import persistencia.ProfessorDAO;
+import strategies.Estrategia1;
+import strategies.Estrategia2;
+import strategies.EstrategiaTabelas;
+import strategies.EstrategiasOpBasicas;
 
 public class VisaoAluno extends JFrame{
     /* Atributo que vai guardar a única instância da interface */
     //private static VisaoAluno uniqueInstance;
+
+    EstrategiasOpBasicas e1,e3;
+    EstrategiaTabelas e2;
 
     /* Classes usadas */
     private Aluno aluno;
@@ -211,8 +222,12 @@ public class VisaoAluno extends JFrame{
         aluno = (Aluno)entidade;
         cAluno = (ControleAluno)controle;
 
-        this.cAula = new ControleAula();
-        this.cNoticias = new ControleNoticias();
+        e1 = new Estrategia1(AulaDAO.getInstancia());
+        e3 = new Estrategia1(NoticiasDAO.getInstancia());
+        e2 = new Estrategia2();
+
+        this.cAula = new ControleAula(e1,e2);
+        this.cNoticias = new ControleNoticias(e3,e2);
 
         cabecalho();
         tabelaAulas();
@@ -653,8 +668,12 @@ public class VisaoAluno extends JFrame{
     private void continuarMensagem(ActionEvent actionEvent){
         Aluno aluno_aux = new Aluno();
         Professor professor_aux = new Professor();
-        cProfessor = new ControleProfessor();
-        cMensagem = new ControleMensagem();
+
+        e1 = new Estrategia1(ProfessorDAO.getInstancia());
+        e3 = new Estrategia1(MensagemDAO.getInstancia());
+
+        cProfessor = new ControleProfessor(e1);
+        cMensagem = new ControleMensagem(e3);
 
         data = "";
 
@@ -680,13 +699,13 @@ public class VisaoAluno extends JFrame{
 		data = data + Integer.parseInt(mes) + "." + Integer.parseInt(ano);
 
         if(papel.equals("Aluno")){
-            aluno_aux = cAluno.buscaID(Integer.parseInt(destinatario));
+            aluno_aux = (Aluno) cAluno.buscaID(Integer.parseInt(destinatario));
             if(aluno_aux == null)
                 return;
             mensagem = new Mensagem(titulo, data, texto, aluno, aluno_aux, cMensagem.devolveMaiorID()+1,1,1);
         }
         else{
-            professor_aux = cProfessor.buscaID(Integer.parseInt(destinatario));
+            professor_aux = (Professor) cProfessor.buscaID(Integer.parseInt(destinatario));
             if(professor_aux == null)
                 return;
             mensagem = new Mensagem(titulo, data, texto, aluno, professor_aux, cMensagem.devolveMaiorID()+1,1,2);
@@ -704,7 +723,10 @@ public class VisaoAluno extends JFrame{
         busca = tArea_busca.getText();
         papel = cbox_papel.getSelectedItem()+"";
 
-        cProfessor = new ControleProfessor();
+        e1 = new Estrategia1(ProfessorDAO.getInstancia());
+        e2 = new Estrategia2();
+
+        cProfessor = new ControleProfessor(e1);
 
         if(papel.equals("")){
             JOptionPane.showMessageDialog(null,"Informe a funcao delu.", "ERRO",JOptionPane.ERROR_MESSAGE);
@@ -717,7 +739,7 @@ public class VisaoAluno extends JFrame{
                 return;
             }
             else{
-                JOptionPane.showMessageDialog(null,"O nome deste usuario eh: " + (cAluno.buscaID(Integer.parseInt(busca))).getNome(), "Sucesso",JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null,"O nome deste usuario eh: " + (((Aluno)cAluno.buscaID(Integer.parseInt(busca))).getNome()), "Sucesso",JOptionPane.INFORMATION_MESSAGE);
                 return;  
             }
         }
@@ -727,14 +749,17 @@ public class VisaoAluno extends JFrame{
                 return;
             }
             else{
-                JOptionPane.showMessageDialog(null,"O nome deste usuario eh: " + (cProfessor.buscaID(Integer.parseInt(busca))).getNome(), "Sucesso",JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null,"O nome deste usuario eh: " + ((Professor)cProfessor.buscaID(Integer.parseInt(busca))).getNome(), "Sucesso",JOptionPane.INFORMATION_MESSAGE);
                 return;  
             }
         }
     }
 
     private void vaiPMensagem(ActionEvent actionEvent){
-        cMensagem = new ControleMensagem();
+
+        e1 = new Estrategia1(MensagemDAO.getInstancia());
+
+        cMensagem = new ControleMensagem(e1);
 
         this.vMain = new VisaoMain();
         vMain.mensagemMenu(cMensagem,aluno,1);

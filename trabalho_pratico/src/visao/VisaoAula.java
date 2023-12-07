@@ -12,23 +12,36 @@ import javax.swing.event.ListSelectionListener;
 
 import controle.*;
 import modelo.*;
+import persistencia.AlunoDAO;
+import persistencia.NoticiasDAO;
+import persistencia.TarefasDAO;
+import strategies.Estrategia1;
+import strategies.Estrategia2;
+import strategies.EstrategiaTabelas;
+import strategies.EstrategiasOpBasicas;
 
 public class VisaoAula extends JFrame{
+
+    EstrategiasOpBasicas e1,e3;
+    EstrategiaTabelas e2;
+
     /* Classes usadas */
     private Usuario usuario = new Usuario();
     private Aluno aluno = new Aluno();
     private Professor professor = new Professor();
     private Professor professor_aux = new Professor();
     private Aula aula = new Aula();
+    private Tarefa tarefa;
 
     private ControleAluno cAluno;
     private ControleAula cAula;
     private ControleNoticias cNoticias;
+    private ControleTarefa cTarefa;
     private VisaoMain vMain;
 
     /* Variaveis auxiliares */
     protected int funcao, tamanho_voltar,tamanho_capacidade, inscrito;
-    protected String materia, capacidade, duracao, descricao;
+    protected String materia, capacidade, duracao, descricao, titulo, dia, mes, ano, prazo, dia2, mes2, ano2;
     protected boolean frequencia;
     protected Aula[] aulas_inscritas;
     protected Aluno[] alunos_inscritos;
@@ -47,6 +60,7 @@ public class VisaoAula extends JFrame{
     JPanel jpanel_botoes = new JPanel();
     JPanel jpanel_materia = new JPanel();
     JPanel jpanel_cadastro = new JPanel();
+    JPanel jpanel_tarefa = new JPanel();
 
     /* Scroll Panels */
     JScrollPane jScroll_aula;
@@ -65,6 +79,8 @@ public class VisaoAula extends JFrame{
     JButton bt_tarefas = new JButton("tarefas");
     JButton bt_home = new JButton("home");
     JButton bt_continuar_cadastro = new JButton("CONTINUAR");
+    JButton bt_continuar_tarefa = new JButton("CONTINUAR");
+    JButton bt_criar_tarefa = new JButton("CRIAR TAREFA");
     
     /* Labels */
     JLabel label_aula = new JLabel("");
@@ -84,6 +100,10 @@ public class VisaoAula extends JFrame{
     JLabel label_dias = new JLabel("DIAS DA SEMANA");
     JLabel label_minutos = new JLabel("minutos");
     JLabel label_descricao = new JLabel("DESCRICAO");
+    JLabel label_titulo = new JLabel("TITULO:");
+    JLabel label_data = new JLabel("DATA: ");
+    JLabel label_prazo = new JLabel("PRAZO: ");
+    JLabel label_criar_tarefa = new JLabel("CRIAR TAREFA ");
 
     /* TextAreas */
     JTextArea tArea_descricao = new JTextArea();
@@ -91,6 +111,7 @@ public class VisaoAula extends JFrame{
     JTextArea tArea_materia = new JTextArea();
     JTextArea tArea_capacidade = new JTextArea();
     JTextArea tArea_duracao = new JTextArea();
+    JTextArea tArea_titulo = new JTextArea();
 
     /* CheckBoxes */
     JCheckBox check_frequencia = new JCheckBox("SIM");
@@ -101,6 +122,14 @@ public class VisaoAula extends JFrame{
     JCheckBox check_sexta = new JCheckBox("SEX");
     JCheckBox check_sabado = new JCheckBox("SAB");
     JCheckBox check_domingo = new JCheckBox("DOM");
+
+    /*ComboBoxes */
+    JComboBox <String> cbox_dia = new JComboBox<>(preencheVetor(32, 1, true));
+    JComboBox <String> cbox_mes = new JComboBox<>(preencheVetor(13, 1, true));
+    JComboBox <String> cbox_ano = new JComboBox<>(preencheVetor(151, 1874, false));
+    JComboBox <String> cbox_dia2 = new JComboBox<>(preencheVetor(32, 1, true));
+    JComboBox <String> cbox_mes2 = new JComboBox<>(preencheVetor(13, 1, true));
+    JComboBox <String> cbox_ano2 = new JComboBox<>(preencheVetor(151, 1874, false));
 
     /* Tabelas */
     JTable tabela_aulas;
@@ -208,7 +237,9 @@ public class VisaoAula extends JFrame{
         funcao = tipo;
         cAula = (ControleAula)controle;
 
-        this.cAluno = new ControleAluno();
+        e1 = new Estrategia1(AlunoDAO.getInstancia());
+
+        this.cAluno = new ControleAluno(e1);
 
         bt_aulas.removeActionListener(this::menu);
 
@@ -257,7 +288,7 @@ public class VisaoAula extends JFrame{
                         /* Apaga tabela antiga */
                         jpanel_fundo.remove(jScroll_aula);
 
-                        aula = cAula.buscaID(aula.getId());
+                        aula = (Aula) cAula.buscaID(aula.getId());
 
                         setVisible(false);
                         vMain = new VisaoMain();
@@ -298,7 +329,9 @@ public class VisaoAula extends JFrame{
     }
 
     public void paginaIndividual(Controle controle, Entidade entidade, Entidade entidade2, int tipo){
-        cAluno = new ControleAluno(); 
+        e1 = new Estrategia1(AlunoDAO.getInstancia());
+
+        cAluno = new ControleAluno(e1); 
         cAula = (ControleAula)controle;
         this.aula = (Aula)entidade;
 
@@ -369,6 +402,7 @@ public class VisaoAula extends JFrame{
         bt_tarefas.setBackground(Color.lightGray);
 		bt_tarefas.setForeground(Color.black);
         bt_tarefas.setBorderPainted(false);
+        bt_tarefas.addActionListener(this::tarefas);
 
 
         inscrito = 0;
@@ -394,6 +428,14 @@ public class VisaoAula extends JFrame{
                     bt_editar.addActionListener(this::edita);
 
                     jpanel_dados.add(bt_editar);
+                    
+                    bt_criar_tarefa.setFont(texto_padrao);
+                    bt_criar_tarefa.setBounds(362,300,125,40);
+                    bt_criar_tarefa.setBackground(Color.white);
+                    bt_criar_tarefa.setForeground(Color.black);
+                    bt_criar_tarefa.addActionListener(this::criarTarefa);
+
+                    jpanel_dados.add(bt_criar_tarefa);
                 }
             }
         }
@@ -783,6 +825,146 @@ public class VisaoAula extends JFrame{
         }
     }
 
+    private void criarTarefa(ActionEvent actionEvent){
+        this.vMain = new VisaoMain();
+        vMain.aulaTarefa(aula,professor,2);
+        dispose();
+    }
+
+    public void tarefas(Controle controle, Entidade entidade, Entidade entidade2, int tipo){
+        e1 = new Estrategia1(TarefasDAO.getInstancia());
+        e2 = new Estrategia2();
+
+        cTarefa = new ControleTarefa(e1,e2);
+        cAula = (ControleAula)controle;
+        aula = (Aula)entidade;
+        professor = (Professor)entidade2;
+
+        /* Nomeia o botao como o nome do aluno cadastrado */
+        bt_usuario.setText(professor.getNome());
+
+        cabecalho();
+        /* Botões */
+        bt_continuar_tarefa.setFont(texto_padrao);
+        bt_continuar_tarefa.setBounds(225, 400, 125,40);
+        bt_continuar_tarefa.setBackground(Color.white);
+		bt_continuar_tarefa.setForeground(Color.black);
+        bt_continuar_tarefa.addActionListener(this::continuarTarefa);
+
+        /* Labels */
+        label_criar_tarefa.setFont(texto_sub_titulo);
+        label_criar_tarefa.setBounds(137, 25, 225,50);
+
+        label_titulo.setFont(texto_padrao);
+        label_titulo.setBounds(60, 100, 125,50);
+
+        label_data.setFont(texto_padrao);
+        label_data.setBounds(60, 135, 125,50);
+
+        label_prazo.setFont(texto_padrao);
+        label_prazo.setBounds(60, 170, 125,50);
+
+        label_descricao.setFont(texto_padrao);
+        label_descricao.setBounds(60, 205,125,50);
+
+        /* Caixas de texto */
+        tArea_titulo.setFont(texto_padrao);
+        tArea_titulo.setBounds(190, 110,250,25);
+        tArea_titulo.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
+
+        tArea_descricao.setFont(texto_padrao);
+        tArea_descricao.setBounds(190, 215,250,165);
+        tArea_descricao.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2,cor_cabecalho));
+        tArea_descricao.setLineWrap(true);
+        tArea_descricao.setWrapStyleWord(true);
+
+        /* CheckBOXes */
+        cbox_dia.setBounds(190, 145, 80, 25);
+
+        cbox_mes.setBounds(275, 145, 80, 25);
+
+        cbox_ano.setBounds(360, 145, 80, 25);
+
+        cbox_dia2.setBounds(190, 180, 80, 25);
+
+        cbox_mes2.setBounds(275, 180, 80, 25);
+
+        cbox_ano2.setBounds(360, 180, 80, 25);
+
+
+        /* Painel */   
+        jpanel_tarefa.setLayout(null);
+        jpanel_tarefa.setBackground(Color.WHITE);
+        jpanel_tarefa.setSize(500, 500);
+        jpanel_tarefa.setLocation(125, 100);
+        jpanel_tarefa.setVisible(true);
+
+        /* Adiciona elementos no painel */
+        jpanel_tarefa.add(label_criar_tarefa);
+        jpanel_tarefa.add(label_titulo);
+        jpanel_tarefa.add(label_prazo);
+        jpanel_tarefa.add(label_data);
+        jpanel_tarefa.add(label_descricao);
+        jpanel_tarefa.add(tArea_titulo);
+        jpanel_tarefa.add(tArea_descricao);
+        jpanel_tarefa.add(cbox_ano);
+        jpanel_tarefa.add(cbox_dia);
+        jpanel_tarefa.add(cbox_mes);
+        jpanel_tarefa.add(cbox_ano2);
+        jpanel_tarefa.add(cbox_dia2);
+        jpanel_tarefa.add(cbox_mes2);
+        jpanel_tarefa.add(bt_continuar_tarefa);
+
+        jpanel_fundo.add(jpanel_tarefa);
+
+        setVisible(true);
+    }
+
+    private void continuarTarefa(ActionEvent actionEvent){
+        descricao = tArea_descricao.getText();
+        titulo = tArea_titulo.getText();
+        dia = cbox_dia.getSelectedItem()+"";
+        mes = cbox_mes.getSelectedItem()+"";
+        ano = cbox_ano.getSelectedItem()+"";
+        dia2 = cbox_dia2.getSelectedItem()+"";
+        mes2 = cbox_mes2.getSelectedItem()+"";
+        ano2 = cbox_ano2.getSelectedItem()+"";
+
+        if(descricao.equals("") || titulo.equals("") || dia.equals("") || mes.equals("") || ano.equals("") || dia2.equals("") || mes2.equals("") || ano2.equals(""))
+            JOptionPane.showMessageDialog(null,"Informação faltando", "ERRO",JOptionPane.ERROR_MESSAGE);
+        else{
+
+            if(Integer.parseInt(dia2) < 10)
+                prazo = "0";
+            prazo = prazo + Integer.parseInt(dia2) + ".";
+
+            if(Integer.parseInt(mes2) < 10)
+                prazo = prazo + "0";
+            prazo = prazo + Integer.parseInt(mes2) + "." + Integer.parseInt(ano2);
+
+            tarefa = new Tarefa(cTarefa.devolveMaiorID()+1, Integer.parseInt(dia), Integer.parseInt(mes),
+            Integer.parseInt(ano), prazo, descricao, titulo, professor, aula, null);
+            cTarefa.insere(tarefa);
+            JOptionPane.showMessageDialog(null,"Parabéns!! Sua tarefa foi adicionada com sucesso.", "SUCESSO",JOptionPane.INFORMATION_MESSAGE);
+        
+            vMain = new VisaoMain();
+            switch (funcao) {
+                case 1:
+                    vMain.aulaPI(aula, aluno,funcao);
+                    break;
+
+                case 2:
+                    vMain.aulaPI(aula, professor,funcao);
+                    break;
+            
+                default:
+                    vMain.aulaPI(aula, null,funcao);
+                    break;
+            }
+            dispose(); 
+        }
+    } 
+
     private void login(ActionEvent actionEvent){
         this.vMain = new VisaoMain();
         vMain.usuarioLogin();
@@ -855,7 +1037,11 @@ public class VisaoAula extends JFrame{
     }
 
     private void noticia(ActionEvent actionEvent){
-        this.cNoticias = new ControleNoticias();
+
+        e1 = new Estrategia1(NoticiasDAO.getInstancia());
+        e2 = new Estrategia2();
+
+        this.cNoticias = new ControleNoticias(e1,e2);
         vMain = new VisaoMain();
         
         switch (funcao) {
@@ -894,6 +1080,29 @@ public class VisaoAula extends JFrame{
         dispose(); 
     }
 
+    private void tarefas(ActionEvent actionEvent){ 
+        
+        e1 = new Estrategia1(TarefasDAO.getInstancia());
+        e2 = new Estrategia2();
+
+        cTarefa = new ControleTarefa(e1,e2);
+        vMain = new VisaoMain();
+        switch (funcao) {
+            case 1:
+                vMain.tarefaMenu(cTarefa,aula, aluno,funcao);
+                break;
+
+            case 2:
+                vMain.tarefaMenu(cTarefa, aula, professor,funcao);
+                break;
+        
+            default:
+                vMain.tarefaMenu(cTarefa, aula, null,funcao);
+                break;
+        }
+        dispose(); 
+    }
+
     private void menu(ActionEvent actionEvent){       
         this.vMain = new VisaoMain();
 
@@ -920,5 +1129,30 @@ public class VisaoAula extends JFrame{
         vMain = new VisaoMain();
         vMain.menu();
         dispose();
+    }
+
+    /* Tamanho dos vetores para o dia, mês e ano */
+    public String[] preencheVetor(int tamanho, int comeco, boolean orientacao) {
+
+        /* Cria um vetor que vai armazenar os tempo correspondente e coloca o primeiro elemento*/
+        String[] vetor = new String[tamanho];
+
+        /* Deixa a primeira posição como null */
+        vetor[0]= "";
+
+        /* Preeche os elemetos seguintes até o fim do tamanho se acordo com a orientacao dada
+         * se for TRUE é crescente, se for FALSE é descrescente*/
+        if(orientacao){
+            for(int i = 1; i<tamanho ;i++){
+                vetor[i] = Integer.toString(comeco + i - 1);
+            }
+        }
+        else{
+            for(int i = 1; i<tamanho ;i++){
+                vetor[i] = Integer.toString(comeco + tamanho - i - 1);
+            }
+        }
+        /* Retorna o vetor */
+        return vetor;
     }
 }

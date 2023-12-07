@@ -1,38 +1,47 @@
 package controle;
 
 import persistencia.*;
+import strategies.EstrategiasOpBasicas;
 
 import org.json.simple.JSONObject;
 
 import modelo.*;
 
 public abstract class Controle {
-    /* Cria um atributo do tipo persisntencia para usar dos métodos lá contidos */
-    protected Persistencia persistencia;
+    protected EstrategiasOpBasicas estrategia;
+    protected PersistenciaDAO persistencia;
 
-    /* Construtor que recebe uma persistencia e atribui ela a esse método */
-    public Controle(Persistencia persistencia){
+    public Controle(EstrategiasOpBasicas estrategia, PersistenciaDAO persistencia) {
+        this.estrategia = estrategia;
         this.persistencia = persistencia;
     }
 
-    /* Chama o metodo insere */
+    public void setEstrategia(EstrategiasOpBasicas estrategia) {
+        this.estrategia = estrategia;
+    }
+
     public void insere(Entidade entidade) {
-        persistencia.insere(entidade);
+        estrategia.insere(entidade);
     }
 
-    /* Chama o metodo remove*/
-    public void remove(Entidade entidade, Boolean bool){
-        persistencia.remove(entidade, bool);
+    public void remove(Entidade entidade, boolean condicao){
+        estrategia.remove(entidade, condicao);
     }
 
-    /* Chama o meteodo caminhoExiste */
     public void caminhoExiste(){
-        persistencia.caminhoExiste();
+        estrategia.caminhoExiste();
     }
     
-    /* Chama o metodo escreveArquivo */
     public void escreveArquivo(JSONObject escreve){
-        persistencia.escreveArquivo(escreve);
+        estrategia.escreveArquivo(escreve);
+    }
+
+    public int devolveMaiorID(){
+        return estrategia.devolveMaiorID();
+    }
+
+    public Entidade buscaID(int id){
+        return estrategia.buscaID(id);
     }
 
 }

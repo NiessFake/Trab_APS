@@ -4,14 +4,12 @@
             "senha": "9",
             "mesNasc": 4,
             "anoNasc": 2003,
-            "aulas": [
-                1
-            ],
+            "aulas": null,
             "diaNasc": 9,
-            "nome": "ADELSON",
+            "nome": "Adelson",
             "id": 1,
-            "sobrenome": "JR",
-            "email": "ADELSON@EMAIL.COM"
+            "sobrenome": "Junior",
+            "email": "adelson@email.com"
         }
     ]
 }

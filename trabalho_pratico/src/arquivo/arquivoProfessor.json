@@ -3,16 +3,16 @@
         {
             "senha": "9",
             "mesNasc": 1,
-            "anoNasc": 1874,
+            "anoNasc": 2001,
             "aulas": [
                 1,
                 2
             ],
             "diaNasc": 23,
-            "nome": "RENAN",
+            "nome": "Renan",
             "id": 1,
-            "sobrenome": "RODRIGUES",
-            "email": "NANSOUZA@EMAIL.COM"
+            "sobrenome": "Rodrigues",
+            "email": "renan@email.com"
         }
     ]
 }

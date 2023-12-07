@@ -9,8 +9,16 @@ import javax.swing.event.ListSelectionListener;
 
 import controle.*;
 import modelo.*;
+import persistencia.AulaDAO;
+import strategies.Estrategia1;
+import strategies.Estrategia2;
+import strategies.EstrategiaTabelas;
+import strategies.EstrategiasOpBasicas;
 
 public class VisaoNoticias extends JFrame{
+    EstrategiasOpBasicas e1;
+    EstrategiaTabelas e2;
+
     private Aluno aluno;
     private Professor professor;
     private ControleAula cAula;
@@ -180,7 +188,7 @@ public class VisaoNoticias extends JFrame{
         cabecalho();
 
         /* Chama a funcao que devolve um objeto contendo os dados do json */
-        Object[][] objeto_tabela_noticias = cNoticias.textoNoticias();
+        Object[][] objeto_tabela_noticias = cNoticias.textoTabelas();
 
         
         /* Cria uma tabela de selecao unica e nao editavel */
@@ -207,7 +215,7 @@ public class VisaoNoticias extends JFrame{
                         /* Apaga tabela antiga */
                         jpanel_fundo.remove(jScroll_noticias);
 
-                        noticias = cNoticias.buscaID(noticias.getId());
+                        noticias = (Noticias) cNoticias.buscaID(noticias.getId());
 
                         setVisible(false);
                         vMain = new VisaoMain();
@@ -490,7 +498,10 @@ public class VisaoNoticias extends JFrame{
     }
 
     private void aula(ActionEvent actionEvent){
-        this.cAula = new ControleAula();
+        e1 = new Estrategia1(AulaDAO.getInstancia());
+        e2 = new Estrategia2();
+
+        this.cAula = new ControleAula(e1,e2);
         vMain = new VisaoMain();
         
         switch (funcao) {

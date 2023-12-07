@@ -18,12 +18,26 @@ import modelo.Entidade;
 import modelo.Professor;
 import modelo.Aula;
 
-public class PersistenciaProfessor implements Persistencia{
+public class PersistenciaProfessor implements ProfessorDAO{
     /* Caminho para salvar no arquivo */
     private String file = "src/arquivo/arquivoProfessor.json";
 
     /* Variaveis auxiliares */
     Aula vetor_aulas[];
+
+
+    private static PersistenciaProfessor instancia;
+
+    // Construtor privado para evitar instanciação direta
+    private PersistenciaProfessor() {}
+
+    // Método estático para obter a instância única da classe
+    public static PersistenciaProfessor getInstancia() {
+        if (instancia == null) {
+            instancia = new PersistenciaProfessor();
+        }
+        return instancia;
+    }
 
     /* Função que insere um usuário no arquivo */
     public void insere(Entidade entidade){
@@ -105,7 +119,7 @@ public class PersistenciaProfessor implements Persistencia{
 
         /* Classes usadas */
         Aula aula = new Aula();
-        PersistenciaAula pAula = new PersistenciaAula();
+        PersistenciaAula pAula = PersistenciaAula.getInstancia();
 
         /* Cria um conversor de JSON para texto para que seja possível escrever o arquivo */
         JSONParser conversorJson = new JSONParser();
@@ -243,7 +257,7 @@ public class PersistenciaProfessor implements Persistencia{
 
     /* Funcao que busca um id no banco de dados e retorna o usuario*/
     public Professor buscaID(int id){
-        PersistenciaAula pAula = new PersistenciaAula();
+        PersistenciaAula pAula = PersistenciaAula.getInstancia();
         Professor mProfessor = new Professor();
 
         /* Variavel auxiliar */

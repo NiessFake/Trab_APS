@@ -2,32 +2,26 @@ package controle;
 
 import modelo.Entidade;
 import modelo.Aluno;
-import persistencia.PersistenciaAluno;
+import persistencia.AlunoDAO;
+import strategies.EstrategiasOpBasicas;
 
 public class ControleAluno extends Controle{
 
-    public ControleAluno() {
-        super(new PersistenciaAluno());
+    public ControleAluno(EstrategiasOpBasicas estrategia) {
+        super(estrategia, AlunoDAO.getInstancia());
     }
 
-    public int devolveMaiorID(){
-        return ((PersistenciaAluno)persistencia).devolveMaiorID();
-    }
-
-    public Aluno buscaID(int id){
-        return ((PersistenciaAluno)persistencia).buscaID(id);
-    }
-
+    // Métodos específicos para ControleAluno
     public Aluno buscaIDParcial(int id){
-        return ((PersistenciaAluno)persistencia).buscaIDParcial(id);
+        return ((AlunoDAO)persistencia).buscaIDParcial(id);
     }
 
     public int devolveIdPerdido(String email, int dia, int mes, int ano){
-        return ((PersistenciaAluno)persistencia).devolveIdPerdido(email, dia, mes, ano);
+        return ((AlunoDAO)persistencia).devolveIdPerdido(email, dia, mes, ano);
     }
 
     public Object[][] textoAlunos(Entidade entidade){
-        return ((PersistenciaAluno)persistencia).textoAlunos(entidade);
+        return ((AlunoDAO)persistencia).textoAlunos(entidade);
     }
     
 }

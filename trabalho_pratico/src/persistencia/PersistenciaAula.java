@@ -16,11 +16,22 @@ import org.json.simple.parser.JSONParser;
 
 import modelo.*;
 
-public class PersistenciaAula implements Persistencia{
+public class PersistenciaAula implements AulaDAO{
     /* Caminho para salvar no arquivo */
     private String file = "src/arquivo/arquivoAula.json";
 
     protected int ANO_ATUAL = 2023;
+
+    private static PersistenciaAula instancia;
+
+    // Método estático para obter a instância única da classe
+    public static PersistenciaAula getInstancia() {
+        if (instancia == null) {
+            instancia = new PersistenciaAula();
+        }
+        return instancia;
+    }
+
 
     public void insere(Entidade entidade){
 
@@ -119,9 +130,9 @@ public class PersistenciaAula implements Persistencia{
 
         /* Classes usadas */
         Professor professor = new Professor();
-        PersistenciaProfessor pProfessor = new PersistenciaProfessor();
+        PersistenciaProfessor pProfessor = PersistenciaProfessor.getInstancia();
         Aluno aluno = new Aluno();
-        PersistenciaAluno pAluno = new PersistenciaAluno();
+        PersistenciaAluno pAluno = PersistenciaAluno.getInstancia();
 
         /* Cria um conversor de JSON para texto para que seja possível escrever o arquivo */
         JSONParser conversorJson = new JSONParser();
@@ -288,8 +299,8 @@ public class PersistenciaAula implements Persistencia{
     /* Funcao que busca um id no banco de dados e retorna o usuario*/
     public Aula buscaID(int id){
         Aula mAula = new Aula();
-        PersistenciaAluno pAluno = new PersistenciaAluno();
-        PersistenciaProfessor pProfessor = new PersistenciaProfessor();
+        PersistenciaAluno pAluno = PersistenciaAluno.getInstancia();
+        PersistenciaProfessor pProfessor = PersistenciaProfessor.getInstancia();
 
         /* Variavel auxiliar */
         String aux;
@@ -370,7 +381,7 @@ public class PersistenciaAula implements Persistencia{
 
     public Aula buscaIDParcial(int id){
         Aula mAula = new Aula();
-        PersistenciaProfessor pProfessor = new PersistenciaProfessor();
+        PersistenciaProfessor pProfessor = PersistenciaProfessor.getInstancia();
 
         /* Variavel auxiliar */
         String aux;
@@ -442,7 +453,7 @@ public class PersistenciaAula implements Persistencia{
     /* Funcao que retorna uma String com os elementos JSON */
     public Object[][] textoTabelas(){
         /* Classes que sao usadas no programa */
-        PersistenciaProfessor pProfessor = new PersistenciaProfessor();
+        PersistenciaProfessor pProfessor = PersistenciaProfessor.getInstancia();
         Professor professor = new Professor();
 
         /* Variavel auxiliar */
@@ -549,7 +560,7 @@ public class PersistenciaAula implements Persistencia{
 
         /* Classes usadas */
         Aluno aluno = new Aluno();
-        PersistenciaAluno pAluno = new PersistenciaAluno();
+        PersistenciaAluno pAluno = PersistenciaAluno.getInstancia();
 
         /* Cria um conversor de JSON para texto para que seja possível percorrer o arquivo */
         JSONParser conversorJson = new JSONParser();

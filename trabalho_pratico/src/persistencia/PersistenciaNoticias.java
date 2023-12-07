@@ -14,9 +14,23 @@ import java.util.HashMap;
 import modelo.*;
 
 
-public class PersistenciaNoticias implements Persistencia {
+public class PersistenciaNoticias implements NoticiasDAO {
     /* Caminho para salvar no arquivo */
     private String file = "src/arquivo/arquivoNoticias.json";
+    
+
+    private static PersistenciaNoticias instancia;
+
+    // Construtor privado para evitar instanciação direta
+    private PersistenciaNoticias() {}
+
+    // Método estático para obter a instância única da classe
+    public static PersistenciaNoticias getInstancia() {
+        if (instancia == null) {
+            instancia = new PersistenciaNoticias();
+        }
+        return instancia;
+    }
 
     /* Função que insere um usuário no arquivo */
     public void insere(Entidade entidade){
@@ -197,7 +211,7 @@ public class PersistenciaNoticias implements Persistencia {
     /* Funcao que busca um id no banco de dados e retorna o usuario*/
     public Noticias buscaID(int id){
         Noticias mNoticias = new Noticias();
-        PersistenciaProfessor pProfessor = new PersistenciaProfessor();
+        PersistenciaProfessor pProfessor = PersistenciaProfessor.getInstancia();
 
         /* Variavel auxiliar */
         String aux;
@@ -246,7 +260,7 @@ public class PersistenciaNoticias implements Persistencia {
     }
 
     /* Texto de noticias para tabelas */
-    public Object[][] textoNoticias(){
+    public Object[][] textoTabelas(){
         String aux = " ";
 
         /* Cria um conversor de JSON para texto para que seja possível percorrer o arquivo */

@@ -9,9 +9,15 @@ import javax.swing.event.ListSelectionListener;
 
 import controle.*;
 import modelo.*;
+import strategies.EstrategiaTabelas;
+import strategies.EstrategiasOpBasicas;
 
 
 public class VisaoMensagem extends JFrame{
+
+    EstrategiasOpBasicas e1;
+    EstrategiaTabelas e2;
+    
     private Aluno aluno;
     private Professor professor;
     private Mensagem mensagem;
@@ -161,7 +167,7 @@ public class VisaoMensagem extends JFrame{
                             /* Apaga tabela antiga */
                             jpanel_fundo.remove(jScroll_mensagem);
 
-                            mensagem = cMensagem.buscaID(mensagem.getId());
+                            mensagem = (Mensagem) cMensagem.buscaID(mensagem.getId());
 
                             setVisible(false);
                             vMain = new VisaoMain();

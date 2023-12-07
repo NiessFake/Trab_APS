@@ -1,23 +1,15 @@
 package controle;
 
 import modelo.Entidade;
-import modelo.Mensagem;
-import persistencia.PersistenciaMensagem;
+import persistencia.MensagemDAO;
+import strategies.EstrategiasOpBasicas;
 
 public class ControleMensagem extends Controle {
-    public ControleMensagem() {
-        super(new PersistenciaMensagem());
-    }
-    
-    public Mensagem buscaID(int id){
-        return ((PersistenciaMensagem)persistencia).buscaID(id);
+    public ControleMensagem(EstrategiasOpBasicas estrategia) {
+        super(estrategia, MensagemDAO.getInstancia());
     }
 
     public Object[][] textoMensagem(Entidade entidade, int tipo){
-        return ((PersistenciaMensagem)persistencia).textoMensagem(entidade, tipo);
-    }
-
-    public int devolveMaiorID(){
-        return ((PersistenciaMensagem)persistencia).devolveMaiorID();
+        return ((MensagemDAO)persistencia).textoMensagem(entidade, tipo);
     }
 }

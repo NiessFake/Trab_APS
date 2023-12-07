@@ -2,43 +2,44 @@ package controle;
 
 import modelo.Aula;
 import modelo.Entidade;
-import persistencia.PersistenciaAula;
+import persistencia.AulaDAO;
+import strategies.EstrategiaTabelas;
+import strategies.EstrategiasOpBasicas;
 
 public class ControleAula extends Controle {
 
-    public ControleAula(){
-        super(new PersistenciaAula());
+    protected EstrategiaTabelas estrategia2;
+    
+    public ControleAula(EstrategiasOpBasicas estrategia, EstrategiaTabelas estrategia2) {
+        super(estrategia, AulaDAO.getInstancia());
+        this.estrategia2 = estrategia2;
     }
 
-    public int devolveMaiorID(){
-        return ((PersistenciaAula)persistencia).devolveMaiorID();
+    public void setEstrategia2(EstrategiaTabelas estrategia2) {
+        this.estrategia2 = estrategia2;
     }
 
-    public Aula buscaID(int id){
-        return ((PersistenciaAula)persistencia).buscaID(id);
+    public Object[][] textoTabelas() {
+        return estrategia2.textoTabelas(0);
     }
 
     public Aula buscaIDParcial(int id){
-        return ((PersistenciaAula)persistencia).buscaIDParcial(id);
-    }
-
-    public Object[][] textoTabelas(){
-        return ((PersistenciaAula)persistencia).textoTabelas();
+        return ((AulaDAO)persistencia).buscaIDParcial(id);
     }
 
     public Object[][] aulasProfessor(Entidade  entidade){
-        return ((PersistenciaAula)persistencia).aulasProfessor(entidade);
+        return ((AulaDAO)persistencia).aulasProfessor(entidade);
     }
 
     public Object[][] textoAlunos(Entidade entidade){
-        return ((PersistenciaAula)persistencia).textoAlunos(entidade);
+        return ((AulaDAO)persistencia).textoAlunos(entidade);
     }
 
     public int numeroAlunos(Entidade entidade){
-        return ((PersistenciaAula)persistencia).numeroAlunos(entidade);
+        return ((AulaDAO)persistencia).numeroAlunos(entidade);
     }
 
     public int jaInscrito(Entidade entidade, int id_aluno){
-        return ((PersistenciaAula)persistencia).jaInscrito(entidade, id_aluno);
+        return ((AulaDAO)persistencia).jaInscrito(entidade, id_aluno);
     }
 }

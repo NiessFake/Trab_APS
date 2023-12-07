@@ -6,14 +6,21 @@ import java.awt.event.ActionEvent;
 import javax.swing.*;
 import controle.*;
 import modelo.*;
+import persistencia.*;
+import strategies.*;
 
 public class VisaoMain extends JFrame {
+
+    EstrategiasOpBasicas e1,e3;
+    EstrategiaTabelas e2;
+
     private Usuario usuario;
     private Aula aula;
     private Aluno aluno;
     private Professor professor;
     private Noticias noticias;
     private Mensagem mensagem;
+    private Tarefa tarefa;
 
     private VisaoUsuario vUsuario;
     private VisaoAula vAula;
@@ -21,6 +28,7 @@ public class VisaoMain extends JFrame {
     private VisaoProfessor vProfessor;
     private VisaoNoticias vNoticias;
     private VisaoMensagem vMensagem;
+    private VisaoTarefa vTarefa;
 
     /* Cria um atributo do tipo Controle para acessar as funções */
     private ControleUsuario cUsuario;
@@ -29,6 +37,7 @@ public class VisaoMain extends JFrame {
     private ControleProfessor cProfessor;
     private ControleNoticias cNoticias;
     private ControleMensagem cMensagem;
+    private ControleTarefa cTarefa;
 
     /* Atributo que vai guardar a única instância da interface */
     //private static VisaoMain uniqueInstance;
@@ -131,8 +140,12 @@ public class VisaoMain extends JFrame {
         setVisible(true);
 
         /* instancia ControleAula e Usuario */
-        this.cUsuario = new ControleUsuario();
-        this.cAula = new ControleAula();
+        e1 = new Estrategia1(PersistenciaUsuario.getInstancia());
+        e3 = new Estrategia1(AulaDAO.getInstancia());
+        e2 = new Estrategia2();
+
+        this.cUsuario = new ControleUsuario(e1);
+        this.cAula = new ControleAula(e3,e2);
 
         /* BOTOES */
         bt_aula.setFont(texto_padrao);
@@ -279,7 +292,11 @@ public class VisaoMain extends JFrame {
 
         usuario.setId(0);
         /* Chama a instancia unica do VisaoUsuario e vai até ela na funcao cadastro */
-        this.cAula = new ControleAula();
+        
+        e1 = new Estrategia1(AulaDAO.getInstancia());
+        e2 = new Estrategia2();
+
+        this.cAula = new ControleAula(e1,e2);
         this.vAula = new VisaoAula();
         vAula.menuAulas(cAula,usuario,0);
         dispose();
@@ -289,8 +306,12 @@ public class VisaoMain extends JFrame {
         this.usuario = new Usuario();
 
         usuario.setId(0);
+
+        e1 = new Estrategia1(NoticiasDAO.getInstancia());
+        e2 = new Estrategia2();
+
         /* Chama a instancia unica do VisaoUsuario e vai até ela na funcao cadastro */
-        this.cNoticias = new ControleNoticias();
+        this.cNoticias = new ControleNoticias(e1,e2);
         this.vNoticias = new VisaoNoticias();
         vNoticias.menuNoticias(cNoticias,usuario,0);
         dispose();
@@ -298,14 +319,20 @@ public class VisaoMain extends JFrame {
 
 
     public void usuarioLogin(){
-        this.cUsuario = new ControleUsuario();
+
+        e1 = new Estrategia1(PersistenciaUsuario.getInstancia());
+        
+        this.cUsuario = new ControleUsuario(e1);
         this.vUsuario= new VisaoUsuario();
         vUsuario.login(cUsuario);
         dispose();
     }
 
     public void usuarioCadastro(){
-        this.cUsuario = new ControleUsuario();
+
+        e1 = new Estrategia1(PersistenciaUsuario.getInstancia());
+
+        this.cUsuario = new ControleUsuario(e1);
         this.vUsuario= new VisaoUsuario();
         vUsuario.cadastro(cUsuario);
         dispose();
@@ -313,16 +340,19 @@ public class VisaoMain extends JFrame {
 
     /* Funcao que redireciona o usuario para a sua pagina apos o login */
     public void usuarioContinuar(Boolean tipoUsuario, Entidade entidade){
+        e1 = new Estrategia1(AlunoDAO.getInstancia());
+        e3 = new Estrategia1(ProfessorDAO.getInstancia());
+
         /* Considerando true para Aluno e false para professor, uma comparacao eh feita e 
          * leva o usuario para sua pagina correspondente de acordo com seu papel */
         if(tipoUsuario){
-            this.cAluno = new ControleAluno();
+            this.cAluno = new ControleAluno(e1);
             this.vAluno = new VisaoAluno();
             vAluno.paginaAluno(cAluno,(Aluno)entidade);
             dispose();
         }
         else{
-            this.cProfessor = new ControleProfessor();
+            this.cProfessor = new ControleProfessor(e3);
             this.vProfessor = new VisaoProfessor();
             vProfessor.paginaProfessor(cProfessor,(Professor)entidade);
             dispose();
@@ -384,7 +414,11 @@ public class VisaoMain extends JFrame {
     }
 
     public void aulaPI(Entidade entidade, Entidade entidade2, int tipo){
-        this.cAula = new ControleAula();
+
+        e1 = new Estrategia1(AulaDAO.getInstancia());
+        e2 = new Estrategia2();
+
+        this.cAula = new ControleAula(e1,e2);
         this.aula = (Aula)entidade;
         this.vAula = new VisaoAula();
         switch (tipo) {
@@ -406,20 +440,49 @@ public class VisaoMain extends JFrame {
     }
 
     public void aulaAP(Entidade entidade, int funcao){
+
+        e1 = new Estrategia1(AlunoDAO.getInstancia());
+        e3 = new Estrategia1(ProfessorDAO.getInstancia());
+
         if(funcao == 1){   
-            this.cAluno = new ControleAluno();
+            this.cAluno = new ControleAluno(e1);
             this.aluno = (Aluno)entidade;
             this.vAluno = new VisaoAluno();
             vAluno.paginaAluno(cAluno,aluno);
             dispose();
         }
         else{
-            this.cProfessor = new ControleProfessor();
+            this.cProfessor = new ControleProfessor(e3);
             this.professor = (Professor)entidade;
             this.vProfessor = new VisaoProfessor();
             vProfessor.paginaProfessor(cProfessor,professor);
             dispose();
         }
+    }
+
+    public void aulaTarefa(Entidade entidade, Entidade entidade2, int tipo){
+        e1 = new Estrategia1(AulaDAO.getInstancia());
+        e2 = new Estrategia2();
+
+        this.cAula = new ControleAula(e1,e2);
+        this.aula = (Aula)entidade;
+        this.vAula = new VisaoAula();
+        switch (tipo) {
+            case 1:
+                this.aluno = (Aluno)entidade2;
+                vAula.tarefas(cAula,aula, aluno, tipo);
+                break;
+
+            case 2:
+                this.professor = (Professor)entidade2;
+                vAula.tarefas(cAula,aula, professor, tipo);
+                break;
+        
+            default:
+                vAula.tarefas(cAula,aula, null, tipo);
+                break;
+        }
+        dispose();
     }
 
     public void noticiasMenu(Controle controle, Entidade entidade, int tipo){
@@ -445,7 +508,11 @@ public class VisaoMain extends JFrame {
     }
 
     public void noticiasPI(Entidade entidade, Entidade entidade2, int tipo){
-        this.cNoticias = new ControleNoticias();
+
+        e1 = new Estrategia1(NoticiasDAO.getInstancia());
+        e2 = new Estrategia2();
+
+        this.cNoticias = new ControleNoticias(e1,e2);
         this.noticias = (Noticias)entidade;
         this.vNoticias = new VisaoNoticias();
         switch (tipo) {
@@ -467,7 +534,10 @@ public class VisaoMain extends JFrame {
     }
 
     public void noticiasAlterar(Entidade entidade, Entidade entidade2){
-        this.cNoticias = new ControleNoticias();
+        e1 = new Estrategia1(NoticiasDAO.getInstancia());
+        e2 = new Estrategia2();
+
+        this.cNoticias = new ControleNoticias(e1,e2);
         this.noticias = (Noticias)entidade;
         this.vNoticias = new VisaoNoticias();
         this.professor = (Professor)entidade2;
@@ -498,8 +568,10 @@ public class VisaoMain extends JFrame {
     }
 
     public void mensagemPI(Entidade entidade, Entidade entidade2, int tipo){
+        e1 = new Estrategia1(MensagemDAO.getInstancia());
+
         this.mensagem = (Mensagem)entidade; 
-        this.cMensagem = new ControleMensagem();
+        this.cMensagem = new ControleMensagem(e1);
         this.vMensagem = new VisaoMensagem();
 
         switch (tipo) {
@@ -515,6 +587,55 @@ public class VisaoMain extends JFrame {
         
             default:
                 vMensagem.paginaIndividual(cMensagem, mensagem, null,tipo);
+                break;
+        }
+        dispose();
+    }
+
+    public void tarefaMenu(Controle controle, Entidade entidade, Entidade entidade2, int tipo){
+        aula = (Aula)entidade;
+        this.cTarefa = (ControleTarefa)controle;
+        this.vTarefa = new VisaoTarefa();
+
+        switch (tipo) {
+            case 1:
+                this.aluno = (Aluno)entidade2;
+                vTarefa.menuTarefas(cTarefa,aula,aluno,1);
+                break;
+
+            case 2:
+                this.professor = (Professor)entidade;
+                vTarefa.menuTarefas(cTarefa,aula,professor,2);
+                break;
+        
+            default:
+                vTarefa.menuTarefas(cTarefa,aula,null,0);
+                break;
+        }
+        dispose();
+    }
+
+    public void tarefaPI(Entidade entidade, Entidade entidade2, Entidade entidade3, int tipo){
+        e1 = new Estrategia1(TarefasDAO.getInstancia());
+        e2 = new Estrategia2();
+
+        this.tarefa = (Tarefa)entidade;
+        this.aula = (Aula)entidade2;
+        this.cTarefa = new ControleTarefa(e1,e2);
+        this.vTarefa = new VisaoTarefa();
+        switch (tipo) {
+            case 1:
+                this.aluno = (Aluno)entidade3;
+                vTarefa.paginaIndividual(cTarefa,tarefa,aula, aluno, tipo);
+                break;
+
+            case 2:
+                this.professor = (Professor)entidade3;
+                vTarefa.paginaIndividual(cTarefa,tarefa,aula, professor, tipo);
+                break;
+        
+            default:
+                vTarefa.paginaIndividual(cTarefa,tarefa,aula, null, tipo);
                 break;
         }
         dispose();

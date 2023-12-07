@@ -7,8 +7,16 @@ import javax.swing.*;
 
 import controle.*;
 import modelo.*;
+import persistencia.AlunoDAO;
+import persistencia.ProfessorDAO;
+import strategies.Estrategia1;
+import strategies.EstrategiaTabelas;
+import strategies.EstrategiasOpBasicas;
 
 public class VisaoUsuario extends JFrame {
+    EstrategiasOpBasicas e1,e3;
+    EstrategiaTabelas e2;
+
     /* Cria atributos do tipo modelo e controle */
     private Aluno aluno = new Aluno();
     private Professor professor = new Professor();
@@ -154,8 +162,11 @@ public class VisaoUsuario extends JFrame {
         cabecalho();
 
         /* Inicializa os controles */
-        this.cAluno = new ControleAluno();
-        this.cProfessor = new ControleProfessor();
+        e1 = new Estrategia1(AlunoDAO.getInstancia());
+        e3 = new Estrategia1(ProfessorDAO.getInstancia());
+
+        this.cAluno = new ControleAluno(e1);
+        this.cProfessor = new ControleProfessor(e3);
 
         /* Botões */
         bt_continuar_cadastro.setFont(texto_padrao);
@@ -260,8 +271,11 @@ public class VisaoUsuario extends JFrame {
         cabecalho();
 
         /* Inicializa os controles */
-        this.cAluno = new ControleAluno();
-        this.cProfessor = new ControleProfessor();
+        e1 = new Estrategia1(AlunoDAO.getInstancia());
+        e3 = new Estrategia1(ProfessorDAO.getInstancia());
+
+        this.cAluno = new ControleAluno(e1);
+        this.cProfessor = new ControleProfessor(e3);
 
         /* Botões */
         bt_continuar_login.setFont(texto_padrao);
@@ -484,7 +498,7 @@ public class VisaoUsuario extends JFrame {
 
         /* Insere o usuário de acordo com a funcao selecionada */
         if(aux.equals("Aluno")){
-            aluno = cAluno.buscaID(Integer.parseInt(id));
+            aluno = (Aluno) cAluno.buscaID(Integer.parseInt(id));
             
             /* Se o id for igual a 0, o usuario nao existe e uma mensagem de erro eh exibida */
             if(aluno.getId()==0)
@@ -531,7 +545,7 @@ public class VisaoUsuario extends JFrame {
                 
         }
         else{
-           professor = cProfessor.buscaID(Integer.parseInt(id));
+           professor = (Professor) cProfessor.buscaID(Integer.parseInt(id));
             /* Se o id for igual a 0, o usuario nao existe e uma mensagem de erro eh exibida */
             if(professor.getId()==0)
                 JOptionPane.showMessageDialog(null,"ID não encontrado", "ERRO",JOptionPane.ERROR_MESSAGE);

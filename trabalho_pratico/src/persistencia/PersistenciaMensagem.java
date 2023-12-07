@@ -17,9 +17,23 @@ import org.json.simple.parser.JSONParser;
 
 import modelo.*;
 
-public class PersistenciaMensagem implements Persistencia, Serializable{
+public class PersistenciaMensagem implements MensagemDAO{
 
     private String file = "src/arquivo/arquivoMensagem.json";
+       
+    private static PersistenciaMensagem instancia;
+
+    
+    // Construtor privado para evitar instanciação direta
+    private PersistenciaMensagem() {}
+
+    // Método estático para obter a instância única da classe
+    public static PersistenciaMensagem getInstancia() {
+        if (instancia == null) {
+            instancia = new PersistenciaMensagem();
+        }
+        return instancia;
+    }
 
     public void insere(Entidade entidade){
        /* Cria um conversor de JSON para texto para que seja possível escrever o arquivo */
@@ -157,8 +171,8 @@ public class PersistenciaMensagem implements Persistencia, Serializable{
     public Mensagem buscaID(int id){
         Aluno aluno = new Aluno();
         Professor professor = new Professor();
-        PersistenciaAluno pAluno = new PersistenciaAluno();
-        PersistenciaProfessor pProfessor = new PersistenciaProfessor();
+        PersistenciaAluno pAluno = PersistenciaAluno.getInstancia();
+        PersistenciaProfessor pProfessor = PersistenciaProfessor.getInstancia();
 
         Mensagem mMensagem = new Mensagem();
 
@@ -272,7 +286,7 @@ public class PersistenciaMensagem implements Persistencia, Serializable{
                     TD = Integer.parseInt(elemento.get("TR").toString());
                     TR = Integer.parseInt(elemento.get("TD").toString());
 
-                    if((dest == professor.getId() && TD == 2)|| (remet == professor.getId() && TR == 2)){
+                    if((dest == professor.getId() && TD == 2)|| (remet == professor.getId() && TR == 2  )){
                         objeto[i][0] = elemento.get("id").toString();
                         objeto[i][1] = elemento.get("dest").toString();
                         objeto[i][2] = elemento.get("remet").toString();
